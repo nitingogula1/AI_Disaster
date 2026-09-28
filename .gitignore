@@ -32,3 +32,14 @@ backend/sentinelaid.db*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local verification artifacts
+.test-runs/
+backend/.test-runs/
+sentinelaid/tests/.generated/
+backend/data/raw/INGEST-*/
+backend/data/raw/uploads/
+backend/data/processed/
+backend/data/previews/
+backend/data/masks/
+backend/data/vectors/*_??????????.geojson

@@ -18,7 +18,7 @@ from app.api import (
 setup_logging()
 
 app = FastAPI(
-    title="SentinelAid AI — Disaster Response Intelligence API",
+    title="SentinelAid AI â€” Disaster Response Intelligence API",
     description="Synchronized rapid satellite ingestion, deep-learning damage detection, life-safety triage prioritization, and tactical route optimization engine.",
     version=settings.VERSION,
     docs_url="/docs",
@@ -71,6 +71,23 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         }
     )
 
+
+@app.exception_handler(FileNotFoundError)
+async def missing_resource(request, exc):
+    return JSONResponse(status_code=404, content={"success": False, "error": {"message": str(exc)}})
+
+@app.exception_handler(ValueError)
+async def invalid_dataset(request, exc):
+    return JSONResponse(status_code=400, content={"success": False, "error": {"message": str(exc)}})
+
+@app.exception_handler(NotImplementedError)
+async def unavailable_capability(request, exc):
+    return JSONResponse(status_code=501, content={"success": False, "error": {"message": str(exc)}})
+
+@app.exception_handler(RuntimeError)
+async def provider_failure(request, exc):
+    return JSONResponse(status_code=502, content={"success": False, "error": {"message": str(exc)}})
+
 # Health & System Status Endpoints
 @app.get("/health", tags=["Health"])
 @app.get(f"{settings.API_V1_PREFIX}/health", tags=["Health"])
@@ -83,25 +100,10 @@ def health_check():
         db_status = f"error: {str(e)}"
 
     return {
-        "status": "healthy",
+        "status": "healthy" if db_status == "connected" else "degraded",
         "database": db_status,
         "version": settings.VERSION,
         "environment": settings.APP_ENV
-    }
-
-@app.get(f"{settings.API_V1_PREFIX}/system/status", tags=["Health"])
-def system_status():
-    return {
-        "success": True,
-        "data": {
-            "database": "ONLINE",
-            "ai_engine": "ONLINE",
-            "satellite_pipeline": "SYNCED",
-            "gis_engine": "ONLINE",
-            "routing_engine": "OPERATIONAL",
-            "telemetry_stream": "ACTIVE",
-            "stac_api": "LIVE"
-        }
     }
 
 # Register API v1 Routers
@@ -133,3 +135,13 @@ async def test_planetary_computer_direct():
 def on_startup():
     logger.info("Initializing SentinelAid AI backend services...")
     init_db()
+
+    # A single backend process owns workers. Interrupted jobs must not stay falsely active.
+    from app.core.database import SessionLocal
+    from app.models.satellite import SatelliteIngestionJob
+    with SessionLocal() as db:
+        for job in db.query(SatelliteIngestionJob).filter(SatelliteIngestionJob.status.in_(["QUEUED", "DOWNLOADING", "VALIDATING", "PROCESSING"])):
+            job.status = "FAILED"
+            job.error_message = "Backend restarted during ingestion. Retry the scene."
+            job.current_stage = "Interrupted"
+        db.commit()

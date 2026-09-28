@@ -1,0 +1,7 @@
+{
+  "status": "PASSED",
+  "real_api_images_loaded": 2,
+  "polygon_map_rendered": true,
+  "backend_offline_error": " Request failed with status code 502",
+  "artifacts": "D:\\AI-Disaster\\backend\\.test-runs\\live-af5e2a66cc\\browser"
+}

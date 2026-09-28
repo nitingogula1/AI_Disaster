@@ -6,13 +6,17 @@ import type {
 } from '../types';
 import { 
   mockUsers, mockDisasterEvents, mockMapLayers, 
-  mockSatelliteScenes, mockPreprocessingStages, 
-  mockInferencePipeline, mockDamageAssets, 
+  mockDamageAssets, 
   mockRescueZones, mockRescueTeams, mockRoutes, 
   mockAlerts, mockDashboardMetrics 
 } from '../data/mockData';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+export const BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/$/, '');
+export const assetUrl = (path: string) => {
+  if (/^https?:\/\//.test(path)) return path;
+  const base = (import.meta.env.VITE_IMAGE_BASE_URL || BASE_URL).replace(/\/$/, '');
+  return base + '/' + path.replace(/^\/api\/v1\/?/, '').replace(/^\//, '');
+};
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -278,13 +282,8 @@ export const satelliteService = {
     try {
       const res = await api.get('/satellite/aoi', { params: { operation_id: operationId } });
       return res.data.data;
-    } catch {
-      return {
-        operation_id: 'EVT-8821-BGD',
-        bbox: [89.310, 21.540, 90.040, 22.120],
-        region: 'Bay Area / Delta Sector 4',
-        crs: 'EPSG:32645 (WGS 84 / UTM 45N)'
-      };
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -307,8 +306,8 @@ export const satelliteService = {
     try {
       const res = await api.get('/satellite/providers');
       return res.data.data;
-    } catch {
-      return [];
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -333,8 +332,8 @@ export const satelliteService = {
         size: s.size ?? s.file_size ?? '514 MB',
         thumbnail_url: s.thumbnail_url
       }));
-    } catch {
-      return mockSatelliteScenes;
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -353,8 +352,8 @@ export const satelliteService = {
         size: s.size ?? s.file_size ?? '514 MB',
         thumbnail_url: s.thumbnail_url
       }));
-    } catch {
-      return mockSatelliteScenes;
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -383,8 +382,8 @@ export const satelliteService = {
     try {
       const res = await api.get('/satellite/ingestion/queue');
       return res.data.data;
-    } catch {
-      return { pending: 3, processing: 1, completed: 8, failed: 0, jobs: [] };
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -402,8 +401,8 @@ export const satelliteService = {
     try {
       const res = await api.get(`/satellite/scenes/${sceneId}/bands`);
       return res.data.data.bands || [];
-    } catch {
-      return [];
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -416,11 +415,8 @@ export const satelliteService = {
     try {
       const res = await api.get(`/satellite/scenes/${sceneId}/band-summary`);
       return res.data.data;
-    } catch {
-      return {
-        bit_depth: 'UInt16 (Scaled 0.0001)',
-        tile_dimension: '10980 × 10980 px'
-      };
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -476,9 +472,9 @@ export const satelliteService = {
         operation_id: data.disaster_id,
         scene_id: data.post_image_id || 'scn-001'
       });
-      return res.data.data.stages || mockPreprocessingStages;
-    } catch {
-      return mockPreprocessingStages;
+      return res.data.data.stages || [];
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -528,16 +524,16 @@ export const satelliteService = {
         resolution: s.resolution || '10m',
         sensorType: s.sensorType || s.sensor || 'MSI',
         pipelineStatus: s.pipelineStatus || s.status || 'Verified',
-        floodStatus: s.flood_status || s.floodStatus || 'FLOOD RELEVANT',
+        floodStatus: s.flood_status || s.floodStatus || 'NOT_ANALYZED',
         floodSignal: s.flood_signal || s.floodSignal || s.detection_method || 'MNDWI',
-        floodRelevanceScore: s.flood_relevance_score ?? s.floodRelevanceScore ?? 91.4,
-        floodAreaKm2: s.flood_area_km2 ?? s.floodAreaKm2 ?? 18.6,
+        floodRelevanceScore: s.flood_relevance_score ?? s.floodRelevanceScore ?? 0,
+        floodAreaKm2: s.flood_area_km2 ?? s.floodAreaKm2 ?? 0,
         detectionMethod: s.detection_method || s.detectionMethod || 'MNDWI',
         source: s.source || 'LIVE SATELLITE DATA',
         isDemo: s.is_demo ?? false
       }));
-    } catch {
-      return mockSatelliteScenes;
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -552,16 +548,16 @@ export const satelliteService = {
         resolution: s.resolution || '10m',
         sensorType: s.sensorType || s.sensor || 'MSI',
         pipelineStatus: s.pipelineStatus || s.status || 'Verified',
-        floodStatus: s.flood_status || s.floodStatus || 'FLOOD RELEVANT',
+        floodStatus: s.flood_status || s.floodStatus || 'NOT_ANALYZED',
         floodSignal: s.flood_signal || s.floodSignal || s.detection_method || 'MNDWI',
-        floodRelevanceScore: s.flood_relevance_score ?? s.floodRelevanceScore ?? 91.4,
-        floodAreaKm2: s.flood_area_km2 ?? s.floodAreaKm2 ?? 18.6,
+        floodRelevanceScore: s.flood_relevance_score ?? s.floodRelevanceScore ?? 0,
+        floodAreaKm2: s.flood_area_km2 ?? s.floodAreaKm2 ?? 0,
         detectionMethod: s.detection_method || s.detectionMethod || 'MNDWI',
         source: s.source || 'LIVE SATELLITE DATA',
         isDemo: s.is_demo ?? false
       }));
-    } catch {
-      return mockSatelliteScenes;
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -569,19 +565,8 @@ export const satelliteService = {
     try {
       const res = await api.get('/satellite/flood-scenes/events');
       return res.data.data;
-    } catch {
-      return [
-        {
-          event: "Cyclone Remal Flood Surge",
-          operation_id: "EVT-8821-BGD",
-          location: "Delta Sector 4 (Sundarbans / Khulna)",
-          latest_scene: "S1A_IW_GRDH_1SDV_20260926T051210",
-          scene_count: 14,
-          latest_acquisition: "2026-09-26 05:12:10 UTC",
-          flood_area_km2: 18.6,
-          status: "ACTIVE FLOOD EMERGENCY"
-        }
-      ];
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -592,17 +577,8 @@ export const satelliteService = {
         method
       });
       return res.data.data;
-    } catch {
-      return {
-        scene_id: sceneId,
-        status: "COMPLETED",
-        method,
-        flood_area_km2: 18.6,
-        water_pixels: 123456,
-        confidence: 0.91,
-        geojson_layer_id: `lyr-flood-${sceneId.slice(0, 16)}`,
-        created_at: new Date().toISOString()
-      };
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -610,8 +586,8 @@ export const satelliteService = {
     try {
       const res = await api.get(`/gis/flood/${sceneId}`);
       return res.data;
-    } catch {
-      return null;
+    } catch (error) {
+      throw error;
     }
   }
 };
@@ -621,6 +597,8 @@ export const stacService = {
     operation_id?: string;
     bbox?: number[];
     collections?: string[];
+    start_datetime?: string;
+    end_datetime?: string;
     max_cloud_cover?: number;
     limit?: number;
   }) {
@@ -654,8 +632,8 @@ export const aiDetectionService = {
     try {
       const res = await api.post('/ai/damage-detection', data);
       return res.data.data;
-    } catch {
-      return mockInferencePipeline;
+    } catch (error) {
+      throw error;
     }
   }
 };
@@ -941,7 +919,7 @@ export const systemService = {
       const res = await api.get('/system/satellite-status');
       return res.data.data;
     } catch {
-      return { status: 'ONLINE', label: 'Live', provider: 'Microsoft Planetary Computer' };
+      return { status: 'DISCONNECTED', label: 'Unavailable' };
     }
   },
 
@@ -950,7 +928,7 @@ export const systemService = {
       const res = await api.get('/system/telemetry');
       return res.data.data;
     } catch {
-      return { sync_percentage: 100, latency_ms: 12, status: 'SYNCED' };
+      return { sync_percentage: null, latency_ms: null, status: 'UNAVAILABLE' };
     }
   },
 
@@ -959,7 +937,7 @@ export const systemService = {
       const res = await api.get('/satellite/cloud-status');
       return res.data.data;
     } catch {
-      return { cloud_cover: 3.8, valid: true, quality: 'SCL Valid' };
+      return { cloud_cover: null, valid: false, quality: 'Unavailable' };
     }
   },
 
@@ -968,13 +946,78 @@ export const systemService = {
       const res = await api.get('/ai/status');
       return res.data.data;
     } catch {
-      return { model_name: 'ResNet-UNet-v4.2b', framework: 'PyTorch', version: '4.2b', status: 'READY', inference_engine: 'TorchScript TensorRT FP16' };
+      return { model_name: null, status: 'UNAVAILABLE' };
     }
   },
 
   async getHealth() {
-    const res = await axios.get(`${BASE_URL.replace('/api/v1', '')}/health`);
-    return res.data;
+    try {
+      const res = await axios.get(`${BASE_URL}/health`, { timeout: 4000 });
+      return res.data;
+    } catch {
+      const rootRes = await axios.get(`${BASE_URL.replace('/api/v1', '')}/health`, { timeout: 4000 });
+      return rootRes.data;
+    }
+  },
+
+  async checkConnection(): Promise<{
+    connected: boolean;
+    status: 'healthy' | 'degraded' | 'disconnected';
+    database: string;
+    version: string;
+    environment: string;
+    latencyMs: number | null;
+    error?: string;
+    lastChecked: Date;
+    baseUrl: string;
+  }> {
+    const start = performance.now();
+    try {
+      // First try API v1 health endpoint
+      const res = await axios.get(`${BASE_URL}/health`, { timeout: 4000 });
+      const latencyMs = Math.round(performance.now() - start);
+      const data = res.data;
+      return {
+        connected: true,
+        status: data.status === 'healthy' ? 'healthy' : 'degraded',
+        database: data.database || 'connected',
+        version: data.version || '1.0.0',
+        environment: data.environment || 'development',
+        latencyMs,
+        lastChecked: new Date(),
+        baseUrl: BASE_URL,
+      };
+    } catch (err: any) {
+      // Fallback try root health endpoint
+      try {
+        const rootHealth = `${BASE_URL.replace(/\/api\/v1\/?$/, '')}/health`;
+        const res = await axios.get(rootHealth, { timeout: 4000 });
+        const latencyMs = Math.round(performance.now() - start);
+        const data = res.data;
+        return {
+          connected: true,
+          status: data.status === 'healthy' ? 'healthy' : 'degraded',
+          database: data.database || 'connected',
+          version: data.version || '1.0.0',
+          environment: data.environment || 'development',
+          latencyMs,
+          lastChecked: new Date(),
+          baseUrl: BASE_URL,
+        };
+      } catch (fallbackErr: any) {
+        return {
+          connected: false,
+          status: 'disconnected',
+          database: 'unreachable',
+          version: 'offline',
+          environment: 'offline',
+          latencyMs: null,
+          error: fallbackErr.message || err.message || 'Connection refused',
+          lastChecked: new Date(),
+          baseUrl: BASE_URL,
+        };
+      }
+    }
   },
 
   async getStatus() {

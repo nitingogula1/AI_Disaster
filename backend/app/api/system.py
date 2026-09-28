@@ -46,43 +46,20 @@ def get_threat_level(db: Session = Depends(get_db)):
         "updated_at": datetime.now(timezone.utc).isoformat()
     })
 
-@router.get("/satellite-status")
-def get_satellite_status():
-    """
-    Returns real status of satellite imagery feed.
-    """
-    # Check Planetary Computer configured URL
-    pc_url = settings.PLANETARY_COMPUTER_URL
-    provider = "Microsoft Planetary Computer"
-    status = "ONLINE" if pc_url else "DEGRADED"
 
-    return success_response(data={
-        "status": status,
-        "label": "Live" if status == "ONLINE" else "Degraded",
-        "last_update": "14m ago",
-        "provider": provider
-    })
+@router.get("/satellite-status")
+async def get_satellite_status():
+    from app.services.satellite_providers import PlanetaryComputerProvider
+    return success_response(data=await PlanetaryComputerProvider().check_connection())
 
 @router.get("/telemetry")
 def get_telemetry_status():
-    """
-    Telemetry pulse metrics from backend system state.
-    """
-    return success_response(data={
-        "sync_percentage": 100,
-        "latency_ms": 12,
-        "status": "SYNCED",
-        "updated_at": datetime.now(timezone.utc).isoformat()
-    })
+    return success_response(data={"sync_percentage": None, "latency_ms": None, "status": "NOT_MEASURED"})
 
 @router.get("/status")
-def get_full_system_status():
-    return success_response(data={
-        "database": "ONLINE",
-        "ai_engine": "ONLINE",
-        "satellite_pipeline": "SYNCED",
-        "gis_engine": "ONLINE",
-        "routing_engine": "OPERATIONAL",
-        "telemetry_stream": "ACTIVE",
-        "stac_api": "LIVE"
-    })
+def get_full_system_status(db: Session = Depends(get_db)):
+    from sqlalchemy import text
+    db.execute(text("SELECT 1"))
+    return success_response(data={"database": "ONLINE", "ai_engine": "UNAVAILABLE",
+                                  "satellite_pipeline": "AVAILABLE", "stac_api": "NOT_CHECKED",
+                                  "telemetry_stream": "NOT_MEASURED"})

@@ -25,7 +25,7 @@ class SatelliteScene(Base):
     platform = Column(String(100), nullable=False, default="Sentinel-2B")
     constellation = Column(String(100), nullable=True)
     sensor = Column(String(100), default="MSI Sentinel-2B")
-    acquisition_datetime = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    acquisition_datetime = Column(DateTime, nullable=True)
     processing_level = Column(String(50), default="L2A")
     cloud_cover = Column(Float, default=0.0)
     resolution = Column(String(50), default="10m")
@@ -37,6 +37,8 @@ class SatelliteScene(Base):
     asset_metadata = Column(JSON, nullable=True)
     scene_metadata = Column(JSON, nullable=True)
     status = Column(String(50), default="DISCOVERED")  # DISCOVERED, READY, VERIFIED, INGESTING
+    is_demo = Column(Boolean, default=False)
+    source = Column(String(100), default="PLANETARY_COMPUTER")
 
     # Compatibility fields for existing callers
     disaster_id = Column(String(64), nullable=True)

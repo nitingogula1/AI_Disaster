@@ -21,7 +21,7 @@ def test_health_and_status():
     status_data = status_resp.json()
     assert status_data["success"] is True
     assert status_data["data"]["database"] == "ONLINE"
-    assert status_data["data"]["ai_engine"] == "ONLINE"
+    assert status_data["data"]["ai_engine"] == "UNAVAILABLE"
 
 def test_auth_login_success():
     resp = client.post("/api/v1/auth/login", json={
@@ -185,42 +185,14 @@ def test_gis_geojson():
     assert shelters_gis.status_code == 200
     assert shelters_gis.json()["type"] == "FeatureCollection"
 
+
 def test_satellite_and_preprocessing():
-    # Search scenes
-    search_resp = client.get("/api/v1/satellite/search?provider=PLANETARY_COMPUTER&satellite=Sentinel-2")
-    assert search_resp.status_code == 200
-    scenes = search_resp.json()["data"]
-    assert len(scenes) >= 1
+    response = client.post("/api/v1/satellite/preprocess", json={"scene_id": "unregistered"})
+    assert response.status_code == 501
 
-    # Preprocessing pipeline
-    process_resp = client.post("/api/v1/satellite/process", json={
-        "disaster_id": "evt-remal-001",
-        "calculate_mndwi": True,
-        "calculate_ndvi": True,
-        "cloud_masking": True
-    })
-    assert process_resp.status_code == 200
-    assert process_resp.json()["data"]["status"] in ["COMPLETED", "RUNNING"]
-
-def test_ai_damage_detection_and_summary():
-    # AI detection
-    ai_resp = client.post("/api/v1/ai/damage-detection", json={
-        "disaster_id": "evt-remal-001",
-        "confidence_threshold": 0.80
-    })
-    assert ai_resp.status_code == 200
-    data = ai_resp.json()["data"]
-    assert "job_id" in data
-    assert "detections" in data
-    assert len(data["detections"]) >= 1
-
-    # Damage summary
-    sum_resp = client.get("/api/v1/damage/evt-remal-001/summary")
-    assert sum_resp.status_code == 200
-    summary = sum_resp.json()["data"]
-    assert "total_inspected" in summary
-    assert "grade_5_destroyed" in summary
-    assert "grade_4_severe" in summary
+def test_ai_damage_detection_is_unavailable():
+    response = client.post("/api/v1/ai/damage-detection", json={"disaster_id": "evt-remal-001"})
+    assert response.status_code == 501
 
 def test_rescue_priority_and_teams():
     # Priorities
@@ -254,7 +226,7 @@ def test_alerts():
         "severity": "CRITICAL",
         "title": "Tidal Wave Surge Warning",
         "message": "Water levels exceeding safety levee by 1.2m.",
-        "coordinates_str": "21.8412° N, 89.5422° E"
+        "coordinates_str": "21.8412Â° N, 89.5422Â° E"
     })
     assert create_resp.status_code == 200
     alert_id = create_resp.json()["data"]["id"]

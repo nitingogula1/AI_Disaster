@@ -1,12 +1,13 @@
 import os
+from pathlib import Path
 from typing import List
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, AliasChoices, field_validator
 
 class Settings(BaseSettings):
     APP_NAME: str = "SentinelAid AI"
     APP_ENV: str = "development"
-    DEBUG: bool = True
+    DEBUG: bool = Field(default=True, validation_alias=AliasChoices("SENTINELAID_DEBUG", "DEBUG"))
     VERSION: str = "1.0.0"
     API_V1_PREFIX: str = "/api/v1"
 
@@ -46,8 +47,15 @@ class Settings(BaseSettings):
     ROUTING_PROVIDER_KEY: str = ""
     AI_MODEL_PATH: str = ""
 
+    @field_validator("DEBUG", mode="before")
+    @classmethod
+    def parse_debug_mode(cls, value):
+        if isinstance(value, str) and value.lower() in ("release", "production"):
+            return False
+        return value
+
     class Config:
-        env_file = ".env"
+        env_file = str(Path(__file__).resolve().parents[2] / ".env")
         extra = "ignore"
 
 settings = Settings()

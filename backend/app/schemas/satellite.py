@@ -14,8 +14,8 @@ class STACSearchRequest(BaseModel):
     start_datetime: Optional[str] = None
     end_datetime: Optional[str] = None
     collections: Optional[List[str]] = ["sentinel-2-l2a"]
-    max_cloud_cover: Optional[float] = 15.0
-    limit: Optional[int] = 50
+    max_cloud_cover: float = Field(15.0, ge=0, le=100)
+    limit: int = Field(50, ge=1, le=100)
 
 class AssignRoleRequest(BaseModel):
     operation_id: Optional[str] = "EVT-8821-BGD"
@@ -27,7 +27,7 @@ class IngestRequest(BaseModel):
 
 class PreprocessingPipelineRequest(BaseModel):
     operation_id: Optional[str] = "EVT-8821-BGD"
-    scene_id: Optional[str] = "scn-001"
+    scene_id: str = Field(..., min_length=1)
     stages: Optional[List[str]] = [
         "RADIOMETRIC",
         "ATMOSPHERIC",
@@ -36,20 +36,20 @@ class PreprocessingPipelineRequest(BaseModel):
     ]
 
 class RenderRGBRequest(BaseModel):
-    scene_id: Optional[str] = "scn-001"
+    scene_id: str = Field(..., min_length=1)
     red: Optional[str] = "B04"
     green: Optional[str] = "B03"
     blue: Optional[str] = "B02"
 
 class RenderFalseColorRequest(BaseModel):
-    scene_id: Optional[str] = "scn-001"
+    scene_id: str = Field(..., min_length=1)
     nir: Optional[str] = "B08"
     red: Optional[str] = "B04"
     green: Optional[str] = "B03"
 
 class VectorizeFloodRequest(BaseModel):
-    scene_id: Optional[str] = "scn-001"
-    threshold: Optional[float] = 0.05
+    scene_id: str = Field(..., min_length=1)
+    threshold: float = Field(0.05, ge=-1, le=1)
 
 class SendToGISRequest(BaseModel):
     operation_id: Optional[str] = "EVT-8821-BGD"
@@ -58,7 +58,7 @@ class SendToGISRequest(BaseModel):
 class AIDamageSegmentationRequest(BaseModel):
     operation_id: Optional[str] = "EVT-8821-BGD"
     pre_scene_id: Optional[str] = "scn-000"
-    post_scene_id: Optional[str] = "scn-001"
+    post_scene_id: str = Field(..., min_length=1)
     model: Optional[str] = "ResNet-UNet"
     confidence_threshold: Optional[float] = 0.70
 
@@ -69,12 +69,12 @@ class FloodSceneSearchRequest(BaseModel):
     end_datetime: Optional[str] = None
     max_cloud_cover: Optional[float] = 30.0
     satellites: Optional[List[str]] = ["Sentinel-1", "Sentinel-2", "Landsat"]
-    limit: Optional[int] = 50
+    limit: int = Field(50, ge=1, le=100)
 
 class FloodAnalysisExecutionRequest(BaseModel):
     operation_id: Optional[str] = "EVT-8821-BGD"
     method: Optional[str] = "MNDWI"  # MNDWI, NDWI, SAR Change, SAR Inundation
-    threshold: Optional[float] = 0.05
+    threshold: float = Field(0.05, ge=-1, le=1)
 
 
 # Legacy schemas for backward compatibility
@@ -126,3 +126,7 @@ class PreprocessingResponse(BaseModel):
     stages: List[Dict[str, Any]]
     results: Dict[str, Any]
     processing_time_ms: int
+
+class IndexRequest(BaseModel):
+    scene_id: str = Field(..., min_length=1)
+    threshold: float = Field(0.0, ge=-1, le=1)

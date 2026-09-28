@@ -1,12 +1,16 @@
 import os
 import uuid
 import httpx
+from datetime import datetime, timezone
 from typing import Optional, List
+import rasterio
+from rasterio.warp import transform_bounds
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, status
 from fastapi.responses import FileResponse, Response, JSONResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.config import settings
+from app.models.satellite import SatelliteScene
 from app.services.satellite_hub_service import satellite_hub_service
 from app.services.raster_engine import raster_engine
 from app.schemas.satellite import (
@@ -20,7 +24,9 @@ from app.schemas.satellite import (
     VectorizeFloodRequest,
     SendToGISRequest,
     PreprocessingRequest,
-    PreprocessingResponse
+    PreprocessingResponse,
+    FloodAnalysisExecutionRequest,
+    IndexRequest
 )
 from app.schemas.common import success_response
 
@@ -47,7 +53,7 @@ def set_target_aoi(payload: AOIRequest, db: Session = Depends(get_db)):
 @router.get("/aoi")
 def get_target_aoi(operation_id: str = "EVT-8821-BGD", db: Session = Depends(get_db)):
     """Returns the current target AOI bounding box and spatial representation."""
-    op_data = satellite_hub_service.get_active_operation(db)
+    op_data = satellite_hub_service.get_active_operation(db, operation_id)
     bbox_dict = op_data.get("target_bbox", {})
     min_lon = bbox_dict.get("min_lon", 89.310)
     min_lat = bbox_dict.get("min_lat", 21.540)
@@ -141,7 +147,7 @@ async def test_planetary_computer():
 async def connect_nasa(db: Session = Depends(get_db)):
     """Verifies NASA Earth Science & CMR STAC connectivity using configured NASA_API_KEY."""
     res = await satellite_hub_service.connect_nasa(db)
-    return success_response(data=res, message="NASA API verified and connected")
+    raise NotImplementedError("NASA imagery ingestion is unavailable. EONET event metadata is not satellite imagery.")
 
 @router.get("/providers/nasa/events")
 async def get_nasa_disasters(db: Session = Depends(get_db)):
@@ -162,13 +168,18 @@ def list_satellite_providers(db: Session = Depends(get_db)):
 @router.post("/stac/search")
 async def search_stac_scenes(payload: STACSearchRequest, db: Session = Depends(get_db)):
     """Queries live STAC catalog, normalizes scene records, and updates database."""
+    bbox = payload.bbox
+    if bbox is None:
+        operation = satellite_hub_service.get_active_operation(db, payload.operation_id)
+        target = operation["target_bbox"]
+        bbox = [target.get(k) for k in ("min_lon", "min_lat", "max_lon", "max_lat")]
     res = await satellite_hub_service.search_stac(
         operation_id=payload.operation_id or "EVT-8821-BGD",
-        bbox=payload.bbox or [89.310, 21.540, 90.040, 22.120],
+        bbox=bbox,
         start_datetime=payload.start_datetime,
         end_datetime=payload.end_datetime,
         collections=payload.collections,
-        max_cloud_cover=payload.max_cloud_cover or 15.0,
+        max_cloud_cover=payload.max_cloud_cover,
         limit=payload.limit or 50,
         db=db
     )
@@ -199,23 +210,8 @@ def get_flood_scenes(
     return success_response(data=res.get("scenes", []), message=f"Fetched {len(res.get('scenes', []))} flood-relevant satellite scenes")
 
 @router.post("/flood-scenes/search")
-def search_flood_scenes(
-    payload: STACSearchRequest,
-    hours: Optional[int] = Query(72),
-    max_cloud_cover: Optional[float] = Query(30.0),
-    db: Session = Depends(get_db)
-):
-    """Executes 12-step search & flood relevance analysis workflow."""
-    hours_val = hours or 72
-    cloud_val = payload.max_cloud_cover or max_cloud_cover or 30.0
-    res = satellite_hub_service.get_flood_scenes(
-        db=db,
-        operation_id=payload.operation_id or "EVT-8821-BGD",
-        hours=hours_val,
-        max_cloud_cover=cloud_val,
-        limit=payload.limit or 50
-    )
-    return success_response(data=res.get("scenes", []), message="Flood-relevant satellite scene search complete")
+async def search_flood_scenes(payload: STACSearchRequest, db: Session = Depends(get_db)):
+    return await search_stac_scenes(payload, db)
 
 @router.get("/flood-scenes/events")
 def get_flood_disaster_events(db: Session = Depends(get_db)):
@@ -226,19 +222,20 @@ def get_flood_disaster_events(db: Session = Depends(get_db)):
 @router.post("/scenes/{scene_id}/flood-analysis")
 def execute_scene_flood_analysis(
     scene_id: str,
-    payload: Optional[dict] = None,
+    payload: FloodAnalysisExecutionRequest,
     db: Session = Depends(get_db)
 ):
-    """Executes NDWI/MNDWI or SAR flood analysis pipeline on target scene."""
-    op_id = payload.get("operation_id", "EVT-8821-BGD") if payload else "EVT-8821-BGD"
-    method = payload.get("method", "MNDWI") if payload else "MNDWI"
+    """Measures observed surface water, not new inundation."""
+    op_id = payload.operation_id
+    method = payload.method
     res = satellite_hub_service.run_scene_flood_analysis(
         scene_id=scene_id,
         operation_id=op_id,
         method=method,
+        threshold=payload.threshold,
         db=db
     )
-    return success_response(data=res, message="Flood inundation analysis executed successfully")
+    return success_response(data=res, message="Surface-water analysis completed; new inundation is not assessed")
 
 @router.get("/scenes")
 def list_satellite_scenes(
@@ -289,9 +286,6 @@ def get_satellite_scene(id: str, db: Session = Depends(get_db)):
             "thumbnail_url": scene.thumbnail_url,
             "metadata_json": scene.scene_metadata
         })
-    curated = [s for s in satellite_hub_service.get_provider("LOCAL").get_curated_scenes() if s["id"] == id or s["scene_id"] == id]
-    if curated:
-        return success_response(data=curated[0])
     raise HTTPException(status_code=404, detail="Satellite scene not found")
 
 # -------------------------------------------------------------
@@ -300,29 +294,38 @@ def get_satellite_scene(id: str, db: Session = Depends(get_db)):
 @router.get("/scenes/{id}/preview")
 def get_scene_preview(id: str, db: Session = Depends(get_db)):
     """Returns visual thumbnail preview PNG for the specified scene."""
-    is_post = ("0526" in id or "scn-001" in id or "scn-002" in id or "scn-003" in id)
-    png_path = raster_engine.render_rgb(id)
-    if os.path.exists(png_path):
-        return FileResponse(png_path, media_type="image/png")
-    raise HTTPException(status_code=404, detail=f"Preview for scene {id} not available")
+    try:
+        png_path = raster_engine.render_rgb(id)
+        if os.path.exists(png_path):
+            return FileResponse(png_path, media_type="image/png")
+    except FileNotFoundError as fnf:
+        raise HTTPException(status_code=404, detail=str(fnf))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error rendering preview for scene '{id}': {str(e)}")
+    raise HTTPException(status_code=404, detail=f"Preview for scene '{id}' not available")
 
 @router.get("/scenes/{id}/image")
 def get_scene_image(id: str, type: str = "rgb", db: Session = Depends(get_db)):
     """Returns preview image rendered according to selected spectral composite or index."""
-    if type == "false_color":
-        path = raster_engine.render_false_color(id)
-    elif type == "ndwi":
-        res = raster_engine.calculate_ndwi(id)
-        path = res["preview_path"]
-    elif type == "mndwi":
-        res = raster_engine.calculate_mndwi(id)
-        path = res["preview_path"]
-    else:
-        path = raster_engine.render_rgb(id)
+    try:
+        if type == "false_color":
+            path = raster_engine.render_false_color(id)
+        elif type == "ndwi":
+            res = raster_engine.calculate_ndwi(id)
+            path = res["preview_path"]
+        elif type == "mndwi":
+            res = raster_engine.calculate_mndwi(id)
+            path = res["preview_path"]
+        else:
+            path = raster_engine.render_rgb(id)
 
-    if os.path.exists(path):
-        return FileResponse(path, media_type="image/png")
-    raise HTTPException(status_code=404, detail=f"Image product {type} for scene {id} not found")
+        if os.path.exists(path):
+            return FileResponse(path, media_type="image/png")
+    except FileNotFoundError as fnf:
+        raise HTTPException(status_code=404, detail=str(fnf))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error rendering image for scene '{id}': {str(e)}")
+    raise HTTPException(status_code=404, detail=f"Image product '{type}' for scene '{id}' not found")
 
 # -------------------------------------------------------------
 # 6. Direct Ingestion & Roles
@@ -355,12 +358,6 @@ def get_ingestion_queue(db: Session = Depends(get_db)):
     res = satellite_hub_service.get_ingestion_queue(db)
     return success_response(data=res)
 
-@router.get("/jobs/{job_id}")
-def get_job_status(job_id: str, db: Session = Depends(get_db)):
-    """Returns status, percentage, stage, and ETA for a specific ingestion job."""
-    res = satellite_hub_service.get_job_status(job_id, db)
-    return success_response(data=res)
-
 @router.get("/jobs/queue")
 def get_batch_queue(
     job_type: Optional[str] = Query(None),
@@ -369,6 +366,12 @@ def get_batch_queue(
 ):
     """Batch queue endpoint for ingestion, preprocessing, benchmark, and AI jobs."""
     res = satellite_hub_service.get_ingestion_queue(db)
+    return success_response(data=res)
+
+@router.get("/jobs/{job_id}")
+def get_job_status(job_id: str, db: Session = Depends(get_db)):
+    """Returns status, percentage, stage, and ETA for a specific ingestion job."""
+    res = satellite_hub_service.get_job_status(job_id, db)
     return success_response(data=res)
 
 @router.post("/jobs/{job_id}/cancel")
@@ -405,7 +408,7 @@ def get_band_summary(id: str, db: Session = Depends(get_db)):
 def render_rgb_composite(payload: RenderRGBRequest, db: Session = Depends(get_db)):
     """Generates True Color RGB composite (B04, B03, B02)."""
     res = satellite_hub_service.render_rgb(
-        scene_id=payload.scene_id or "scn-001",
+        scene_id=payload.scene_id,
         red=payload.red or "B04",
         green=payload.green or "B03",
         blue=payload.blue or "B02",
@@ -417,7 +420,7 @@ def render_rgb_composite(payload: RenderRGBRequest, db: Session = Depends(get_db
 def render_false_color_composite(payload: RenderFalseColorRequest, db: Session = Depends(get_db)):
     """Generates False-Color Infrared (B8-B4-B3) composite."""
     res = satellite_hub_service.render_false_color(
-        scene_id=payload.scene_id or "scn-001",
+        scene_id=payload.scene_id,
         nir=payload.nir or "B08",
         red=payload.red or "B04",
         green=payload.green or "B03",
@@ -426,25 +429,25 @@ def render_false_color_composite(payload: RenderFalseColorRequest, db: Session =
     return success_response(data=res, message="False-Color Infrared preview generated")
 
 @router.post("/indices/ndwi")
-def calculate_ndwi_index(payload: dict, db: Session = Depends(get_db)):
+def calculate_ndwi_index(payload: IndexRequest, db: Session = Depends(get_db)):
     """Calculates NDWI: (Green - NIR) / (Green + NIR)."""
-    scene_id = payload.get("scene_id", "scn-001")
-    res = satellite_hub_service.calculate_ndwi(scene_id, db)
+    scene_id = payload.scene_id
+    res = satellite_hub_service.calculate_ndwi(scene_id, db, payload.threshold)
     return success_response(data=res, message="NDWI water index computed")
 
 @router.post("/indices/mndwi")
-def calculate_mndwi_index(payload: dict, db: Session = Depends(get_db)):
+def calculate_mndwi_index(payload: IndexRequest, db: Session = Depends(get_db)):
     """Calculates Modified NDWI: (Green - SWIR) / (Green + SWIR)."""
-    scene_id = payload.get("scene_id", "scn-001")
-    res = satellite_hub_service.calculate_mndwi(scene_id, db)
+    scene_id = payload.scene_id
+    res = satellite_hub_service.calculate_mndwi(scene_id, db, payload.threshold)
     return success_response(data=res, message="MNDWI inundation index computed")
 
 @router.post("/flood/vectorize")
 def vectorize_flood_inundation(payload: VectorizeFloodRequest, db: Session = Depends(get_db)):
     """Converts water index raster into GeoJSON polygons with area and confidence."""
     res = satellite_hub_service.vectorize_flood(
-        scene_id=payload.scene_id or "scn-001",
-        threshold=payload.threshold or 0.05,
+        scene_id=payload.scene_id,
+        threshold=payload.threshold,
         db=db
     )
     return success_response(data=res, message="Flood inundation boundary vectorized successfully")
@@ -457,7 +460,7 @@ def run_preprocessing_pipeline(payload: PreprocessingPipelineRequest, db: Sessio
     """Executes the automated 4-stage preprocessing pipeline."""
     res = satellite_hub_service.execute_preprocessing(
         operation_id=payload.operation_id or "EVT-8821-BGD",
-        scene_id=payload.scene_id or "scn-001",
+        scene_id=payload.scene_id,
         stages=payload.stages or ["RADIOMETRIC", "ATMOSPHERIC", "CLOUD_MASK", "COREGISTRATION"],
         db=db
     )
@@ -496,12 +499,7 @@ def get_benchmark_results(job_id: str):
 # -------------------------------------------------------------
 @router.get("/cloud-status")
 def get_cloud_status():
-    return success_response(data={
-        "cloud_cover": 3.8,
-        "valid": True,
-        "quality": "SCL Valid",
-        "mask_opacity": "85%"
-    })
+    return success_response(data={"status": "NOT_ASSESSED", "valid": False, "cloud_cover": None, "quality": "Select and analyze a scene"})
 
 @router.get("/search")
 async def search_scenes_legacy(
@@ -529,49 +527,89 @@ async def search_scenes_legacy(
     )
     return success_response(data=res.get("scenes", []))
 
+
 @router.post("/download")
-async def download_satellite_scene(payload: dict):
-    product_id = payload.get("product_id", "scn-001")
-    provider = payload.get("provider", "PLANETARY_COMPUTER")
-    prov = satellite_hub_service.get_provider(provider)
-    dest_path = await prov.download(product_id, settings.UPLOAD_DIR)
-    return success_response(data={
-        "product_id": product_id,
-        "provider": provider,
-        "status": "COMPLETED",
-        "download_path": dest_path
-    }, message="Satellite scene downloaded successfully")
+async def download_satellite_scene(payload: dict, db: Session = Depends(get_db)):
+    if payload.get("provider", "PLANETARY_COMPUTER") != "PLANETARY_COMPUTER":
+        raise NotImplementedError("Only Planetary Computer acquisition is implemented.")
+    scene_id = payload.get("product_id")
+    if not scene_id:
+        raise ValueError("product_id is required.")
+    if not db.query(SatelliteScene).filter_by(scene_id=scene_id).first():
+        item = await satellite_hub_service.get_provider("PLANETARY_COMPUTER").get_scene(scene_id)
+        satellite_hub_service.upsert_scene(item, db)
+        db.commit()
+    result = satellite_hub_service.direct_ingest(scene_id, payload.get("operation_id", "EVT-8821-BGD"),
+                                                 "POST_DISASTER", db)
+    return success_response(data=result, message="Download queued; poll job_id for validated completion.")
+
 
 @router.post("/upload")
 async def upload_satellite_image(
-    disaster_id: str = Form(...),
-    image_type: str = Form(...),
-    file: UploadFile = File(...)
+    disaster_id: Optional[str] = Form(None),
+    image_type: Optional[str] = Form("satellite"),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
 ):
-    allowed = {".tif", ".tiff", ".png", ".jpg", ".jpeg", ".jp2"}
-    ext = os.path.splitext(file.filename)[1].lower()
-    if ext not in allowed:
-        raise HTTPException(status_code=400, detail=f"File extension {ext} not supported.")
+    from pathlib import Path
+    from app.services.scene_registry import inspect_raster, register_file
+    from app.models.satellite import OperationSatelliteScene
+    if Path(file.filename or "").suffix.lower() not in (".tif", ".tiff"):
+        raise ValueError("Upload a georeferenced GeoTIFF with named B02, B03, B04, B08, B11 and SCL bands. RGB JPG/PNG is unsupported.")
+    sid = "UPLOAD-" + uuid.uuid4().hex
+    # User-supplied filenames and disaster IDs never become filesystem path components.
+    directory = Path(raster_engine.raw_dir) / "uploads"
+    directory.mkdir(parents=True, exist_ok=True)
+    dest = directory / (sid + ".tif")
+    size = 0
+    try:
+        with dest.open("wb") as output:
+            while chunk := await file.read(1024 * 1024):
+                size += len(chunk)
+                if size > 500 * 1024 * 1024:
+                    raise HTTPException(status_code=413, detail="Maximum upload size is 500 MB.")
+                output.write(chunk)
+        try:
+            info = inspect_raster(dest)
+        except rasterio.errors.RasterioError as exc:
+            raise ValueError("Invalid or corrupted GeoTIFF raster content.") from exc
+        raw_date = info.get("acquisition_datetime")
+        acquired = datetime.fromisoformat(raw_date.replace("Z", "+00:00")) if raw_date else None
+        scene = SatelliteScene(id=sid, scene_id=sid, product_id=sid, provider="LOCAL", source="UPLOAD",
+                               collection="uploaded-dataset", platform="User Upload", sensor="User multispectral dataset",
+                               acquisition_datetime=acquired, acquisition_date=acquired, cloud_cover=None,
+                               processing_level="USER_DECLARED", disaster_id=disaster_id)
+        register_file(scene, dest, "UPLOAD", info["is_demo"])
+        db.add(scene)
+        if disaster_id:
+            db.add(OperationSatelliteScene(scene_id=sid, operation_id=disaster_id, scene_role="TARGET"))
+        db.commit()
+        return success_response(data={"scene_id": sid, "bands": info["count"], "crs": info["crs"],
+                                     "width": info["width"], "height": info["height"], "bbox": info["bbox"],
+                                     "acquisition_datetime": acquired.isoformat() if acquired else None,
+                                     "is_demo": scene.is_demo, "source": scene.source, "status": "READY"},
+                                message="Validated dataset registered. Select it for processing.")
+    except Exception:
+        db.rollback()
+        if dest.exists(): dest.unlink()
+        raise
+    finally:
+        await file.close()
 
-    upload_folder = os.path.join(settings.UPLOAD_DIR, "disasters", disaster_id, image_type)
-    os.makedirs(upload_folder, exist_ok=True)
-
-    file_id = f"SAT-{uuid.uuid4().hex[:8]}"
-    saved_filename = f"{file_id}{ext}"
-    dest_path = os.path.join(upload_folder, saved_filename)
-
-    contents = await file.read()
-    with open(dest_path, "wb") as f:
-        f.write(contents)
-
-    return success_response(data={
-        "file_id": file_id,
-        "filename": saved_filename,
-        "path": dest_path,
-        "size_bytes": len(contents),
-        "content_type": file.content_type,
-        "image_type": image_type
-    }, message="Satellite image uploaded and stored successfully")
+@router.get("/products/{product_id}/{kind}")
+def get_product_output(product_id: str, kind: str, db: Session = Depends(get_db)):
+    from app.models.satellite import ProcessingResult
+    product = db.get(ProcessingResult, product_id)
+    if not product:
+        raise FileNotFoundError("Analysis product not found.")
+    metadata = product.metadata_json or {}
+    if kind == "geojson":
+        return product.geometry or {"type": "FeatureCollection", "features": []}
+    key, media = {"preview": ("preview_path", "image/png"), "mask": ("mask_preview_path", "image/png"),
+                  "raster": ("file_path", "image/tiff"), "mask-raster": ("mask_path", "image/tiff")}.get(kind, (None, None))
+    if not key or not metadata.get(key) or not os.path.isfile(metadata[key]):
+        raise FileNotFoundError("Requested product file is unavailable.")
+    return FileResponse(metadata[key], media_type=media)
 
 @router.post("/process")
 def process_satellite_imagery(req: PreprocessingRequest, db: Session = Depends(get_db)):

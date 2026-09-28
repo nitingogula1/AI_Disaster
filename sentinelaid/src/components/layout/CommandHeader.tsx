@@ -3,6 +3,7 @@ import { Search, Bell, Maximize2, ChevronDown, Check } from 'lucide-react';
 import SentinelAidLogo from '../common/SentinelAidLogo';
 import { useAppStore } from '../../store/appStore';
 import { operationService, systemService, alertService } from '../../services/api';
+import ApiStatusIndicator from '../common/ApiStatusIndicator';
 
 export default function CommandHeader() {
   const {
@@ -96,7 +97,7 @@ export default function CommandHeader() {
       : 'bg-primary/20 border-primary/40';
 
   const satIndicatorColor =
-    satelliteStream.status === 'ONLINE'
+    ['ONLINE', 'CONNECTED'].includes(satelliteStream.status)
       ? 'bg-success'
       : satelliteStream.status === 'DEGRADED'
       ? 'bg-warning'
@@ -185,10 +186,15 @@ export default function CommandHeader() {
       </div>
 
       {/* Satellite Status */}
-      <div className="flex items-center gap-1.5 text-slate-300 text-[11px] mr-4 bg-white/5 border border-white/10 rounded px-2.5 py-1">
+      <div className="flex items-center gap-1.5 text-slate-300 text-[11px] mr-3 bg-white/5 border border-white/10 rounded px-2.5 py-1">
         <span className="text-[10px] font-medium">Satellite Stream:</span>
-        <span className="text-primary-light font-bold">{satelliteStream.label || 'Live'}</span>
+        <span className="text-primary-light font-bold">{satelliteStream.label || satelliteStream.status || 'Not checked'}</span>
         <span className={`w-1.5 h-1.5 rounded-full ${satIndicatorColor}`} />
+      </div>
+
+      {/* Backend API Connection Indicator */}
+      <div className="mr-3">
+        <ApiStatusIndicator variant="dark" />
       </div>
 
       {/* Notifications */}

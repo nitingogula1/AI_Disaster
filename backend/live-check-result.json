@@ -1,0 +1,11 @@
+{
+  "scene_id": "S2B_MSIL2A_20240627T184919_R113_T10SEG_20240628T001602",
+  "status": "COMPLETED",
+  "valid_pixels": 10170,
+  "water_pixel_count": 514,
+  "water_area_km2": 0.051438101895321046,
+  "polygon_count": 207,
+  "is_demo": false,
+  "data_source": "PLANETARY_COMPUTER",
+  "output_directory": "D:\\AI-Disaster\\backend\\.test-runs\\live-af5e2a66cc"
+}

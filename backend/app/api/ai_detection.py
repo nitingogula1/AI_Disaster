@@ -16,15 +16,7 @@ router = APIRouter(prefix="/ai", tags=["AI Detection"])
 @router.get("/status")
 def get_ai_status():
     """Returns AI model and inference engine operational status."""
-    return success_response(data={
-        "model_name": "ResNet-UNet-v4.2b",
-        "framework": "PyTorch",
-        "version": "4.2b",
-        "status": "READY",
-        "last_inference": "14m ago",
-        "inference_engine": "TorchScript TensorRT FP16",
-        "model_status": "DEMO_MODEL"
-    })
+    return success_response(data=ai_detection_service.get_model_status())
 
 @router.post("/damage-segmentation")
 def launch_ai_damage_segmentation(payload: AIDamageSegmentationRequest, db: Session = Depends(get_db)):
@@ -32,21 +24,12 @@ def launch_ai_damage_segmentation(payload: AIDamageSegmentationRequest, db: Sess
     Launches asynchronous AI Damage Segmentation.
     Validates pre/post scenes, co-registration, and AI-ready products.
     """
-    res = satellite_hub_service.launch_ai_damage_segmentation(
-        operation_id=payload.operation_id or "EVT-8821-BGD",
-        pre_scene_id=payload.pre_scene_id or "scn-000",
-        post_scene_id=payload.post_scene_id or "scn-001",
-        model=payload.model or "ResNet-UNet",
-        confidence_threshold=payload.confidence_threshold or 0.70,
-        db=db
-    )
-    return success_response(data=res, message="AI Damage Segmentation initiated")
+    raise HTTPException(status_code=501, detail=ai_detection_service.get_model_status()["message"])
 
 @router.get("/jobs/{job_id}")
 def get_ai_job(job_id: str):
     """Returns status and results of an AI damage segmentation job."""
-    res = satellite_hub_service.get_ai_job(job_id)
-    return success_response(data=res)
+    raise HTTPException(status_code=404, detail="No trained inference job exists.")
 
 @router.post("/damage-detection")
 def run_damage_detection(req: AIDetectionRequest, db: Session = Depends(get_db)):

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Satellite, Brain, Map, ShieldAlert, Route, FileText, Zap, Layers, Target, Radio } from 'lucide-react';
 import SentinelAidLogo from '../../components/common/SentinelAidLogo';
+import ApiStatusIndicator from '../../components/common/ApiStatusIndicator';
 
 const NAV_LINKS = ['Solutions', 'Satellite & AI Tech', 'GIS Mapping', 'Rescue Optimization', 'Documentation', 'Case Studies'];
 
@@ -40,6 +41,7 @@ export default function LandingPage() {
           ))}
         </div>
         <div className="flex items-center gap-3 ml-auto">
+          <ApiStatusIndicator variant="light" />
           <button className="text-[13px] text-primary font-medium border border-primary/30 rounded px-4 py-1.5 hover:bg-primary/5 transition">
             View System Demo
           </button>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Eye, EyeOff, Satellite, Crosshair, Radio } from 'lucide-react';
 import SentinelAidLogo from '../../components/common/SentinelAidLogo';
+import ApiStatusIndicator from '../../components/common/ApiStatusIndicator';
 import { useAuthStore } from '../../store/authStore';
 
 type DutyRole = 'Administrator' | 'Disaster Officer' | 'Rescue Lead';
@@ -133,9 +134,12 @@ export default function LoginPage() {
               <Shield size={14} />
               <span className="label-uppercase">SECURE MISSION GATEWAY</span>
             </div>
-            <button className="text-primary text-[12px] font-medium hover:underline flex items-center gap-1">
-              ⊘ Duty Support
-            </button>
+            <div className="flex items-center gap-3">
+              <ApiStatusIndicator variant="light" />
+              <button className="text-primary text-[12px] font-medium hover:underline flex items-center gap-1">
+                ⊘ Duty Support
+              </button>
+            </div>
           </div>
 
           <h2 className="text-[28px] font-bold text-text-primary mb-2">Sign In to Command Center</h2>

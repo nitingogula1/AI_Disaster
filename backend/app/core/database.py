@@ -8,8 +8,16 @@ Base = declarative_base()
 
 def get_engine():
     db_url = settings.DATABASE_URL
+    if db_url.startswith("sqlite:///") and not db_url.endswith(":memory:"):
+        from pathlib import Path
+        from sqlalchemy.engine import make_url
+        parsed = make_url(db_url)
+        database_path = Path(parsed.database)
+        if not database_path.is_absolute():
+            parsed = parsed.set(database=str(Path(__file__).resolve().parents[2] / database_path))
+            db_url = parsed
     try:
-        if db_url.startswith("mysql"):
+        if str(db_url).startswith("mysql"):
             # Test MySQL connection with timeout
             engine = create_engine(
                 db_url,
@@ -24,7 +32,7 @@ def get_engine():
         else:
             engine = create_engine(
                 db_url,
-                connect_args={"check_same_thread": False} if "sqlite" in db_url else {},
+                connect_args={"check_same_thread": False} if "sqlite" in str(db_url) else {},
                 echo=settings.SQL_ECHO
             )
             return engine
@@ -33,7 +41,9 @@ def get_engine():
             "Could not connect to MySQL (%s). Falling back to SQLite local database for instant zero-dependency execution.",
             str(e)
         )
-        fallback_url = "sqlite:///./sentinelaid.db"
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        default_db = os.path.join(backend_dir, "sentinelaid.db").replace(os.sep, "/")
+        fallback_url = f"sqlite:///{default_db}"
         engine = create_engine(fallback_url, connect_args={"check_same_thread": False})
         return engine
 
@@ -47,36 +57,10 @@ def get_db():
     finally:
         db.close()
 
+
 def init_db():
-    """Initializes tables and performs lightweight migrations"""
-    from sqlalchemy import text
-    # Check if satellite_scenes needs migration to new schema
-    try:
-        with engine.connect() as conn:
-            res = conn.execute(text("PRAGMA table_info(satellite_scenes)"))
-            cols = [row[1] for row in res.fetchall()]
-            if cols and "scene_id" not in cols:
-                conn.execute(text("DROP TABLE IF EXISTS satellite_scenes"))
-                conn.commit()
-    except Exception:
-        pass
-
     import app.models
-    Base.metadata.create_all(bind=engine)
-    # Check if operation_id column exists in disaster_events
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("ALTER TABLE disaster_events ADD COLUMN operation_id VARCHAR(64) DEFAULT 'CY-2025-05B'"))
-            conn.commit()
-    except Exception:
-        # Column already exists or table freshly created
-        pass
-
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("ALTER TABLE operations ADD COLUMN target_bbox JSON"))
-            conn.commit()
-    except Exception:
-        pass
-    logger.info("Database tables verified/created successfully.")
-
+    from app.core.migrations import migrate
+    with engine.begin() as connection:
+        migrate(connection, Base.metadata)
+    logger.info("Database schema verified without deleting records.")

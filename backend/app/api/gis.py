@@ -11,31 +11,18 @@ from app.schemas.common import success_response
 router = APIRouter(prefix="/gis", tags=["GIS"])
 
 def build_flood_geojson(db: Session, op_id: str = "CY-2025-05B") -> Dict[str, Any]:
-    # Flood polygon around delta area
-    coords = [
-        [89.52, 21.86], [89.56, 21.87], [89.58, 21.85],
-        [89.57, 21.83], [89.54, 21.82], [89.51, 21.83],
-        [89.52, 21.86]
-    ]
-    return {
-        "type": "FeatureCollection",
-        "name": "Flood Extent (MNDWI)",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": {
-                    "layer": "FLOOD_EXTENT",
-                    "index": "MNDWI",
-                    "area_km2": 18.6,
-                    "color": "#0284C7"
-                },
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [coords]
-                }
-            }
-        ]
-    }
+    from app.models.satellite import ProcessingResult
+    records = db.query(ProcessingResult).filter_by(operation_id=op_id).order_by(ProcessingResult.created_at.desc()).all()
+    features, seen = [], set()
+    for record in records:
+        if record.scene_id in seen or not (record.metadata_json or {}).get("observation_type") == "SURFACE_WATER":
+            continue
+        seen.add(record.scene_id)
+        for feature in (record.geometry or {}).get("features", []):
+            features.append({**feature, "properties": {**feature["properties"],
+                            "scene_id": record.scene_id, "is_demo": record.metadata_json.get("is_demo", False)}})
+    return {"type": "FeatureCollection", "features": features, "observation_type": "SURFACE_WATER"}
+
 
 def build_buildings_geojson(db: Session, op_id: str = "CY-2025-05B") -> Dict[str, Any]:
     bld_q = db.query(DamageDetection).filter(DamageDetection.object_type == "BUILDING").all()
@@ -161,39 +148,11 @@ def get_layer_flood(db: Session = Depends(get_db)):
 
 @router.get("/flood/{scene_id}")
 def get_scene_flood_geojson(scene_id: str, db: Session = Depends(get_db)):
-    """Returns GeoJSON FeatureCollection containing vectorized flood extent for target satellite scene."""
-    method = "SAR Change" if ("S1" in scene_id or "SAR" in scene_id) else "MNDWI"
-    area = 14.2 if "SAR" in method else 18.6
-    coords = [
-        [89.52, 21.86], [89.56, 21.87], [89.58, 21.85],
-        [89.57, 21.83], [89.54, 21.82], [89.51, 21.83],
-        [89.52, 21.86]
-    ]
-    return {
-        "type": "FeatureCollection",
-        "name": f"Flood Inundation Extent ({scene_id})",
-        "scene_id": scene_id,
-        "acquisition_date": "2026-09-26",
-        "detection_method": method,
-        "flood_area_km2": area,
-        "features": [
-            {
-                "type": "Feature",
-                "properties": {
-                    "layer": "FLOOD_EXTENT",
-                    "scene_id": scene_id,
-                    "index": method,
-                    "area_km2": area,
-                    "color": "#0284C7"
-                },
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [coords]
-                }
-            }
-        ]
-    }
-
+    from app.models.satellite import ProcessingResult
+    record = db.query(ProcessingResult).filter_by(scene_id=scene_id).order_by(ProcessingResult.created_at.desc()).first()
+    if not record or not (record.metadata_json or {}).get("observation_type") == "SURFACE_WATER":
+        raise FileNotFoundError("No computed surface-water polygons exist for this scene.")
+    return record.geometry
 
 @router.get("/layers/buildings")
 def get_layer_buildings(db: Session = Depends(get_db)):
