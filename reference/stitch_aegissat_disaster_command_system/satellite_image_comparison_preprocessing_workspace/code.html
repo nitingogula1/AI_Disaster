@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-low":"#eff4ff","surface-bright":"#f8f9ff","outline":"#707881","on-primary-container":"#fdfcff","tertiary-fixed":"#e9ddff","surface-dim":"#cbdbf5","surface-container-high":"#dce9ff","primary-fixed":"#cce5ff","surface":"#f8f9ff","primary-container":"#007bb9","secondary":"#565e74","primary":"#006194","background":"#f8f9ff","error-container":"#ffdad6","secondary-fixed-dim":"#bec6e0","tertiary":"#6b38d4","tertiary-fixed-dim":"#d0bcff","surface-container-highest":"#d3e4fe","inverse-primary":"#93ccff","on-surface-variant":"#3f4850","primary-fixed-dim":"#93ccff","on-tertiary-container":"#fffbff","on-secondary-fixed":"#131b2e","inverse-on-surface":"#eaf1ff","on-surface":"#0b1c30","on-tertiary":"#ffffff","on-error":"#ffffff","tertiary-container":"#8455ef","on-background":"#0b1c30","on-secondary":"#ffffff","on-secondary-fixed-variant":"#3f465c","on-secondary-container":"#5c647a","on-tertiary-fixed":"#23005c","on-primary":"#ffffff","on-error-container":"#93000a","surface-container-lowest":"#ffffff","error":"#ba1a1a","outline-variant":"#bfc7d2","secondary-container":"#dae2fd","on-tertiary-fixed-variant":"#5516be","surface-container":"#e5eeff","surface-tint":"#006398","on-primary-fixed":"#001d31","inverse-surface":"#213145","on-primary-fixed-variant":"#004b73","secondary-fixed":"#dae2fd","surface-variant":"#d3e4fe"},borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},spacing:{"space-md":"0.75rem","space-sm":"0.5rem","space-xl":"1.5rem","margin-mobile":"1rem","space-xs":"0.25rem","space-lg":"1rem","margin":"1.5rem","gutter-compact":"0.5rem","gutter":"1rem"},fontFamily:{"headline-sm":["Inter"],"headline-xl-mobile":["Inter"],"body-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"label-md":["Inter"],"tabular-data":["Inter"],"body-md":["Inter"],"headline-lg-mobile":["Inter"],"headline-xl":["Inter"],"body-sm":["Inter"],"headline-lg":["Inter"]},fontSize:{"headline-sm":["15px",{"lineHeight":"22px","letterSpacing":"-0.005em","fontWeight":"600"}],"headline-xl-mobile":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-lg":["15px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.03em","fontWeight":"600"}],"headline-md":["18px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"tabular-data":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"500"}],"body-md":["13px",{"lineHeight":"20px","fontWeight":"400"}],"headline-lg-mobile":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-xl":["30px",{"lineHeight":"38px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col flex-1 overflow-y-auto"><div class="h-16 flex items-center px-space-lg gap-space-md bg-inverse-surface border-b border-outline-variant/10"><img alt="SentinelAid Disaster Intelligence Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V1HSVBSv-hq0Xogw9g2jZ3ghKWKWZCw8pxdDSzfIRsa6ABFXgHsvdpKZ9PLFgjJaw4uJyx6CNaAUnSEZq6tyzMsQid2d-QQb30Web9OM9mv8V55GaguFqlyaYtL_CfSRSE2h4-Y3VWvZkyf2w8AlHZ94ZQ02b7aiNYRe0RrHokEGlkEnPGGVDIQw_7at0Ndb7qFbCzNrJ9lCcY66l3SFshtDXpUBJmsVzwjeT2tie7F_PcNkeraw8tNiY"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-surface-container-lowest font-bold tracking-tight">SentinelAid AI</span><span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">Disaster Command</span></div></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs text-secondary-fixed-dim font-label-sm text-label-sm uppercase tracking-wider font-semibold">Mission Navigation</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary text-on-primary font-semibold rounded-lg"><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined mr-space-md text-lg">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="disaster-events" href="#"><span class="material-symbols-outlined mr-space-md text-lg">warning</span><span class="font-body-md text-body-md">Disaster Events</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="satellite-images" href="#"><span class="material-symbols-outlined mr-space-md text-lg">satellite_alt</span><span class="font-body-md text-body-md">Satellite Images</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="ai-damage-detection" href="#"><span class="material-symbols-outlined mr-space-md text-lg">radar</span><span class="font-body-md text-body-md">AI Damage Detection</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="damage-assessment" href="#"><span class="material-symbols-outlined mr-space-md text-lg">analytics</span><span class="font-body-md text-body-md">Damage Assessment</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="rescue-priority" href="#"><span class="material-symbols-outlined mr-space-md text-lg">emergency_heat</span><span class="font-body-md text-body-md">Rescue Priority</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="gis-disaster-map" href="#"><span class="material-symbols-outlined mr-space-md text-lg">map</span><span class="font-body-md text-body-md">GIS Disaster Map</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="emergency-route-optimization" href="#"><span class="material-symbols-outlined mr-space-md text-lg">alt_route</span><span class="font-body-md text-body-md">Emergency Routes</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="reports-and-analytics" href="#"><span class="material-symbols-outlined mr-space-md text-lg">description</span><span class="font-body-md text-body-md">Reports &amp; Analytics</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="notifications-alerts" href="#"><div class="flex items-center"><span class="material-symbols-outlined mr-space-md text-lg">notifications</span><span class="font-body-md text-body-md">Alerts &amp; Intel</span></div><span class="bg-error text-on-error px-space-xs rounded-full font-label-sm text-label-sm font-semibold">4</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="rescue-teams" href="#"><span class="material-symbols-outlined mr-space-md text-lg">groups</span><span class="font-body-md text-body-md">Rescue Teams</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="user-management" href="#"><span class="material-symbols-outlined mr-space-md text-lg">badge</span><span class="font-body-md text-body-md">User Management</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="profile-settings" href="#"><span class="material-symbols-outlined mr-space-md text-lg">settings</span><span class="font-body-md text-body-md">Profile / Settings</span></a></nav></div></div><div class="p-space-md bg-inverse-surface border-t border-outline-variant/10"><div class="flex items-center gap-space-md"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1qSTjXxrEeWRmrsOCg-kmKMALzvstqEvNx_rKpBfDKQCjsYOpDGpe7OeM42G6Wbm73bUlBjExBWANnT3xNjLsqwx-Uw3P-c5ZOJi27n2HEaaqJOpYBOmTu4_OvZBOJ_4glZrrvExLNNx9baJaDfEhj4BSWzO_IISov0BrbamZGdMwZrsWmFi7QSjxSrQBqFyHJJQYyqpQi9KdROqGbTdpAqOB4d1_EGSvUPg-_QEMdURJ9xzvPwdv"/><div class="flex flex-col min-w-0 flex-1"><span class="font-headline-sm text-headline-sm text-surface-container-lowest truncate">Cmdr. Sarah Jenkins</span><span class="font-label-sm text-label-sm text-secondary-fixed-dim truncate">Disaster Response Officer</span></div></div><div class="mt-space-sm pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-inverse-on-surface/70"><span class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-fixed"></span>STAC &amp; AI: Online</span><span class="font-tabular-data text-tabular-data">v4.18</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md"><span class="material-symbols-outlined text-sm">home</span><span>/</span><span>Active Operation</span><span>/</span><span class="text-on-surface font-semibold">Intelligence Feed</span></div><div class="h-4 w-px bg-outline-variant/30 hidden lg:block"></div><div class="hidden lg:flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded-lg"><span class="material-symbols-outlined text-error text-sm">crisis_alert</span><span class="font-label-md text-label-md font-semibold text-on-surface">[ACTIVE CRITICAL] Cyclone Remal - Bay Area / Delta Sector 4</span><span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer">arrow_drop_down</span></div></div><div class="flex items-center gap-space-md"><div class="relative hidden xl:block w-72"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-base">search</span><input class="w-full pl-8 pr-space-md py-1 bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded-lg outline-none focus:ring-1 focus:ring-primary" placeholder="Search coords, zones, incident IDs..." type="text"/></div><div class="flex items-center gap-space-xs bg-error-container text-on-error-container px-space-md py-space-xs rounded-full font-label-sm text-label-sm font-bold tracking-wide"><span class="w-2 h-2 rounded-full bg-error animate-pulse"></span><span>THREAT LEVEL: CRITICAL (LEVEL 4)</span></div><div class="flex items-center gap-space-xs"><button class="flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-sm">satellite_alt</span><span class="hidden md:inline">Satellite Stream: Live</span></button><button class="relative p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error"></span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">fullscreen</span></button></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Sub-header Command Banner -->
+<div class="px-space-lg py-space-md bg-surface-container-lowest shadow-sm flex flex-col xl:flex-row xl:items-center xl:justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-secondary font-label-sm text-label-sm tracking-wider uppercase">
+<span>Operations</span>
+<span>/</span>
+<span>Satellite Imagery</span>
+<span>/</span>
+<span class="text-primary font-bold">Comparison &amp; Preprocessing (#PRC-2024-0526)</span>
+</div>
+<div class="flex items-center gap-space-md flex-wrap">
+<h1 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">
+          Satellite Image Comparison &amp; Preprocessing Workspace
+        </h1>
+<span class="bg-primary-container/10 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          BOA Reflectance L2A
+        </span>
+</div>
+<div class="flex items-center gap-space-md text-on-surface-variant font-tabular-data text-tabular-data flex-wrap">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary">public</span>
+          CRS: EPSG:32645 (WGS 84 / UTM 45N)
+        </span>
+<span class="text-outline-variant">•</span>
+<span class="truncate max-w-xs md:max-w-md">Scene: S2B_MSIL2A_20240526T044719_N0510_R083</span>
+<span class="text-outline-variant">•</span>
+<span class="text-secondary font-medium">GSD: 10m/px Native Resampled</span>
+</div>
+</div>
+<!-- Top Action Buttons -->
+<div class="flex items-center gap-space-sm flex-wrap self-start xl:self-auto">
+<button class="h-8 px-space-md rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-space-xs transition-colors" id="btn-recalibrate" type="button">
+<span class="material-symbols-outlined text-base text-secondary">tune</span>
+<span>Re-Calibrate</span>
+</button>
+<button class="h-8 px-space-md rounded bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md flex items-center gap-space-xs transition-colors" id="btn-toggle-slider" type="button">
+<span class="material-symbols-outlined text-base">compare</span>
+<span>Cycle View Mode</span>
+</button>
+<button class="h-8 px-space-md rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-base text-secondary">file_download</span>
+<span>Export GeoTIFF</span>
+</button>
+<button class="h-8 px-space-md rounded bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center gap-space-xs shadow-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-base">radar</span>
+<span>Send to AI Damage Model</span>
+</button>
+</div>
+</div>
+<!-- Raster Metadata & Spatial Co-Registration Telemetry Strip -->
+<div class="px-space-lg py-space-sm bg-surface-container-low/70 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-space-md text-body-sm font-body-sm">
+<!-- Pre-Disaster Telemetry -->
+<div class="bg-surface-container-lowest p-space-sm rounded shadow-sm flex items-center gap-space-md">
+<div class="w-2.5 h-10 rounded bg-primary-container shrink-0"></div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="font-bold text-on-surface uppercase tracking-wide">Pre-Disaster Baseline</span>
+<span class="bg-surface-container px-1.5 py-0.5 rounded text-primary font-tabular-data">Sentinel-2A</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 text-on-surface-variant font-tabular-data text-tabular-data truncate">
+<span>12-May-2024 04:36 UTC</span>
+<span>•</span>
+<span>SCL Cloud: 0.8%</span>
+<span>•</span>
+<span>Sun Zen: 34.2°</span>
+</div>
+</div>
+</div>
+<!-- Post-Disaster Telemetry -->
+<div class="bg-surface-container-lowest p-space-sm rounded shadow-sm flex items-center gap-space-md">
+<div class="w-2.5 h-10 rounded bg-error shrink-0"></div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="font-bold text-on-surface uppercase tracking-wide">Post-Disaster Surge</span>
+<span class="bg-error-container/60 px-1.5 py-0.5 rounded text-on-error-container font-tabular-data">Sentinel-2B</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 text-on-surface-variant font-tabular-data text-tabular-data truncate">
+<span>26-May-2024 04:47 UTC</span>
+<span>•</span>
+<span>SCL Cloud: 3.8%</span>
+<span>•</span>
+<span>Sun Zen: 33.8°</span>
+</div>
+</div>
+</div>
+<!-- Geometric Alignment Status -->
+<div class="bg-surface-container-lowest p-space-sm rounded shadow-sm flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-lg">filter_center_focus</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Sub-Pixel Co-Registration</span>
+<span class="font-tabular-data text-tabular-data text-on-surface-variant truncate">Affine Matrix Locked • Phase Corr: 0.994</span>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="inline-block px-space-sm py-0.5 rounded bg-surface-container text-primary font-tabular-data text-label-sm font-bold">
+          RMSE 0.18 px
+        </span>
+</div>
+</div>
+</div>
+<!-- Main Multi-Pane Analytical Viewport & Config Area -->
+<div class="p-space-lg grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Viewport Container (8 Cols on Wide Displays) -->
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<!-- Interactive Comparison Canvas Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-md overflow-hidden relative flex flex-col">
+<!-- Viewport Floating Floating HUD Controls Header -->
+<div class="p-space-sm bg-surface-container-lowest/95 backdrop-blur-md flex items-center justify-between flex-wrap gap-space-sm z-20">
+<!-- Band Composite Pills -->
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded">
+<button class="px-space-sm py-1 rounded bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-sm transition-all" id="band-rgb" type="button">
+              RGB True Color (B4-3-2)
+            </button>
+<button class="px-space-sm py-1 rounded hover:bg-surface-container-lowest/60 text-secondary font-label-sm text-label-sm transition-all" id="band-false" type="button">
+              False Color NIR (B8-4-3)
+            </button>
+<button class="px-space-sm py-1 rounded hover:bg-surface-container-lowest/60 text-secondary font-label-sm text-label-sm transition-all" id="band-ndwi" type="button">
+              Water NDWI (B3-B8)
+            </button>
+<button class="px-space-sm py-1 rounded hover:bg-surface-container-lowest/60 text-secondary font-label-sm text-label-sm transition-all" id="band-swir" type="button">
+              SWIR Flood (B12-8-4)
+            </button>
+</div>
+<!-- Display Mode Dropdown & Tool Actions -->
+<div class="flex items-center gap-space-xs">
+<div class="flex items-center bg-surface-container-low rounded px-2 py-1 text-on-surface font-label-sm text-label-sm">
+<span class="text-secondary mr-1">Mode:</span>
+<span class="font-bold text-primary" id="active-mode-label">Interactive Split Swipe</span>
+</div>
+<button class="w-7 h-7 flex items-center justify-center rounded bg-surface-container-low hover:bg-surface-container text-on-surface" id="btn-zoom-in" title="Zoom In" type="button">
+<span class="material-symbols-outlined text-base">zoom_in</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded bg-surface-container-low hover:bg-surface-container text-on-surface" id="btn-zoom-out" title="Zoom Out" type="button">
+<span class="material-symbols-outlined text-base">zoom_out</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded bg-surface-container-low hover:bg-surface-container text-on-surface" id="btn-reset-zoom" title="Reset Extent" type="button">
+<span class="material-symbols-outlined text-base">crop_free</span>
+</button>
+</div>
+</div>
+<!-- Central Swipe Raster Canvas -->
+<div class="relative w-full h-[520px] select-none overflow-hidden cursor-crosshair bg-inverse-surface" id="compare-stage">
+<!-- POST-DISASTER (Underneath / Background Canvas Layer) -->
+<div class="absolute inset-0 w-full h-full overflow-hidden">
+<div class="w-full h-full bg-cover bg-center" data-alt="High resolution satellite photograph post disaster flooded river delta with turbid brown swirling water submerging towns and destroying farmlands in deep blue and silt tones" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDa-QJOPTU9hJLpMFvXVavE3M0iAehLDkmKjIDnMdWFKh3p2Jwz0f7saujcMbXfYcya6hvRyaiXlfdaSErDVhR2IjFGT0oFR9dekEJCNstQUzZ8J5ljRauFoDbC14uwpdzxfCzxnmY9pnwO8RkMwuqE3_HQ7wbDThx6B6vcJXhUh7vksGkwS53em9U_qEmw6KbslE30O80zy-IQRjOEOyYorSiQfg2nt2I85zP0NsYUxLc3U76T3QHc')">
+</div>
+<!-- Flood Vector Segmentation Overlay (Simulated Post-Disaster Processing Layer) -->
+<div class="absolute inset-0 bg-primary/20 mix-blend-color-burn pointer-events-none"></div>
+<!-- Disaster Anomaly Pinpoints -->
+<div class="absolute top-1/4 left-1/3 bg-error text-on-error font-label-sm text-label-sm px-2 py-0.5 rounded shadow-lg flex items-center gap-1 animate-pulse">
+<span class="material-symbols-outlined text-xs">flood</span>
+<span>Primary Embankment Breach (+4.2m Surge)</span>
+</div>
+<div class="absolute bottom-1/3 right-1/4 bg-error text-on-error font-label-sm text-label-sm px-2 py-0.5 rounded shadow-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">warning</span>
+<span>Submerged Coastal Transport Node</span>
+</div>
+<!-- Post Disaster Watermark Identifier -->
+<div class="absolute bottom-4 right-4 bg-inverse-surface/85 backdrop-blur text-surface font-label-sm text-label-sm px-space-sm py-1 rounded shadow-md flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-bold">POST-DISASTER PASS (26-MAY-2024 04:47)</span>
+</div>
+</div>
+<!-- PRE-DISASTER (Clipped Top Canvas Layer Controlled by Slider) -->
+<div class="absolute inset-0 h-full overflow-hidden pointer-events-none" id="pre-layer" style="width: 50%;">
+<!-- Inner container sized to match full stage so image stays aligned -->
+<div class="relative w-[1200px] h-[520px]">
+<div class="w-full h-full bg-cover bg-center" data-alt="High resolution pristine satellite view of fertile green river delta, lush agriculture, clean blue water channels, sharp bridge structures and intact coastal village settlements" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAPAMSTDT_Z0gB9D85gOXfEzw4FBeUQj7Zr2cVqlVzbbfjBRTCd4b_1korfWHhZLzMcpurjZdcjBeAsm2wInKsIGopN56pmN9GMCzJ13SaY_ssrS2k_C8EKis0ALJb9hlZvaitU33XbC5Jl589XzYxNH5uGYwCtoZ_QQfyz28zde1TE_DojTpGzP6Jc6ro8DqiolG5bbj6_tasLFyMHv1NAI3Te1Iq08apDI7UVg5srTruPNUYIh9YX')">
+</div>
+<!-- Pre-Disaster Baseline Watermark -->
+<div class="absolute bottom-4 left-4 bg-inverse-surface/85 backdrop-blur text-surface font-label-sm text-label-sm px-space-sm py-1 rounded shadow-md flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-fixed"></span>
+<span class="font-bold">PRE-DISASTER BASELINE (12-MAY-2024 04:36)</span>
+</div>
+</div>
+</div>
+<!-- Vertical Split Draggable Divider -->
+<div class="absolute top-0 bottom-0 z-30 cursor-ew-resize flex items-center justify-center" id="slider-handle" style="left: 50%; transform: translateX(-50%);">
+<!-- High contrast vertical dividing hair-line -->
+<div class="w-0.5 h-full bg-surface-container-lowest shadow-[0_0_8px_rgba(0,0,0,0.8)]"></div>
+<!-- Central Pill Handle -->
+<div class="absolute w-8 h-8 rounded-full bg-inverse-surface text-surface-container-lowest shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm">swap_horiz</span>
+</div>
+</div>
+<!-- On-Canvas Telemetry HUD & Pixel Inspector (Bottom-Left Floating) -->
+<div class="absolute top-4 left-4 bg-inverse-surface/90 backdrop-blur-md text-surface p-space-sm rounded-lg shadow-lg font-tabular-data text-tabular-data max-w-xs z-10 pointer-events-none">
+<div class="flex items-center justify-between text-secondary-fixed-dim font-label-sm text-label-sm mb-1">
+<span class="uppercase tracking-wider">Pixel Value Inspector</span>
+<span class="text-primary-fixed">SYNCHRONIZED</span>
+</div>
+<div class="grid grid-cols-2 gap-x-space-md gap-y-0.5 text-body-sm font-body-sm">
+<span class="text-secondary-fixed-dim">Crosshair Lat/Lon:</span>
+<span class="text-right text-surface font-semibold">21°59'42.1"N, 89°32'10.4"E</span>
+<span class="text-secondary-fixed-dim">Pre BOA (B03/Green):</span>
+<span class="text-right text-primary-fixed">0.142 sr⁻¹</span>
+<span class="text-secondary-fixed-dim">Post BOA (B03/Green):</span>
+<span class="text-right text-error-container">0.021 sr⁻¹ (Deep Water)</span>
+<span class="text-secondary-fixed-dim">MNDWI Shift:</span>
+<span class="text-right text-tertiary-fixed font-bold">+0.684 (Inundated)</span>
+</div>
+</div>
+<!-- Compass & Scale Graphic (Bottom-Left) -->
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-inverse-surface/80 backdrop-blur text-surface px-space-md py-1 rounded-full text-tabular-data font-tabular-data flex items-center gap-space-md pointer-events-none z-10">
+<span class="flex items-center gap-1 text-primary-fixed">
+<span class="material-symbols-outlined text-xs">navigation</span> N 0°
+            </span>
+<span class="h-3 w-px bg-outline-variant/30"></span>
+<div class="flex items-center gap-1.5">
+<span class="w-12 h-1 bg-surface-container-lowest block rounded"></span>
+<span>500 m</span>
+</div>
+<span class="h-3 w-px bg-outline-variant/30"></span>
+<span>Zoom: 100% (10m)</span>
+</div>
+</div>
+<!-- Viewport Footer Legend & Band Absorption Profile -->
+<div class="p-space-sm bg-surface-container-low flex items-center justify-between flex-wrap gap-space-sm text-label-sm font-label-sm">
+<div class="flex items-center gap-space-md">
+<span class="font-bold text-on-surface">Spectral Index Heatmap Legend:</span>
+<div class="flex items-center gap-1">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-on-surface-variant">Permanent Water</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="text-on-surface-variant">Sudden Inundation Surge</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-3 h-3 rounded-full bg-tertiary-container"></span>
+<span class="text-on-surface-variant">Saturated Mud / Sediment Silt</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-3 h-3 rounded-full bg-surface-dim"></span>
+<span class="text-on-surface-variant">Unaltered Terrestrial Canopy</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-secondary font-tabular-data">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Delta T: 14 Days, 00h, 11m</span>
+</div>
+</div>
+</div>
+<!-- Spectral Radiance Density Curves & Dual Histogram Comparison -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-base">ssid_chart</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              Spectral Radiance Profile &amp; Reflectance Shift (B08 NIR vs B11 SWIR-1)
+            </h2>
+</div>
+<span class="text-on-surface-variant font-label-sm text-label-sm">Sample Radius: 2500m Focused Delta AOI</span>
+</div>
+<!-- Inline Visual Chart: Radiometric Reflectance Curves -->
+<div class="h-36 w-full relative flex items-end pt-4 pb-2">
+<!-- Baseline NIR Curve (Pre) vs Shifted Curve (Post) -->
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 600 100">
+<!-- Subtle Grid Lines -->
+<line class="text-surface-container" stroke="currentColor" stroke-dasharray="3,3" x1="0" x2="600" y1="20" y2="20"></line>
+<line class="text-surface-container" stroke="currentColor" stroke-dasharray="3,3" x1="0" x2="600" y1="50" y2="50"></line>
+<line class="text-surface-container" stroke="currentColor" stroke-dasharray="3,3" x1="0" x2="600" y1="80" y2="80"></line>
+<!-- Pre-Disaster Vegetation Peak (High NIR green line) -->
+<path class="text-primary-container" d="M 0 85 Q 80 80, 140 30 T 260 22 T 380 45 T 500 70 L 600 80" fill="none" stroke="currentColor" stroke-width="2.5"></path>
+<!-- Post-Disaster Flood Drop (Water Absorption drop) -->
+<path class="text-error" d="M 0 88 Q 80 85, 140 75 T 260 88 T 380 92 T 500 95 L 600 96" fill="none" stroke="currentColor" stroke-dasharray="4,2" stroke-width="2.5"></path>
+<!-- Highlight Peak Marker -->
+<circle class="text-primary-container" cx="260" cy="22" fill="currentColor" r="4"></circle>
+<circle class="text-error" cx="260" cy="88" fill="currentColor" r="4"></circle>
+</svg>
+<!-- Floating Callout -->
+<div class="absolute top-2 right-12 bg-surface-container-low px-space-sm py-1 rounded text-on-surface font-tabular-data text-tabular-data shadow-sm">
+<span class="text-error font-bold">-76.4%</span> Reflectance Crash at 842nm (Chlorophyll Drown)
+          </div>
+</div>
+<div class="flex items-center justify-between text-label-sm font-label-sm text-secondary pt-1 border-t-0">
+<div class="flex items-center gap-space-md">
+<span class="flex items-center gap-1.5">
+<span class="w-3 h-1 bg-primary-container rounded"></span>
+<span>Pre-Disaster BOA Reflectance</span>
+</span>
+<span class="flex items-center gap-1.5">
+<span class="w-3 h-1 bg-error rounded"></span>
+<span>Post-Disaster BOA Reflectance (Deep Water Attenuation)</span>
+</span>
+</div>
+<span class="font-tabular-data text-tabular-data">Dynamic Range: [0.000 - 0.485 sr⁻¹]</span>
+</div>
+</div>
+</div>
+<!-- Preprocessing Configuration & Spectral Tuning Panel (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<!-- Scientific Preprocessing Execution Pipeline Card -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-lg">science</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              Preprocessing Stages
+            </h2>
+</div>
+<span class="bg-primary/10 text-primary px-space-sm py-0.5 rounded-full font-label-sm text-label-sm font-bold">
+            5 / 5 Verified
+          </span>
+</div>
+<!-- Stage Steps Vertical Stepper -->
+<div class="flex flex-col gap-space-sm">
+<!-- Step 1: Radiometric Calibration -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span class="font-label-md text-label-md font-semibold text-on-surface">1. Radiometric Calibration</span>
+</div>
+<span class="bg-surface-container-lowest text-primary px-1.5 py-0.5 rounded font-label-sm text-label-sm font-bold">Sen2Cor v2.11</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-6">
+              DN to Bottom-Of-Atmosphere (BOA) surface reflectance conversion complete. Solar irradiance corrected.
+            </p>
+</div>
+<!-- Step 2: Atmospheric Correction -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span class="font-label-md text-label-md font-semibold text-on-surface">2. Atmospheric &amp; AOT</span>
+</div>
+<span class="bg-surface-container-lowest text-on-surface font-label-sm text-label-sm font-tabular-data">AOT 0.124 Locked</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-6">
+              Aerosol Optical Thickness modeling via 940nm water vapor band. Ground elevation SRTM 30m coupled.
+            </p>
+</div>
+<!-- Step 3: Cloud & Shadow Masking (Interactive Config) -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-base">tune</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">3. Cloud &amp; Shadow Masking</span>
+</div>
+<span class="bg-primary text-on-primary px-1.5 py-0.5 rounded font-label-sm text-label-sm">Active Mask</span>
+</div>
+<div class="flex flex-col gap-space-xs pl-6">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">SCL Cloud Exclusion Mask:</span>
+<span class="font-bold text-on-surface font-tabular-data" id="mask-val-label">85% Opacity</span>
+</div>
+<input class="w-full h-1.5 bg-outline-variant/40 rounded-lg appearance-none cursor-pointer accent-primary" id="cloud-mask-slider" max="100" min="0" type="range" value="85"/>
+<div class="flex items-center justify-between text-label-sm font-label-sm text-secondary">
+<span>0% (Raw Scene)</span>
+<span>Exclude Cirrus &amp; Semi-Transparent</span>
+<span>100%</span>
+</div>
+</div>
+</div>
+<!-- Step 4: Co-Registration & Resampling -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span class="font-label-md text-label-md font-semibold text-on-surface">4. Co-Registration &amp; Resample</span>
+</div>
+<span class="bg-surface-container-lowest text-primary px-1.5 py-0.5 rounded font-tabular-data text-label-sm font-bold">10m B-Spline</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-6">
+              20m SWIR/RedEdge bands cubic-spline resampled to unified 10m grid. Absolute displacement: 0.18px.
+            </p>
+</div>
+<!-- Step 5: Spectral Indices Computation -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-base">biotech</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">5. Spectral Index Transforms</span>
+</div>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-1.5 py-0.5 rounded font-label-sm text-label-sm font-semibold">2 Derived</span>
+</div>
+<!-- Calculated Metrics -->
+<div class="grid grid-cols-1 gap-space-xs pl-6">
+<!-- MNDWI Metric Card -->
+<div class="bg-surface-container-lowest p-space-xs rounded flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface">MNDWI (Green - SWIR)</span>
+<span class="font-body-sm text-body-sm text-secondary">Threshold &gt; +0.12</span>
+</div>
+<div class="text-right">
+<span class="font-tabular-data text-tabular-data font-bold text-primary block">+18.64 km²</span>
+<span class="font-label-sm text-label-sm text-secondary">New Flood Inundation</span>
+</div>
+</div>
+<!-- NDVI Degradation Delta Card -->
+<div class="bg-surface-container-lowest p-space-xs rounded flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Vegetation Vigor Delta</span>
+<span class="font-body-sm text-body-sm text-secondary">Normalized Diff ΔNDVI</span>
+</div>
+<div class="text-right">
+<span class="font-tabular-data text-tabular-data font-bold text-error block">-48.2%</span>
+<span class="font-label-sm text-label-sm text-secondary">Canopy Loss Detected</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Cloud Shadow & Mask Verification Thumbnail Preview -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-bold text-on-surface">SCL Classification Mask Verification</span>
+<span class="material-symbols-outlined text-secondary text-base">visibility</span>
+</div>
+<div class="relative h-24 rounded-lg overflow-hidden">
+<div class="w-full h-full bg-cover bg-center" data-alt="Scientific satellite cloud shadow classification mask layer with binary overlays of cloud coverage in cyan and red" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB6_GptPJUW5J5SI7G6k_gmhfAhAI5rj_1iW6_V3-g-yMRWlAE5iq8b04Nl4hOkYqSo97DGdLGWmhDMU67CkxosiQ_7gETpaMa21oIa6FDen19ZSVcVnO0C5GQLuIs80oz6297a1Kc8qfOhx_6d9RvgqGkIgK1Sm23ggC_3UsBN35ZV9wSS2h3jzYqqm9paddPqcv77h2H5LmdnLWfMVQcUEp4ZT-hfWlFMtjkw5DcgtPkW8THySvLQ')"></div>
+<div class="absolute inset-0 bg-inverse-surface/40 flex items-center justify-center p-2 text-center">
+<span class="bg-surface-container-lowest/90 px-space-sm py-1 rounded text-on-surface font-label-sm text-label-sm font-bold shadow">
+              Cloud Contamination: 3.8% (Approved for AI Ingestion)
+            </span>
+</div>
+</div>
+<div class="flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span>Target Accuracy: &gt;96%</span>
+<span class="text-primary font-bold">Confidence: 99.1%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Operational Footer Workflow Status & Dispatch Bar -->
+<div class="sticky bottom-0 left-0 right-0 z-30 bg-surface-container-lowest shadow-xl px-space-lg py-space-sm flex flex-col md:flex-row md:items-center md:justify-between gap-space-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-lg">verified</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-bold text-on-surface">
+          All 5 Preprocessing Stages Verified • Radiometric Consistency Validated
+        </span>
+<span class="font-tabular-data text-tabular-data text-on-surface-variant truncate">
+          COG Tile Cache generated • Zero geometric drift detected (RMSE: 0.18px &lt; 0.5px threshold)
+        </span>
+</div>
+</div>
+<!-- Workflow Execution CTAs -->
+<div class="flex items-center gap-space-sm shrink-0 flex-wrap">
+<button class="h-9 px-space-md rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+<span>Preprocessing Report</span>
+</button>
+<button class="h-9 px-space-md rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-base">archive</span>
+<span>Download Aligned COG</span>
+</button>
+<button class="h-9 px-space-lg rounded bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-bold flex items-center gap-space-xs shadow-md transition-colors" id="btn-proceed" type="button">
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+<span>Proceed to AI Damage Detection</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  (function initComparisonWorkspace() {
+    const stage = document.getElementById('compare-stage');
+    const preLayer = document.getElementById('pre-layer');
+    const handle = document.getElementById('slider-handle');
+    const maskSlider = document.getElementById('cloud-mask-slider');
+    const maskValLabel = document.getElementById('mask-val-label');
+    const modeLabel = document.getElementById('active-mode-label');
+    const cycleBtn = document.getElementById('btn-toggle-slider');
+    
+    let isDragging = false;
+    let currentModeIndex = 0;
+    const modes = [
+      'Interactive Split Swipe',
+      'Side-by-Side Synced',
+      'Change Difference Heatmap',
+      'Flicker Overlay (2 Hz)'
+    ];
+
+    // Draggable Split Screen Comparison Slider
+    function updateSplitPosition(clientX) {
+      if (!stage || !preLayer || !handle) return;
+      const rect = stage.getBoundingClientRect();
+      let offsetX = clientX - rect.left;
+      if (offsetX < 0) offsetX = 0;
+      if (offsetX > rect.width) offsetX = rect.width;
+      const percentage = (offsetX / rect.width) * 100;
+      preLayer.style.width = percentage + '%';
+      handle.style.left = percentage + '%';
+    }
+
+    if (stage && handle) {
+      stage.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        updateSplitPosition(e.clientX);
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        updateSplitPosition(e.clientX);
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // Touch support for tablets/command monitors
+      stage.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        if (e.touches && e.touches[0]) {
+          updateSplitPosition(e.touches[0].clientX);
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        if (e.touches && e.touches[0]) {
+          updateSplitPosition(e.touches[0].clientX);
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchend', () => {
+        isDragging = false;
+      });
+    }
+
+    // Cloud Mask Opacity Slider Feedback
+    if (maskSlider && maskValLabel) {
+      maskSlider.addEventListener('input', (e) => {
+        maskValLabel.textContent = e.target.value + '% Opacity';
+      });
+    }
+
+    // Band Composite Selector Visual Toggle
+    const bandButtons = [
+      document.getElementById('band-rgb'),
+      document.getElementById('band-false'),
+      document.getElementById('band-ndwi'),
+      document.getElementById('band-swir')
+    ].filter(Boolean);
+
+    bandButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        bandButtons.forEach((b) => {
+          b.className = 'px-space-sm py-1 rounded hover:bg-surface-container-lowest/60 text-secondary font-label-sm text-label-sm transition-all';
+        });
+        btn.className = 'px-space-sm py-1 rounded bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-sm transition-all';
+      });
+    });
+
+    // Cycle View Modes Button
+    if (cycleBtn && modeLabel) {
+      cycleBtn.addEventListener('click', () => {
+        currentModeIndex = (currentModeIndex + 1) % modes.length;
+        modeLabel.textContent = modes[currentModeIndex];
+      });
+    }
+
+    // Zoom buttons subtle visual effect
+    const zoomIn = document.getElementById('btn-zoom-in');
+    const zoomOut = document.getElementById('btn-zoom-out');
+    const zoomReset = document.getElementById('btn-reset-zoom');
+
+    if (zoomIn && zoomOut && zoomReset) {
+      let scale = 1.0;
+      zoomIn.addEventListener('click', () => {
+        scale = Math.min(scale + 0.15, 2.5);
+        if (preLayer && preLayer.firstElementChild) {
+          preLayer.firstElementChild.style.transform = 'scale(' + scale + ')';
+        }
+      });
+      zoomOut.addEventListener('click', () => {
+        scale = Math.max(scale - 0.15, 0.85);
+        if (preLayer && preLayer.firstElementChild) {
+          preLayer.firstElementChild.style.transform = 'scale(' + scale + ')';
+        }
+      });
+      zoomReset.addEventListener('click', () => {
+        scale = 1.0;
+        if (preLayer && preLayer.firstElementChild) {
+          preLayer.firstElementChild.style.transform = 'scale(1)';
+        }
+      });
+    }
+  })();
+</script></main></div></body></html>

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-low":"#eff4ff","surface-bright":"#f8f9ff","outline":"#707881","on-primary-container":"#fdfcff","tertiary-fixed":"#e9ddff","surface-dim":"#cbdbf5","surface-container-high":"#dce9ff","primary-fixed":"#cce5ff","surface":"#f8f9ff","primary-container":"#007bb9","secondary":"#565e74","primary":"#006194","background":"#f8f9ff","error-container":"#ffdad6","secondary-fixed-dim":"#bec6e0","tertiary":"#6b38d4","tertiary-fixed-dim":"#d0bcff","surface-container-highest":"#d3e4fe","inverse-primary":"#93ccff","on-surface-variant":"#3f4850","primary-fixed-dim":"#93ccff","on-tertiary-container":"#fffbff","on-secondary-fixed":"#131b2e","inverse-on-surface":"#eaf1ff","on-surface":"#0b1c30","on-tertiary":"#ffffff","on-error":"#ffffff","tertiary-container":"#8455ef","on-background":"#0b1c30","on-secondary":"#ffffff","on-secondary-fixed-variant":"#3f465c","on-secondary-container":"#5c647a","on-tertiary-fixed":"#23005c","on-primary":"#ffffff","on-error-container":"#93000a","surface-container-lowest":"#ffffff","error":"#ba1a1a","outline-variant":"#bfc7d2","secondary-container":"#dae2fd","on-tertiary-fixed-variant":"#5516be","surface-container":"#e5eeff","surface-tint":"#006398","on-primary-fixed":"#001d31","inverse-surface":"#213145","on-primary-fixed-variant":"#004b73","secondary-fixed":"#dae2fd","surface-variant":"#d3e4fe"},borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},spacing:{"space-md":"0.75rem","space-sm":"0.5rem","space-xl":"1.5rem","margin-mobile":"1rem","space-xs":"0.25rem","space-lg":"1rem","margin":"1.5rem","gutter-compact":"0.5rem","gutter":"1rem"},fontFamily:{"headline-sm":["Inter"],"headline-xl-mobile":["Inter"],"body-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"label-md":["Inter"],"tabular-data":["Inter"],"body-md":["Inter"],"headline-lg-mobile":["Inter"],"headline-xl":["Inter"],"body-sm":["Inter"],"headline-lg":["Inter"]},fontSize:{"headline-sm":["15px",{"lineHeight":"22px","letterSpacing":"-0.005em","fontWeight":"600"}],"headline-xl-mobile":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-lg":["15px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.03em","fontWeight":"600"}],"headline-md":["18px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"tabular-data":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"500"}],"body-md":["13px",{"lineHeight":"20px","fontWeight":"400"}],"headline-lg-mobile":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-xl":["30px",{"lineHeight":"38px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col flex-1 overflow-y-auto"><div class="h-16 flex items-center px-space-lg gap-space-md bg-inverse-surface border-b border-outline-variant/10"><img alt="SentinelAid Disaster Intelligence Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V1HSVBSv-hq0Xogw9g2jZ3ghKWKWZCw8pxdDSzfIRsa6ABFXgHsvdpKZ9PLFgjJaw4uJyx6CNaAUnSEZq6tyzMsQid2d-QQb30Web9OM9mv8V55GaguFqlyaYtL_CfSRSE2h4-Y3VWvZkyf2w8AlHZ94ZQ02b7aiNYRe0RrHokEGlkEnPGGVDIQw_7at0Ndb7qFbCzNrJ9lCcY66l3SFshtDXpUBJmsVzwjeT2tie7F_PcNkeraw8tNiY"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-surface-container-lowest font-bold tracking-tight">SentinelAid AI</span><span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">Disaster Command</span></div></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs text-secondary-fixed-dim font-label-sm text-label-sm uppercase tracking-wider font-semibold">Mission Navigation</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary text-on-primary font-semibold rounded-lg"><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined mr-space-md text-lg">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="disaster-events" href="#"><span class="material-symbols-outlined mr-space-md text-lg">warning</span><span class="font-body-md text-body-md">Disaster Events</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="satellite-images" href="#"><span class="material-symbols-outlined mr-space-md text-lg">satellite_alt</span><span class="font-body-md text-body-md">Satellite Images</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="ai-damage-detection" href="#"><span class="material-symbols-outlined mr-space-md text-lg">radar</span><span class="font-body-md text-body-md">AI Damage Detection</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="damage-assessment" href="#"><span class="material-symbols-outlined mr-space-md text-lg">analytics</span><span class="font-body-md text-body-md">Damage Assessment</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="rescue-priority" href="#"><span class="material-symbols-outlined mr-space-md text-lg">emergency_heat</span><span class="font-body-md text-body-md">Rescue Priority</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="gis-disaster-map" href="#"><span class="material-symbols-outlined mr-space-md text-lg">map</span><span class="font-body-md text-body-md">GIS Disaster Map</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="emergency-route-optimization" href="#"><span class="material-symbols-outlined mr-space-md text-lg">alt_route</span><span class="font-body-md text-body-md">Emergency Routes</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="reports-and-analytics" href="#"><span class="material-symbols-outlined mr-space-md text-lg">description</span><span class="font-body-md text-body-md">Reports & Analytics</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="notifications-alerts" href="#"><div class="flex items-center"><span class="material-symbols-outlined mr-space-md text-lg">notifications</span><span class="font-body-md text-body-md">Alerts & Intel</span></div><span class="bg-error text-on-error px-space-xs rounded-full font-label-sm text-label-sm font-semibold">4</span></a><a aria-current="page" class="flex items-center px-space-md py-space-sm transition-colors bg-primary text-on-primary font-semibold rounded-lg" data-path="rescue-teams" href="#"><span class="material-symbols-outlined mr-space-md text-lg">groups</span><span class="font-body-md text-body-md">Rescue Teams</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="user-management" href="#"><span class="material-symbols-outlined mr-space-md text-lg">badge</span><span class="font-body-md text-body-md">User Management</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="profile-settings" href="#"><span class="material-symbols-outlined mr-space-md text-lg">settings</span><span class="font-body-md text-body-md">Profile / Settings</span></a></nav></div></div><div class="p-space-md bg-inverse-surface border-t border-outline-variant/10"><div class="flex items-center gap-space-md"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1qSTjXxrEeWRmrsOCg-kmKMALzvstqEvNx_rKpBfDKQCjsYOpDGpe7OeM42G6Wbm73bUlBjExBWANnT3xNjLsqwx-Uw3P-c5ZOJi27n2HEaaqJOpYBOmTu4_OvZBOJ_4glZrrvExLNNx9baJaDfEhj4BSWzO_IISov0BrbamZGdMwZrsWmFi7QSjxSrQBqFyHJJQYyqpQi9KdROqGbTdpAqOB4d1_EGSvUPg-_QEMdURJ9xzvPwdv"/><div class="flex flex-col min-w-0 flex-1"><span class="font-headline-sm text-headline-sm text-surface-container-lowest truncate">Cmdr. Sarah Jenkins</span><span class="font-label-sm text-label-sm text-secondary-fixed-dim truncate">Disaster Response Officer</span></div></div><div class="mt-space-sm pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-inverse-on-surface/70"><span class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-fixed"></span>STAC & AI: Online</span><span class="font-tabular-data text-tabular-data">v4.18</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md"><span class="material-symbols-outlined text-sm">home</span><span>/</span><span>Active Operation</span><span>/</span><span class="text-on-surface font-semibold">Intelligence Feed</span></div><div class="h-4 w-px bg-outline-variant/30 hidden lg:block"></div><div class="hidden lg:flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded-lg"><span class="material-symbols-outlined text-error text-sm">crisis_alert</span><span class="font-label-md text-label-md font-semibold text-on-surface">[ACTIVE CRITICAL] Cyclone Remal - Bay Area / Delta Sector 4</span><span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer">arrow_drop_down</span></div></div><div class="flex items-center gap-space-md"><div class="relative hidden xl:block w-72"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-base">search</span><input class="w-full pl-8 pr-space-md py-1 bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded-lg outline-none focus:ring-1 focus:ring-primary" placeholder="Search coords, zones, incident IDs..." type="text"/></div><div class="flex items-center gap-space-xs bg-error-container text-on-error-container px-space-md py-space-xs rounded-full font-label-sm text-label-sm font-bold tracking-wide"><span class="w-2 h-2 rounded-full bg-error animate-pulse"></span><span>THREAT LEVEL: CRITICAL (LEVEL 4)</span></div><div class="flex items-center gap-space-xs"><button class="flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-sm">satellite_alt</span><span class="hidden md:inline">Satellite Stream: Live</span></button><button class="relative p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error"></span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">fullscreen</span></button></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full pb-space-xl">
+<!-- Emergency Broadcast Notice Banner -->
+<div class="w-full bg-error text-on-error px-space-lg py-space-sm flex flex-wrap items-center justify-between shadow-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-lg animate-pulse" style="font-variation-settings: 'FILL' 1;">crisis_alert</span>
+<span class="font-label-md text-label-md uppercase tracking-wider font-bold">TACTICAL PRIORITY RED</span>
+<span class="font-body-sm text-body-sm opacity-90 hidden sm:inline">• Water surge rising +0.15m/hr. Target cutoff window closes at 16:45 Local.</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="font-tabular-data text-tabular-data font-bold">MIL-GRID: 88Q-ED-4109</span>
+<span class="bg-surface-container-lowest/20 px-space-xs py-0.5 rounded text-on-error font-label-sm text-label-sm">ENCRYPTED L3</span>
+</div>
+</div>
+<div class="px-space-lg py-space-md flex flex-col gap-space-lg">
+<!-- Section 1: Field Operations Command Header -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center gap-1.5 bg-surface-container px-space-sm py-0.5 rounded-lg">
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></span>
+<span class="font-label-sm text-label-sm font-bold text-primary tracking-wide">DEPLOYED IN FIELD</span>
+</div>
+<span class="font-label-md text-label-md text-secondary font-semibold">UNIT ID: RT-02</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Amphibious Craft B-14</span>
+<span class="text-outline-variant">•</span>
+<span class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-sm text-primary">satellite</span>
+            Iridium/Starlink Dual Sync
+          </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Rescue Team Field Console - Unit RT-02 (Water Rescue & Evac)</h1>
+<div class="flex items-center gap-space-sm text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm text-error">pin_drop</span>
+<span class="font-semibold text-on-surface">Mission: Cyclone Remal - Delta Sector 4B Extraction</span>
+<span class="text-outline-variant">|</span>
+<span>Lead Officer: Lt. Marcus Vance</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm w-full xl:w-auto justify-end">
+<button class="flex-1 xl:flex-none flex items-center justify-center gap-space-xs px-space-md py-2.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface rounded-lg font-label-md text-label-md transition-colors shadow-sm" id="radio-btn" type="button">
+<span class="material-symbols-outlined text-base">mic</span>
+<span>PTT Radio</span>
+</button>
+<button class="flex-1 xl:flex-none flex items-center justify-center gap-space-xs px-space-lg py-2.5 bg-error hover:bg-error/90 text-on-error rounded-lg font-headline-sm text-headline-sm shadow-md transition-all active:scale-95" id="sos-btn" type="button">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">fmd_bad</span>
+<span>SOS EMERGENCY / BACKUP</span>
+</button>
+</div>
+</div>
+<!-- Section 2: Real-Time Field Telemetry & Mission KPIs -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-sm">
+<!-- Assigned Incidents -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-semibold">Active Incidents</span>
+<span class="material-symbols-outlined text-base text-primary">format_list_bulleted</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface">3</span>
+<span class="font-body-sm text-body-sm text-secondary">Assigned</span>
+</div>
+<div class="mt-space-xs bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 33%"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-space-xs">1 Underway • 2 Staged</span>
+</div>
+<!-- Life Priority -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between border-l-4 border-error">
+<div class="flex items-center justify-between text-secondary mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-semibold">Immediate Priority</span>
+<span class="material-symbols-outlined text-base text-error">emergency</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-error">#INC-402</span>
+<p class="font-body-sm text-body-sm text-on-surface truncate">High School Cutoff Point</p>
+</div>
+<span class="font-label-sm text-label-sm text-error bg-error-container text-on-error-container px-space-xs py-0.5 rounded w-max mt-space-xs font-bold">STRUCTURAL COMPROMISE</span>
+</div>
+<!-- Civilians Awaiting -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-semibold">Awaiting Extrac.</span>
+<span class="material-symbols-outlined text-base text-tertiary">groups</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface">320</span>
+<span class="font-body-sm text-body-sm text-secondary">Souls</span>
+</div>
+<div class="flex items-center gap-space-xs mt-space-xs">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-label-sm text-label-sm text-error font-semibold">18 Critical Medical triage</span>
+</div>
+</div>
+<!-- ETA Destination -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-semibold">ETA Destination</span>
+<span class="material-symbols-outlined text-base text-primary">timer</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-xl text-headline-xl text-primary font-bold font-tabular-data">14</span>
+<span class="font-body-sm text-body-sm text-secondary">Minutes</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate mt-space-xs">Via West Levee Bypass Route A</span>
+</div>
+<!-- Water Depth -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-semibold">Flood Depth</span>
+<span class="material-symbols-outlined text-base text-primary-container">tsunami</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface font-tabular-data">1.2<span class="text-headline-sm">m</span></span>
+<span class="font-body-sm text-body-sm text-secondary">Target Avg</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface bg-surface-container-high px-space-xs py-0.5 rounded w-max mt-space-xs font-semibold">Amphibious Nav OK</span>
+</div>
+</div>
+<!-- Section 3 & Side Panel: Tactical Map + Quick Field Controls -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
+<!-- Tactical GIS Map & Waypoints (xl:col-span-8) -->
+<div class="xl:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-sm relative">
+<div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-xl">map</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Tactical Waypoint Navigation (Route A Vector)</span>
+<span class="bg-surface-container text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">1:5,000 VECTOR HUD</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-space-sm py-1 bg-surface-container-low hover:bg-surface-container text-on-surface rounded font-label-sm text-label-sm flex items-center gap-1 transition-colors" id="toggle-layer" type="button">
+<span class="material-symbols-outlined text-sm">layers</span>
+<span>SAR Synthetic Overlay</span>
+</button>
+<button class="px-space-sm py-1 bg-surface-container-low hover:bg-surface-container text-on-surface rounded font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">my_location</span>
+<span>Center RT-02</span>
+</button>
+</div>
+</div>
+<!-- Simulated GIS Map Container -->
+<div class="relative w-full h-[460px] bg-inverse-surface rounded-xl overflow-hidden shadow-inner select-none" id="tactical-canvas">
+<!-- Real-world Basemap Underlay with data-location for automated static mapping -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center opacity-30 mix-blend-luminosity pointer-events-none" data-alt="Satellite radar imagery of flooded river delta coastline showing submerged levees, emergency boat channels, and water runoff vectors during cyclone conditions. Dark tactical slate and deep cyan hues." data-location="Khulna Delta, Bangladesh" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBcHlixdoNa2P2OBqWLp5m3IDWMxtes946QZ2KabUAA16tf0dQ5O0PZMBCoEN9vHTNWcYuA2pACWSK6bUsuan-FqEVp1oVpu6wHMVzAKtUEecFv637qAU6vcpsjM2-Fxu3qwLQwBT4ysrFfS1_C-tY7txoWJWlMhSz9PzLG2nybSYD2crHGR8pAvI2FQqj_KGapMhtdt9Kr6X7E6G3InDY3CJIEPBjG9bL9QtfygmJoCKiWszeZa9UF');"></div>
+<!-- Dynamic SVG Tactical Overlays: Route Vector, Markers, Danger Cones -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" preserveaspectratio="none" viewbox="0 0 800 460">
+<!-- Grid Lines for Military Precision -->
+<defs>
+<pattern height="40" id="grid" patternunits="userSpaceOnUse" width="40">
+<path class="text-inverse-on-surface/10" d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.5"></path>
+</pattern>
+<!-- Route Arrow Marker -->
+<marker id="arrow" markerheight="6" markerwidth="6" orient="auto-start-reverse" refx="5" refy="5" viewbox="0 0 10 10">
+<path d="M 0 1 L 8 5 L 0 9 z" fill="#007bb9"></path>
+</marker>
+<marker id="dangerArrow" markerheight="6" markerwidth="6" orient="auto-start-reverse" refx="5" refy="5" viewbox="0 0 10 10">
+<path d="M 0 1 L 8 5 L 0 9 z" fill="#ba1a1a"></path>
+</marker>
+</defs>
+<rect fill="url(#grid)" height="100%" width="100%"></rect>
+<!-- Flood Inundation Zone (Semi-transparent overlay) -->
+<path d="M 0,220 Q 240,160 420,240 T 800,200 L 800,460 L 0,460 Z" fill="#007bb9" fill-opacity="0.18"></path>
+<!-- Clear Water Channel Vector (Secondary safe corridor) -->
+<path d="M 120,380 C 220,320 300,280 430,260 S 660,180 710,130" fill="none" opacity="0.6" stroke="#93ccff" stroke-dasharray="6,4" stroke-width="2"></path>
+<!-- High-Visibility Primary Route A Vector Line -->
+<path d="M 140,360 L 260,330 L 390,260 L 520,240 L 680,120" fill="none" id="route-path" marker-end="url(#arrow)" stroke="#007bb9" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"></path>
+<!-- Pulsing Route Core -->
+<path d="M 140,360 L 260,330 L 390,260 L 520,240 L 680,120" fill="none" stroke="#cce5ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<!-- Prohibited/Blocked Path Branch -->
+<path d="M 390,260 L 460,340" fill="none" marker-end="url(#dangerArrow)" stroke="#ba1a1a" stroke-dasharray="4,4" stroke-width="3"></path>
+<!-- Landing Zone 1 Radius -->
+<circle cx="280" cy="140" fill="#8455ef" fill-opacity="0.12" r="32" stroke="#8455ef" stroke-dasharray="3,3" stroke-width="1.5"></circle>
+</svg>
+<!-- Interactive HUD Elements Overlaid on Canvas -->
+<!-- 1. Live Unit RT-02 Beacon -->
+<div class="absolute left-[140px] top-[360px] -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-20">
+<div class="relative flex items-center justify-center">
+<span class="absolute w-8 h-8 rounded-full bg-primary/40 animate-ping"></span>
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-xs">navigation</span>
+</span>
+</div>
+<!-- Tactical Tooltip -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-space-sm py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+<div class="flex items-center gap-1 font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span>
+<span>RT-02 (Amphibious B-14)</span>
+</div>
+<div class="font-tabular-data text-[10px] text-surface-variant">Speed: 18.4 kt | Heading: 034°</div>
+</div>
+</div>
+<!-- 2. Hazard Marker 1: Submerged Culvert -->
+<div class="absolute left-[460px] top-[340px] -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer">
+<div class="bg-error text-on-error p-1 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+<span class="material-symbols-outlined text-xs">warning</span>
+</div>
+<div class="absolute top-7 left-1/2 -translate-x-1/2 bg-surface-container-lowest text-on-surface px-space-xs py-0.5 rounded shadow text-center whitespace-nowrap">
+<span class="font-label-sm text-label-sm font-bold text-error block">HAZARD: km 4.8</span>
+<span class="font-tabular-data text-[10px] text-secondary">Submerged Culvert debris</span>
+</div>
+</div>
+<!-- 3. Safe Corridor Waypoint Marker -->
+<div class="absolute left-[390px] top-[260px] -translate-x-1/2 -translate-y-1/2 z-10">
+<div class="w-3.5 h-3.5 bg-primary-container rounded-full border-2 border-surface-container-lowest shadow"></div>
+<div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-inverse-surface/80 text-inverse-on-surface px-space-xs rounded text-[10px] whitespace-nowrap">
+              WP-2: West Levee Bypass
+            </div>
+</div>
+<!-- 4. Target Destination Beacon: Sector 4B Assembly Point -->
+<div class="absolute left-[680px] top-[120px] -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer">
+<div class="relative flex items-center justify-center">
+<span class="absolute w-12 h-12 rounded-full bg-error/30 animate-pulse"></span>
+<span class="w-8 h-8 rounded-full bg-error text-on-error flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined text-sm">flag</span>
+</span>
+</div>
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-space-sm py-1 rounded shadow-xl whitespace-nowrap">
+<div class="font-label-sm text-label-sm font-bold text-error-container">DESTINATION: SECTOR 4B</div>
+<div class="font-body-sm text-body-sm text-surface-container-highest">High School & Clinic Cutoff</div>
+<div class="font-tabular-data text-[10px] text-tertiary-fixed">Civilians: 320 | Medical SOS: 18</div>
+</div>
+</div>
+<!-- 5. Secondary Safe Zones & Landing Zone -->
+<div class="absolute left-[280px] top-[140px] -translate-x-1/2 -translate-y-1/2 z-10">
+<div class="flex items-center gap-1 bg-surface-container-lowest/90 px-space-xs py-0.5 rounded shadow text-on-surface">
+<span class="material-symbols-outlined text-sm text-tertiary">helicopter</span>
+<span class="font-label-sm text-label-sm font-semibold">LZ-1 (Secondary Evac)</span>
+</div>
+</div>
+<div class="absolute left-[540px] top-[80px] -translate-x-1/2 -translate-y-1/2 z-10">
+<div class="flex items-center gap-1 bg-surface-container-lowest/90 px-space-xs py-0.5 rounded shadow text-on-surface">
+<span class="material-symbols-outlined text-sm text-primary">local_hospital</span>
+<span class="font-label-sm text-label-sm font-semibold">Field Aid Station Delta</span>
+</div>
+</div>
+<!-- Telemetry Floating Heads-Up Display (HUD) -->
+<div class="absolute bottom-space-sm left-space-sm bg-inverse-surface/90 backdrop-blur-md text-inverse-on-surface p-space-sm rounded-lg shadow-lg flex items-center gap-space-md z-30 font-tabular-data text-body-sm">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-secondary-fixed-dim tracking-wider font-semibold">GPS Fix</span>
+<span class="font-bold">22°14'08.2"N 89°32'44.1"E</span>
+</div>
+<div class="h-6 w-px bg-outline-variant/30"></div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-secondary-fixed-dim tracking-wider font-semibold">Current Speed</span>
+<span class="text-primary-fixed-dim font-bold">18.4 knots</span>
+</div>
+<div class="h-6 w-px bg-outline-variant/30"></div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-secondary-fixed-dim tracking-wider font-semibold">Target Dist</span>
+<span class="font-bold">4.2 km remaining</span>
+</div>
+</div>
+<!-- Floating Map Zoom Controls -->
+<div class="absolute right-space-sm bottom-space-sm flex flex-col gap-1 z-30">
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-base">explore</span>
+</button>
+</div>
+</div>
+<!-- Waypoint Strip -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-xs mt-space-xs">
+<div class="bg-surface-container-low p-space-xs rounded flex items-center gap-space-sm">
+<div class="w-6 h-6 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs">A1</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Boat Slip Base Alpha</p>
+<p class="font-label-sm text-label-sm text-secondary">Cleared at 14:10</p>
+</div>
+</div>
+<div class="bg-surface-container p-space-xs rounded flex items-center gap-space-sm">
+<div class="w-6 h-6 rounded bg-primary-container text-on-primary flex items-center justify-center font-bold text-xs">A2</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface font-semibold truncate">West Levee Waterway</p>
+<p class="font-label-sm text-label-sm text-primary font-medium">Navigating • 1.2m depth</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded flex items-center gap-space-sm">
+<div class="w-6 h-6 rounded bg-error text-on-error flex items-center justify-center font-bold text-xs">A3</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Sector 4B Clinic & School</p>
+<p class="font-label-sm text-label-sm text-secondary">ETA 14:48 (Critical Extraction)</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Field Actions & Triage Triggers (xl:col-span-4) -->
+<div class="xl:col-span-4 flex flex-col gap-space-md">
+<!-- Quick Action Buttons Hub -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">Field Incident Actions</span>
+<span class="bg-error-container text-on-error-container text-[11px] font-bold px-space-xs py-0.5 rounded">HIGH PRIORITY</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<!-- Action 1: Hazard / Obstruction -->
+<button class="w-full flex items-center justify-between p-space-sm bg-surface-container-low hover:bg-surface-container-high text-on-surface rounded-lg transition-colors text-left group" id="btn-report-hazard" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-105 transition-transform flex-shrink-0">
+<span class="material-symbols-outlined text-lg">add_road</span>
+</div>
+<div class="min-w-0">
+<p class="font-headline-sm text-headline-sm text-on-surface truncate">Report Road / Water Hazard</p>
+<p class="font-body-sm text-body-sm text-secondary truncate">Submerged powerline, logjam, breach</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-lg">chevron_right</span>
+</button>
+<!-- Action 2: Update Headcount -->
+<button class="w-full flex items-center justify-between p-space-sm bg-surface-container-low hover:bg-surface-container-high text-on-surface rounded-lg transition-colors text-left group" id="btn-update-headcount" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-secondary-container flex items-center justify-center text-secondary group-hover:scale-105 transition-transform flex-shrink-0">
+<span class="material-symbols-outlined text-lg">person_add</span>
+</div>
+<div class="min-w-0">
+<p class="font-headline-sm text-headline-sm text-on-surface truncate">Update Civilian Headcount</p>
+<p class="font-body-sm text-body-sm text-secondary truncate">Logged on-board / rescued triage tally</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-lg">chevron_right</span>
+</button>
+<!-- Action 3: Air Evac Request -->
+<button class="w-full flex items-center justify-between p-space-sm bg-error-container text-on-error-container hover:bg-error-container/80 rounded-lg transition-colors text-left group" id="btn-air-evac" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-error text-on-error flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
+<span class="material-symbols-outlined text-lg">airplay</span>
+</div>
+<div class="min-w-0">
+<p class="font-headline-sm text-headline-sm text-on-error-container truncate font-bold">Request Air Evac (Medevac)</p>
+<p class="font-body-sm text-body-sm text-on-error-container/80 truncate">Immediate helicopter airlift for LZ-1</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-error-container text-lg">arrow_forward</span>
+</button>
+<!-- Action 4: Return to Base -->
+<button class="w-full flex items-center justify-between p-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg transition-colors text-left group mt-space-xs" id="btn-rtb" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:scale-105 transition-transform flex-shrink-0">
+<span class="material-symbols-outlined text-lg">home_pin</span>
+</div>
+<div class="min-w-0">
+<p class="font-headline-sm text-headline-sm text-on-surface truncate">Complete & Return to Base</p>
+<p class="font-body-sm text-body-sm text-secondary truncate">Disengage from sector, fuel low alert</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-lg">check_circle</span>
+</button>
+</div>
+</div>
+<!-- Weather Radar & Vessel Diagnostics Widget -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-xs">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">Unit Telemetry & Fuel</span>
+<span class="text-primary font-tabular-data text-body-sm font-semibold">STABLE</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs">
+<div class="bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex items-center justify-between text-secondary">
+<span class="font-label-sm text-label-sm">Fuel (Dual Tank)</span>
+<span class="material-symbols-outlined text-sm text-primary">local_gas_station</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-tabular-data">78%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mt-0.5">~4.8 hrs runtime</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex items-center justify-between text-secondary">
+<span class="font-label-sm text-label-sm">Wind Gusts</span>
+<span class="material-symbols-outlined text-sm text-secondary">air</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-tabular-data">48 kt</span>
+<span class="font-label-sm text-label-sm text-error block mt-0.5">Sustained Gale</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex items-center justify-between text-secondary">
+<span class="font-label-sm text-label-sm">Water Temp</span>
+<span class="material-symbols-outlined text-sm text-primary-container">thermostat</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-tabular-data">24.2°C</span>
+<span class="font-label-sm text-label-sm text-secondary block mt-0.5">Hypothermia Risk Mid</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex items-center justify-between text-secondary">
+<span class="font-label-sm text-label-sm">Battery / Comms</span>
+<span class="material-symbols-outlined text-sm text-primary">battery_5_bar</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-tabular-data">92%</span>
+<span class="font-label-sm text-label-sm text-primary block mt-0.5">Mesh Relay Active</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 4: Task Queue & Incident Checklist (Field friendly large action cards) -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-xl">assignment</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Field Operations Checklist & Incident Priority Queue</h2>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Ordered by Life-Safety Severity Matrix</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
+<!-- Task 1: In Progress -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col justify-between border-l-4 border-primary">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="bg-primary text-on-primary font-label-sm text-label-sm px-space-xs py-0.5 rounded font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-container-lowest animate-ping"></span>
+                TASK 1 • IN PROGRESS
+              </span>
+<span class="font-label-sm text-label-sm text-secondary font-tabular-data font-semibold">INC-402-A</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-space-xs">Extract 45 stranded residents from Community Clinic 2F</h3>
+<p class="font-body-sm text-body-sm text-secondary">
+              First floor completely flooded under 1.8m surge. 12 elderly patients, 3 on ventilator backup generators. Amphibious docking recommended at north balcony.
+            </p>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-center justify-between text-body-sm mt-space-xs font-tabular-data">
+<span class="text-secondary font-label-sm text-label-sm">STATUS</span>
+<span class="text-primary font-bold">IN NAVIGATION (ETA 8m)</span>
+</div>
+<!-- Visual Context Preview -->
+<div class="w-full h-24 rounded-lg overflow-hidden relative mt-space-xs" data-alt="Drone aerial perspective of a two-story medical facility surrounded by muddy brown flood waters with people signaling from a concrete second floor terrace. Disaster relief color palette." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC0ry3xNZZK9s40nl0jLNyAV8qLMBPK51CNdRSj5f7PDgoh-cFxEH5_GAfkHWPqddkwMokE3iHylSI53uDKH7K0f8toFT_aKTKCo0n1Q5lhMMRnSDmzQmAvS5SbZYMKF74qM_VBiKZ7eB0p39tCR63k52qZSKSyUkf7eRcuNCd74cE68B0xDXjNpnzWDSTjGaQyFDHEgYkZqZoRbUNynxj2mHc5MfEMrQQSOpS_BDWx7uOBbY9xreUh')">
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 to-transparent flex items-end p-space-xs">
+<span class="font-label-sm text-label-sm text-surface-container-lowest">Aerial Recon Confirmed: Clear Balcony Approach</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs mt-space-md pt-space-xs">
+<button class="flex-1 py-2.5 bg-primary hover:bg-primary-container text-on-primary rounded-lg font-headline-sm text-headline-sm transition-colors shadow flex items-center justify-center gap-space-xs" id="task1-action" type="button">
+<span class="material-symbols-outlined text-base">where_to_vote</span>
+<span>Mark RT-02 On-Site</span>
+</button>
+<button class="p-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg transition-colors" title="Contact Building Coordinator" type="button">
+<span class="material-symbols-outlined text-base">call</span>
+</button>
+</div>
+</div>
+<!-- Task 2: Next Staged -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col justify-between border-l-4 border-secondary">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="bg-surface-container-high text-on-surface font-label-sm text-label-sm px-space-xs py-0.5 rounded font-bold uppercase tracking-wider">
+                TASK 2 • STAGED NEXT
+              </span>
+<span class="font-label-sm text-label-sm text-secondary font-tabular-data font-semibold">INC-402-B</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-space-xs">Deliver emergency insulin & water purification to Sector 4 High School</h3>
+<p class="font-body-sm text-body-sm text-secondary">
+              Shelter cutoff with 275 civilians. Fresh water contaminated by sewage backflow. Cold-chain storage container onboard Craft B-14 must be transferred.
+            </p>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-center justify-between text-body-sm mt-space-xs font-tabular-data">
+<span class="text-secondary font-label-sm text-label-sm">STATUS</span>
+<span class="text-secondary font-semibold">STAGED / CARGO SECURED</span>
+</div>
+<!-- Supply Kit Overview -->
+<div class="flex items-center gap-space-xs p-space-xs bg-surface-container-high/60 rounded text-body-sm mt-space-xs">
+<span class="material-symbols-outlined text-primary text-base">inventory_2</span>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">Payload: 200kg Medical • 500L Aquatabs</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs mt-space-md pt-space-xs">
+<button class="flex-1 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-headline-sm text-headline-sm transition-colors flex items-center justify-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-base">play_arrow</span>
+<span>Promote to Current Mission</span>
+</button>
+<button class="p-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-base">share_location</span>
+</button>
+</div>
+</div>
+<!-- Task 3: Pending Hazard Cordons -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col justify-between border-l-4 border-error">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="bg-error-container text-on-error-container font-label-sm text-label-sm px-space-xs py-0.5 rounded font-bold uppercase tracking-wider">
+                TASK 3 • STANDBY CORDON
+              </span>
+<span class="font-label-sm text-label-sm text-secondary font-tabular-data font-semibold">INC-409-HAZ</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-space-xs">Secure perimeter cordons around ruptured gas line on South Dock</h3>
+<p class="font-body-sm text-body-sm text-secondary">
+              Submerged natural gas conduit leaking bubbles. Severe explosion hazard within 200m buffer. Civilian boats must be diverted to northern bypass canal.
+            </p>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-center justify-between text-body-sm mt-space-xs font-tabular-data">
+<span class="text-secondary font-label-sm text-label-sm">STATUS</span>
+<span class="text-error font-bold">HAZMAT DANGER ZONE</span>
+</div>
+<div class="flex items-center gap-space-xs p-space-xs bg-error-container/40 rounded text-body-sm mt-space-xs">
+<span class="material-symbols-outlined text-error text-base">local_fire_department</span>
+<span class="font-label-sm text-label-sm text-on-error-container font-medium">Air Sniffer: LEL 14% at 50m water surface</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs mt-space-md pt-space-xs">
+<button class="flex-1 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-headline-sm text-headline-sm transition-colors flex items-center justify-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-base">security</span>
+<span>Acknowledge Hazard Order</span>
+</button>
+<button class="p-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-base">info</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Quick Hazard Report Modal (Hidden by Default) -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm hidden items-center justify-center p-space-md" id="hazard-modal">
+<div class="bg-surface-container-lowest rounded-xl max-w-lg w-full p-space-lg shadow-2xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-error text-2xl">report_problem</span>
+<span class="font-headline-md text-headline-md text-on-surface">Field Hazard Incident Log</span>
+</div>
+<button class="text-secondary hover:text-on-surface" id="close-modal" type="button">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div>
+<label class="font-label-md text-label-md text-on-surface block mb-1">Hazard Classification</label>
+<select class="w-full bg-surface-container-low p-2 rounded-lg font-body-sm text-body-sm text-on-surface outline-none">
+<option>Submerged Powerlines / Electrification Risk</option>
+<option>Fallen Tree / Waterway Logjam</option>
+<option>Bridge / Culvert Structural Collapse</option>
+<option>Chemical / Fuel Contamination Slick</option>
+<option>Severe Debris Vortex / Rip Current</option>
+</select>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface block mb-1">Water Depth & Severity</label>
+<div class="grid grid-cols-3 gap-space-xs">
+<button class="p-2 text-center rounded bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold" type="button">Low (Advisory)</button>
+<button class="p-2 text-center rounded bg-surface-container-high text-primary font-label-sm text-label-sm font-bold" type="button">Moderate</button>
+<button class="p-2 text-center rounded bg-error text-on-error font-label-sm text-label-sm font-bold" type="button">Fatal Cutoff</button>
+</div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface block mb-1">Field Observation Notes</label>
+<textarea class="w-full bg-surface-container-low p-2 rounded-lg font-body-sm text-body-sm text-on-surface outline-none" placeholder="Provide visual waypoint description for command center..." rows="3"></textarea>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-xs">
+<button class="px-space-md py-2 rounded-lg bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high" id="cancel-hazard" type="button">Cancel</button>
+<button class="px-space-lg py-2 rounded-lg bg-primary text-on-primary font-headline-sm text-headline-sm hover:bg-primary-container shadow" id="submit-hazard" type="button">Transmit Beacon to Headquarters</button>
+</div>
+</div>
+</div>
+<!-- Interactive Headcount Modal (Hidden by Default) -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm hidden items-center justify-center p-space-md" id="headcount-modal">
+<div class="bg-surface-container-lowest rounded-xl max-w-md w-full p-space-lg shadow-2xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-2xl">groups</span>
+<span class="font-headline-md text-headline-md text-on-surface">Unit RT-02 Civilian Tally</span>
+</div>
+<button class="text-secondary hover:text-on-surface" id="close-headcount" type="button">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Boarded Safe</div>
+<div class="font-body-sm text-body-sm text-secondary">Amphibious B-14 Deck</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="w-8 h-8 rounded bg-surface-container text-on-surface font-bold text-lg" id="count-minus" type="button">-</button>
+<span class="font-headline-lg text-headline-lg font-tabular-data w-8 text-center text-primary font-bold" id="boarded-val">14</span>
+<button class="w-8 h-8 rounded bg-surface-container text-on-surface font-bold text-lg" id="count-plus" type="button">+</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-error-container text-on-error-container rounded-lg">
+<div>
+<div class="font-headline-sm text-headline-sm">Critical Medical Cases</div>
+<div class="font-body-sm text-body-sm opacity-80">Requires Immediate Ambulance/Airlift</div>
+</div>
+<span class="font-headline-lg text-headline-lg font-tabular-data font-bold">3</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-xs">
+<button class="px-space-md py-2 rounded-lg bg-surface-container text-on-surface font-label-md text-label-md" id="cancel-headcount" type="button">Close</button>
+<button class="px-space-lg py-2 rounded-lg bg-primary text-on-primary font-headline-sm text-headline-sm hover:bg-primary-container shadow" id="save-headcount" type="button">Sync Telemetry</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    // SOS Emergency Dispatch micro-interaction
+    const sosBtn = document.getElementById('sos-btn');
+    if (sosBtn) {
+      sosBtn.addEventListener('click', function() {
+        const confirmed = confirm('BROADCAST HIGH PRIORITY MAYDAY SOS?\\n\\nThis will summon immediate USAR air support and notify central incident command of imminent team peril.');
+        if (confirmed) {
+          sosBtn.classList.remove('bg-error');
+          sosBtn.classList.add('bg-on-error-container', 'text-error-container');
+          sosBtn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">sync</span><span>MAYDAY TRANSMITTED...</span>';
+          setTimeout(() => {
+            alert('SOS confirmed. Air Wing 4 diverted to RT-02 coordinates (22°14\'08.2"N 89°32\'44.1"E). ETA 6 mins.');
+          }, 600);
+        }
+      });
+    }
+
+    // Modal controllers
+    const hazardBtn = document.getElementById('btn-report-hazard');
+    const hazardModal = document.getElementById('hazard-modal');
+    const closeHazard = document.getElementById('close-modal');
+    const cancelHazard = document.getElementById('cancel-hazard');
+    const submitHazard = document.getElementById('submit-hazard');
+
+    if (hazardBtn && hazardModal) {
+      hazardBtn.addEventListener('click', () => {
+        hazardModal.classList.remove('hidden');
+        hazardModal.classList.add('flex');
+      });
+      const hideHazard = () => {
+        hazardModal.classList.add('hidden');
+        hazardModal.classList.remove('flex');
+      };
+      if (closeHazard) closeHazard.addEventListener('click', hideHazard);
+      if (cancelHazard) cancelHazard.addEventListener('click', hideHazard);
+      if (submitHazard) submitHazard.addEventListener('click', () => {
+        alert('Hazard pinned to GIS layer and broadcast to Delta Fleet.');
+        hideHazard();
+      });
+    }
+
+    // Headcount Modal
+    const headcountBtn = document.getElementById('btn-update-headcount');
+    const headcountModal = document.getElementById('headcount-modal');
+    const closeHeadcount = document.getElementById('close-headcount');
+    const cancelHeadcount = document.getElementById('cancel-headcount');
+    const saveHeadcount = document.getElementById('save-headcount');
+    const boardedVal = document.getElementById('boarded-val');
+    const countPlus = document.getElementById('count-plus');
+    const countMinus = document.getElementById('count-minus');
+
+    let currentBoarded = 14;
+
+    if (headcountBtn && headcountModal) {
+      headcountBtn.addEventListener('click', () => {
+        headcountModal.classList.remove('hidden');
+        headcountModal.classList.add('flex');
+      });
+      const hideHeadcount = () => {
+        headcountModal.classList.add('hidden');
+        headcountModal.classList.remove('flex');
+      };
+      if (closeHeadcount) closeHeadcount.addEventListener('click', hideHeadcount);
+      if (cancelHeadcount) cancelHeadcount.addEventListener('click', hideHeadcount);
+      if (countPlus) {
+        countPlus.addEventListener('click', () => {
+          currentBoarded++;
+          boardedVal.textContent = currentBoarded;
+        });
+      }
+      if (countMinus) {
+        countMinus.addEventListener('click', () => {
+          if (currentBoarded > 0) {
+            currentBoarded--;
+            boardedVal.textContent = currentBoarded;
+          }
+        });
+      }
+      if (saveHeadcount) {
+        saveHeadcount.addEventListener('click', () => {
+          alert('Headcount updated to ' + currentBoarded + ' souls onboard Amphibious Craft B-14.');
+          hideHeadcount();
+        });
+      }
+    }
+
+    // Air Evac button
+    const airEvacBtn = document.getElementById('btn-air-evac');
+    if (airEvacBtn) {
+      airEvacBtn.addEventListener('click', () => {
+        alert('Medevac Helicopter Request sent for LZ-1 (Coordinates: 22°14\'22"N 89°32\'10"E). Air Traffic Control assigning callsign MED-03.');
+      });
+    }
+
+    // Return to base
+    const rtbBtn = document.getElementById('btn-rtb');
+    if (rtbBtn) {
+      rtbBtn.addEventListener('click', () => {
+        confirm('Confirm return to Base Slip Alpha? Current incident progress will be reassigned to Unit RT-05.');
+      });
+    }
+
+    // PTT Radio mic feedback
+    const radioBtn = document.getElementById('radio-btn');
+    if (radioBtn) {
+      let activeRadio = false;
+      radioBtn.addEventListener('click', () => {
+        activeRadio = !activeRadio;
+        if (activeRadio) {
+          radioBtn.classList.add('bg-error', 'text-on-error');
+          radioBtn.innerHTML = '<span class="material-symbols-outlined text-base animate-pulse">radio_button_checked</span><span>TRANSMITTING...</span>';
+        } else {
+          radioBtn.classList.remove('bg-error', 'text-on-error');
+          radioBtn.innerHTML = '<span class="material-symbols-outlined text-base">mic</span><span>PTT Radio</span>';
+        }
+      });
+    }
+
+    // Task 1 On-Site transition
+    const task1Action = document.getElementById('task1-action');
+    if (task1Action) {
+      task1Action.addEventListener('click', () => {
+        task1Action.classList.remove('bg-primary');
+        task1Action.classList.add('bg-surface-container-highest', 'text-primary');
+        task1Action.innerHTML = '<span class="material-symbols-outlined text-base">check_circle</span><span>RT-02 On-Site Verified</span>';
+      });
+    }
+  })();
+</script></main></div></body></html>

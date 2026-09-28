@@ -1,0 +1,646 @@
+import type {
+  User, DisasterEvent, MapLayer, Alert, SatelliteScene,
+  PreprocessingStage, DamageAsset, RescueZone, RescueTeam,
+  OptimizedRoute, DetectionBreakdown, InferencePipeline
+} from '../types';
+
+// ============================================================
+// Users
+// ============================================================
+export const mockUsers: User[] = [
+  {
+    id: 'usr-001',
+    name: 'Cmdr. Sarah Jenkins',
+    email: 'admin@sentinelaid.gov',
+    role: 'ADMIN',
+    title: 'Disaster Response Officer',
+    avatar: '/assets/commander-jenkins.png',
+  },
+  {
+    id: 'usr-002',
+    name: 'Officer Jenkins',
+    email: 'officer.jenkins@sentinelaid.gov',
+    role: 'DISASTER_OFFICER',
+    title: 'Disaster Operations Officer',
+    avatar: '/assets/commander-jenkins.png',
+  },
+  {
+    id: 'usr-003',
+    name: 'Lt. Marcus Vance',
+    email: 'rt02.lead@sar.ops',
+    role: 'RESCUE_TEAM',
+    title: 'Rescue Team Lead RT-02',
+  },
+];
+
+// ============================================================
+// Disaster Events
+// ============================================================
+export const mockDisasterEvents: DisasterEvent[] = [
+  {
+    id: 'EVT-8821-BGD',
+    name: 'Cyclone Remal & Estuary Inundation',
+    type: 'Cyclone',
+    hazardTypes: ['Cyclone', 'Flood'],
+    location: 'Bay of Bengal & South Delta Coastline',
+    coordinates: { lat: 21.8412, lng: 89.5422 },
+    severity: 'CRITICAL',
+    status: 'ACTIVE',
+    affectedArea: 1420,
+    affectedPopulation: 42000,
+    teamsDeployed: 12,
+    floodCrest: '+3.8m',
+    satelliteSource: 'Sentinel-2 L2A',
+    lastSatellitePass: '14 mins ago',
+    aiConfidence: 98,
+    createdAt: '2024-05-26T04:00:00Z',
+    updatedAt: '2024-05-26T14:36:00Z',
+    description: 'Response Active - AI Damage Detected',
+    thumbnailBand: 'Band 8A / 11 NDWI Overlaid',
+  },
+  {
+    id: 'EVT-8819-IND',
+    name: 'Assam Valley Flash Flooding',
+    type: 'Flood',
+    hazardTypes: ['Flood'],
+    location: 'Brahmaputra Basin, Sector 2',
+    coordinates: { lat: 26.1445, lng: 91.7362 },
+    severity: 'HIGH',
+    status: 'ACTIVE',
+    affectedArea: 680,
+    affectedPopulation: 18500,
+    teamsDeployed: 4,
+    satelliteSource: 'Sentinel-1 SAR + Sentinel-2 MSI',
+    aiConfidence: 91,
+    createdAt: '2024-05-25T10:00:00Z',
+    updatedAt: '2024-05-26T12:00:00Z',
+    description: 'AI Analysis Complete - 4 Rescue Teams Active',
+    thumbnailBand: 'Dual Polarization SAR VV/VH',
+  },
+  {
+    id: 'EVT-8815-IDN',
+    name: 'Mount Merapi Volcanic Ash & Mudflow',
+    type: 'Volcanic',
+    hazardTypes: ['Mudslide', 'Quake'],
+    location: 'Central Highlands, Yogyakarta',
+    coordinates: { lat: -7.5407, lng: 110.4457 },
+    severity: 'MODERATE',
+    status: 'MONITORING',
+    affectedArea: 240,
+    affectedPopulation: 8200,
+    teamsDeployed: 0,
+    satelliteSource: 'Sentinel-2 MSI',
+    aiConfidence: 84,
+    createdAt: '2024-05-24T06:00:00Z',
+    updatedAt: '2024-05-26T08:00:00Z',
+    description: 'Early Warning Monitoring',
+    thumbnailBand: 'SWIR Thermal Infrared Radiance',
+  },
+  {
+    id: 'EVT-8798-JPN',
+    name: 'Kyushu Coastal Typhoon Impact',
+    type: 'Typhoon',
+    hazardTypes: ['Typhoon'],
+    location: 'Kyushu SW Basin, Kagoshima',
+    coordinates: { lat: 31.5966, lng: 130.5571 },
+    severity: 'RESOLVED',
+    status: 'RESOLVED',
+    affectedArea: 510,
+    affectedPopulation: 0,
+    teamsDeployed: 0,
+    aiConfidence: 100,
+    createdAt: '2024-05-20T00:00:00Z',
+    updatedAt: '2024-05-25T18:00:00Z',
+    description: 'All damage verified & cleared',
+    thumbnailBand: 'Post-event Sentinel Baseline Complete',
+  },
+];
+
+// ============================================================
+// Map Layers (GIS)
+// ============================================================
+export const mockMapLayers: MapLayer[] = [
+  { id: 'lyr-perimeter', name: 'Disaster Perimeter', description: 'Level 4 Cyclone Extent', type: 'hazard', visible: true, opacity: 100, count: undefined },
+  { id: 'lyr-flood', name: 'Flooded Regions (MNDWI)', description: 'Sentinel-2 Inundation Mask', type: 'hazard', visible: true, opacity: 85 },
+  { id: 'lyr-buildings', name: 'Damaged Structures', description: '1,126 Geocoded Buildings', type: 'hazard', visible: true, opacity: 100, aiVerified: true },
+  { id: 'lyr-roads', name: 'Impassable Roads & Bridges', description: '18 Obstacles Tracked', type: 'hazard', visible: true, opacity: 100 },
+  { id: 'lyr-rescue-zones', name: 'High-Priority Rescue Zones', description: 'Stranded Civilian Clusters', type: 'hazard', visible: true, opacity: 100 },
+  { id: 'lyr-rescue-units', name: 'Rescue Units (RT-01, 02, 03)', description: 'Live GPS Position Stream', type: 'response', visible: true, opacity: 100 },
+  { id: 'lyr-shelters', name: 'Shelters & Field Hospitals', description: '6 Points Active (82% Occ.)', type: 'response', visible: true, opacity: 100 },
+  { id: 'lyr-utilities', name: 'Utilities & Substations', description: 'Power, Grid & Water Filtration', type: 'infrastructure', visible: false, opacity: 100 },
+  { id: 'lyr-drone', name: 'Pre-Disaster Drone Baselayer', description: 'May 14 Flight Baseline', type: 'infrastructure', visible: false, opacity: 100 },
+];
+
+// ============================================================
+// Alerts
+// ============================================================
+export const mockAlerts: Alert[] = [
+  {
+    id: 'alt-001',
+    severity: 'CRITICAL',
+    title: 'Bridge Collapse on Arterial HWY-10',
+    description: 'Sector 3 connector bridge swept away by surge. Route blocked for Unit RT-02. Safe bypass computed via Canal Bypass Rd (+18m ETA).',
+    timestamp: '3 mins ago',
+    coordinates: '21°49\'10"N, 89°14\'02"E',
+    actions: [{ label: 'View Route', type: 'primary' }],
+  },
+  {
+    id: 'alt-002',
+    severity: 'HIGH_SURGE',
+    title: 'Rapid Water Surge near Coastal Hospital #2',
+    description: 'Telemetry buoy delta-3 registering +45cm/hr water rise. ICU backup power generators at ground tier vulnerable. Evacuation advisory activated.',
+    timestamp: '11 mins ago',
+    actions: [
+      { label: '140 patients needing transfer', type: 'secondary' },
+      { label: 'Assign Unit →', type: 'primary' },
+    ],
+  },
+  {
+    id: 'alt-003',
+    severity: 'SATELLITE_INGEST',
+    title: 'Sentinel-2 L2A Ingestion Completed',
+    description: 'New satellite pass ingested and preprocessed. Ready for AI damage detection pipeline.',
+    timestamp: '14 mins ago',
+  },
+  {
+    id: 'alt-004',
+    severity: 'WARNING',
+    title: 'Levee Breach Warning - Sector 7',
+    description: 'Secondary levee overflow projected at 19:40. Rations safe; potable water distributed for 72 hrs.',
+    timestamp: '22 mins ago',
+  },
+];
+
+// ============================================================
+// Satellite Scenes
+// ============================================================
+export const mockSatelliteScenes: SatelliteScene[] = [
+  {
+    id: 'S1A_IW_GRDH_1SDV_20260926T051210',
+    platform: 'Sentinel-1A',
+    acquisitionDate: 'Sep 26, 2026',
+    cloudCover: 0.0,
+    resolution: '10m',
+    sensorType: 'C-band SAR',
+    pipelineStatus: 'Verified',
+    bands: 2,
+    size: '410 MB',
+    floodStatus: 'FLOOD RELEVANT',
+    floodSignal: 'SAR Change',
+    floodRelevanceScore: 94.5,
+    floodAreaKm2: 14.2,
+    detectionMethod: 'SAR Change',
+    source: 'LIVE SATELLITE DATA',
+    isDemo: false
+  },
+  {
+    id: 'S2A_MSIL2A_20260926T043231_N0510_R133_T45QZD',
+    platform: 'Sentinel-2A',
+    acquisitionDate: 'Sep 26, 2026',
+    cloudCover: 8.2,
+    resolution: '10m',
+    sensorType: 'MSI',
+    pipelineStatus: 'Verified',
+    bands: 13,
+    size: '514 MB',
+    floodStatus: 'FLOOD RELEVANT',
+    floodSignal: 'MNDWI',
+    floodRelevanceScore: 91.4,
+    floodAreaKm2: 18.6,
+    detectionMethod: 'MNDWI',
+    source: 'LIVE SATELLITE DATA',
+    isDemo: false
+  },
+  {
+    id: 'S1C_IW_GRDH_1SDV_20260925T052014',
+    platform: 'Sentinel-1C',
+    acquisitionDate: 'Sep 25, 2026',
+    cloudCover: 0.0,
+    resolution: '10m',
+    sensorType: 'C-band SAR',
+    pipelineStatus: 'Ready',
+    bands: 2,
+    size: '425 MB',
+    floodStatus: 'FLOOD RELEVANT',
+    floodSignal: 'SAR Change',
+    floodRelevanceScore: 88.0,
+    floodAreaKm2: 15.0,
+    detectionMethod: 'SAR Change',
+    source: 'LIVE SATELLITE DATA',
+    isDemo: false
+  },
+  {
+    id: 'S2B_MSIL2A_20260924T042659_N0510_R033_T45QYE',
+    platform: 'Sentinel-2B',
+    acquisitionDate: 'Sep 24, 2026',
+    cloudCover: 12.0,
+    resolution: '10m',
+    sensorType: 'MSI',
+    pipelineStatus: 'Ready',
+    bands: 13,
+    size: '510 MB',
+    floodStatus: 'POSSIBLE FLOOD SIGNAL',
+    floodSignal: 'NDWI',
+    floodRelevanceScore: 68.5,
+    floodAreaKm2: 12.8,
+    detectionMethod: 'NDWI',
+    source: 'LIVE SATELLITE DATA',
+    isDemo: false
+  },
+  {
+    id: 'LC09_L2SP_137044_20260923_20260924',
+    platform: 'Landsat-9',
+    acquisitionDate: 'Sep 23, 2026',
+    cloudCover: 14.5,
+    resolution: '30m',
+    sensorType: 'OLI-2',
+    pipelineStatus: 'Ready',
+    bands: 11,
+    size: '890 MB',
+    floodStatus: 'POSSIBLE FLOOD SIGNAL',
+    floodSignal: 'NDWI',
+    floodRelevanceScore: 54.2,
+    floodAreaKm2: 11.2,
+    detectionMethod: 'NDWI',
+    source: 'LIVE SATELLITE DATA',
+    isDemo: false
+  }
+];
+
+// ============================================================
+// Preprocessing Stages
+// ============================================================
+export const mockPreprocessingStages: PreprocessingStage[] = [
+  { id: 1, name: 'Radiometric Calibration', status: 'Verified', detail: 'DN to Bottom-Of-Atmosphere (BOA) surface reflectance conversion complete. Solar irradiance corrected.' },
+  { id: 2, name: 'Atmospheric & AOT', status: 'Calibrated', detail: 'Aerosol Optical Thickness modeling via 940nm water vapor band. Ground elevation SRTM 30m coupled.' },
+  { id: 3, name: 'Cloud & Shadow Masking', status: 'Verified', detail: 'SCL Cloud Exclusion Mask: 85% Opacity. Exclude Cirrus & Semi-Transparent.' },
+  { id: 4, name: 'Co-Registration & Resample', status: 'Verified', detail: '20m SWIR/RedEdge bands cubic-spline resampled to unified 10m grid. Absolute displacement: 0.18px.' },
+  { id: 5, name: 'Spectral Index Transforms', status: 'Verified', detail: 'MNDWI (Green - SWIR): +18.64 km² New Flood Inundation. ΔNDVI: -48.2% Canopy Loss Detected.' },
+];
+
+// ============================================================
+// AI Inference Pipeline
+// ============================================================
+export const mockInferencePipeline: InferencePipeline = {
+  modelName: 'Dual-Stream Siamese U-Net + Transformer CV',
+  backbone: 'ConvNeXt-Large | Trained on xBD Disaster Dataset & Maxar Open Data',
+  inferenceTime: 1240,
+  gpu: 'NVIDIA H100 SXM5',
+  status: 'COMPLETE',
+};
+
+export const mockDetectionBreakdown: DetectionBreakdown = {
+  buildingsAnalyzed: 4280,
+  severeCollapse: 1126,
+  partialDamage: 482,
+  destroyedPercent: 26.3,
+  roadSegments: 186,
+  roadCuts: 42,
+  blockedLength: 18.6,
+  floodFootprint: 18.6,
+  waterExpansion: '+310%',
+};
+
+// ============================================================
+// Damage Assessment Assets
+// ============================================================
+export const mockDamageAssets: DamageAsset[] = [
+  {
+    id: 'BLD-8821',
+    location: 'Coastal District Hospital - Wing B',
+    category: 'Medical',
+    damageGrade: 4,
+    failureMode: 'Roof Shearing',
+    floodDepth: 1.3,
+    floodType: 'Surge',
+    aiConfidence: 96.2,
+    coordinates: { lat: 21.7439, lng: 89.3068 },
+    rescueStatus: 'ENQUEUED P1-01',
+  },
+  {
+    id: 'BRG-0019',
+    location: 'Old Tidal Sluice Causeway Bridge',
+    category: 'Transport',
+    damageGrade: 5,
+    failureMode: 'Span Washed Away',
+    floodDepth: 2.8,
+    floodType: 'Channel',
+    aiConfidence: 98.9,
+    coordinates: { lat: 21.7381, lng: 89.2942 },
+    rescueStatus: 'ROUTE SEVERED',
+  },
+  {
+    id: 'SCH-0402',
+    location: 'Sector 4 Higher Secondary Shelter',
+    category: 'Education',
+    damageGrade: 3,
+    failureMode: 'Perimeter Breached',
+    floodDepth: 0.6,
+    floodType: 'Courtyard',
+    aiConfidence: 93.4,
+    coordinates: { lat: 21.7512, lng: 89.3120 },
+    rescueStatus: 'ENQUEUED P2-06',
+  },
+  {
+    id: 'RES-8840',
+    location: 'Riverside Embankment Cluster B (32 units)',
+    category: 'Residential',
+    damageGrade: 5,
+    failureMode: 'Complete Inundation',
+    floodDepth: 2.1,
+    floodType: 'High Surge',
+    aiConfidence: 97.8,
+    coordinates: { lat: 21.7290, lng: 89.2811 },
+    rescueStatus: '+ Add to Rescue',
+  },
+  {
+    id: 'WTR-0114',
+    location: 'Municipal Water Filtration Booster Plant',
+    category: 'Utility',
+    damageGrade: 2,
+    failureMode: 'Electrical Substation Dry',
+    floodDepth: 0.2,
+    floodType: 'Drainable',
+    aiConfidence: 91.7,
+    coordinates: { lat: 21.7588, lng: 89.3245 },
+    rescueStatus: 'OPERATIONAL',
+  },
+];
+
+// ============================================================
+// Rescue Priority Zones
+// ============================================================
+export const mockRescueZones: RescueZone[] = [
+  {
+    rank: 'P1-01',
+    zone: 'Zone 4B - Riverview',
+    gridCoords: "21°48'N 89°12'E",
+    structuralDamage: 'Level 5 Catastrophic - Multi-story collapse',
+    populationAtRisk: 1240,
+    populationDetail: '380 elderly/children',
+    cutoffLevel: '100% Road Cutoff',
+    cutoffDetail: 'Water depth 1.6m',
+    recommendedResponse: 'Amphibious Boat + Medevac - Roof staging active',
+    assignedUnit: 'RT-02 En Route (12m)',
+    unitStatus: 'EN_ROUTE',
+    priority: 'P1',
+  },
+  {
+    rank: 'P1-02',
+    zone: 'Sector 7 - Central Levee',
+    gridCoords: "21°51'N 89°17'E",
+    structuralDamage: 'Level 4 Severe Flood - Ground floors fully submerged',
+    populationAtRisk: 920,
+    populationDetail: '210 in nursing facility',
+    cutoffLevel: '95% Road Cutoff',
+    cutoffDetail: 'Water depth 1.9m',
+    recommendedResponse: 'Heavy Lift Air Winch Drop - Critical medical transport',
+    assignedUnit: 'RT-05 Pending',
+    unitStatus: 'STANDBY',
+    priority: 'P1',
+  },
+  {
+    rank: 'P1-03',
+    zone: 'Old Town Island Sector 9',
+    gridCoords: "21°44'N 89°09'E",
+    structuralDamage: 'Level 5 Structural Shift - Embankment washed away',
+    populationAtRisk: 860,
+    populationDetail: 'Hospital power severed',
+    cutoffLevel: '100% Isolated',
+    cutoffDetail: 'Debris in channel',
+    recommendedResponse: 'Inflatable SAR Rafts + Patrol - Generator drop required',
+    assignedUnit: 'UNASSIGNED',
+    unitStatus: 'UNASSIGNED',
+    priority: 'P1',
+  },
+  {
+    rank: 'P1-04',
+    zone: 'East Port Harbor Basin',
+    gridCoords: "21°54'N 89°22'E",
+    structuralDamage: 'Level 4 Embankment Rupture - Industrial mudflow',
+    populationAtRisk: 640,
+    populationDetail: 'Warehouse workers trapped',
+    cutoffLevel: '85% Road Cutoff',
+    cutoffDetail: 'Heavy mud blockage',
+    recommendedResponse: 'Tracked All-Terrain (BV-206) - Bulldozer path clearing',
+    assignedUnit: 'RT-09 Deployed',
+    unitStatus: 'DEPLOYED',
+    priority: 'P1',
+  },
+  {
+    rank: 'P1-05',
+    zone: 'Kalyanpur Canal North',
+    gridCoords: "21°46'N 89°15'E",
+    structuralDamage: 'Level 4 Surge Overflow - Fast-moving current',
+    populationAtRisk: 510,
+    populationDetail: 'Squatter settlement cluster',
+    cutoffLevel: '90% Cutoff',
+    cutoffDetail: 'Footbridge collapsed',
+    recommendedResponse: 'Swiftwater Rescue Swimmers - Tethered raft system',
+    assignedUnit: 'RT-11 Mobilizing',
+    unitStatus: 'EN_ROUTE',
+    priority: 'P1',
+  },
+  {
+    rank: 'P1-06',
+    zone: 'Shilpa Nagar Substation',
+    gridCoords: "21°50'N 89°11'E",
+    structuralDamage: 'Level 4 Hazmat / Electrocution - Submerged power grid',
+    populationAtRisk: 390,
+    populationDetail: 'Surrounding rowhomes',
+    cutoffLevel: '80% Blocked',
+    cutoffDetail: 'Live wire danger zone',
+    recommendedResponse: 'Grid Isolation + Armored Evac - Grid shutdown underway',
+    assignedUnit: 'RT-04 En Route (18m)',
+    unitStatus: 'EN_ROUTE',
+    priority: 'P1',
+  },
+  {
+    rank: 'P1-07',
+    zone: 'Dakshin Para Community Clinic',
+    gridCoords: "21°43'N 89°18'E",
+    structuralDamage: 'Level 4 Oxygen Depletion - Generator flooded',
+    populationAtRisk: 290,
+    populationDetail: '45 ICU patients on battery',
+    cutoffLevel: '100% Inaccessible',
+    cutoffDetail: 'Access bridges swept away',
+    recommendedResponse: 'Helicopter Rooftop Extraction - Portable O2 cylinders drop',
+    assignedUnit: 'Air SAR-01 Inbound (8m)',
+    unitStatus: 'EN_ROUTE',
+    priority: 'P1',
+  },
+];
+
+// ============================================================
+// Rescue Teams
+// ============================================================
+export const mockRescueTeams: RescueTeam[] = [
+  {
+    id: 'RT-01',
+    name: 'Rescue Team RT-01',
+    type: 'Amphibious',
+    status: 'DEPLOYED',
+    members: 8,
+    currentLocation: 'Zone 4B - South Delta',
+    currentMission: 'Flood Rescue & Evacuation',
+    missionId: 'INC-402',
+    vehicleType: 'Amphibious Craft B-14',
+    gpsPosition: [21.8412, 89.5422],
+    speed: 18.4,
+    heading: 34,
+    fuel: 78,
+  },
+  {
+    id: 'RT-02',
+    name: 'Rescue Team RT-02',
+    type: 'Water Rescue',
+    status: 'EN_ROUTE',
+    members: 6,
+    currentLocation: 'En Route to Zone 4B',
+    currentMission: 'Delta Sector 4B Extraction',
+    eta: 14,
+    distance: 4.2,
+    vehicleType: 'Amphibious Craft B-14',
+    gpsPosition: [21.85, 89.55],
+    speed: 18.4,
+    heading: 34,
+    fuel: 78,
+  },
+  {
+    id: 'RT-03',
+    name: 'Rescue Team RT-03',
+    type: 'Field Medic',
+    status: 'ON_SITE',
+    members: 5,
+    currentLocation: 'Coastal Hospital #2',
+    currentMission: 'Medical Evacuation',
+    gpsPosition: [21.82, 89.50],
+    fuel: 65,
+  },
+  {
+    id: 'RT-04',
+    name: 'Rescue Team RT-04',
+    type: 'Hazmat',
+    status: 'EN_ROUTE',
+    members: 7,
+    currentLocation: 'En Route to Shilpa Nagar',
+    eta: 18,
+    gpsPosition: [21.83, 89.48],
+    fuel: 82,
+  },
+  {
+    id: 'RT-05',
+    name: 'Rescue Team RT-05',
+    type: 'Heavy Lift',
+    status: 'STANDBY',
+    members: 6,
+    currentLocation: 'Command Station Alpha',
+    gpsPosition: [21.87, 89.60],
+    fuel: 95,
+  },
+];
+
+// ============================================================
+// Route Optimization
+// ============================================================
+export const mockRoutes: OptimizedRoute[] = [
+  {
+    id: 'route-a',
+    name: 'West Levee Bypass',
+    label: 'ROUTE A • RECOMMENDED',
+    distance: 14.2,
+    estimatedTime: 22,
+    riskFactor: 'LOW',
+    riskPercent: 12,
+    status: 'RECOMMENDED',
+    blockedSegments: 0,
+    maxDepth: 0.15,
+    waypoints: [
+      { name: 'Alpha HQ Base', position: [21.87, 89.60] },
+      { name: 'WP-1: West Levee Rd', position: [21.855, 89.57] },
+      { name: 'WP-2: Sluice Gate 7', position: [21.845, 89.54] },
+      { name: 'WP-3: High Causeway', position: [21.835, 89.52] },
+      { name: 'Sector 4B Shelter Gate', position: [21.84, 89.54] },
+    ],
+    path: [
+      [21.87, 89.60], [21.865, 89.59], [21.855, 89.57],
+      [21.845, 89.55], [21.845, 89.54], [21.835, 89.52],
+      [21.84, 89.53], [21.84, 89.54],
+    ],
+  },
+  {
+    id: 'route-b',
+    name: 'Direct Delta Highway',
+    label: 'ROUTE B • HIGH HAZARD',
+    distance: 9.8,
+    estimatedTime: 16,
+    riskFactor: 'CRITICAL',
+    riskPercent: 88,
+    status: 'HAZARD',
+    blockedSegments: 1,
+    maxDepth: 1.10,
+    details: 'Flash flood at km 5.2, Depth: 1.10m',
+    waypoints: [],
+    path: [
+      [21.87, 89.60], [21.86, 89.58], [21.85, 89.56],
+      [21.84, 89.54],
+    ],
+  },
+  {
+    id: 'route-c',
+    name: 'North Perimeter Ring',
+    label: 'ROUTE C • CONGESTED',
+    distance: 18.6,
+    estimatedTime: 34,
+    riskFactor: 'MEDIUM',
+    riskPercent: 45,
+    status: 'CONGESTED',
+    blockedSegments: 0,
+    details: 'Civilian Evac Jam, Avg Spd: 22 km/h',
+    waypoints: [],
+    path: [
+      [21.87, 89.60], [21.88, 89.58], [21.885, 89.55],
+      [21.87, 89.52], [21.855, 89.51], [21.84, 89.54],
+    ],
+  },
+];
+
+// ============================================================
+// Dashboard Metrics
+// ============================================================
+export const mockDashboardMetrics = {
+  activeDisasters: { value: '3 Ongoing', sublabel: '1 Critical, 2 Elevated', icon: 'alert-triangle' },
+  affectedRegions: { value: '1,420 km²', sublabel: 'Coastline & Delta Se...', icon: 'users' },
+  damagedBuildings: { value: '1,126', sublabel: '+14% vs T-24h (94% AI conf)', icon: 'building' },
+  blockedRoads: { value: '42 Segments', sublabel: '18.4 km impassable...', icon: 'road' },
+  floodedArea: { value: '18.6 km²', sublabel: 'MNDWI Spectral In...', icon: 'droplets' },
+  priorityRescue: { value: '7 Red Zones', sublabel: '4,850 civilians at di...', icon: 'siren' },
+};
+
+// ============================================================
+// Navigation Items
+// ============================================================
+export interface NavItem {
+  id: string;
+  label: string;
+  icon: string;
+  path: string;
+  badge?: number;
+  roles: string[];
+}
+
+export const navigationItems: NavItem[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', path: '/command', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST', 'AI_ANALYST'] },
+  { id: 'events', label: 'Disaster Events', icon: 'AlertTriangle', path: '/command/events', roles: ['ADMIN', 'DISASTER_OFFICER'] },
+  { id: 'satellite', label: 'Satellite Images', icon: 'Satellite', path: '/command/satellite', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST', 'AI_ANALYST'] },
+  { id: 'ai-detection', label: 'AI Damage Detection', icon: 'Brain', path: '/command/ai-detection', roles: ['ADMIN', 'AI_ANALYST', 'DISASTER_OFFICER'] },
+  { id: 'damage', label: 'Damage Assessment', icon: 'ClipboardList', path: '/command/damage', roles: ['ADMIN', 'DISASTER_OFFICER', 'AI_ANALYST'] },
+  { id: 'rescue-priority', label: 'Rescue Priority', icon: 'ShieldAlert', path: '/command/rescue-priority', roles: ['ADMIN', 'DISASTER_OFFICER', 'RESCUE_TEAM'] },
+  { id: 'gis-map', label: 'GIS Disaster Map', icon: 'Map', path: '/command/gis', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST'] },
+  { id: 'routes', label: 'Emergency Routes', icon: 'Route', path: '/command/routes', roles: ['ADMIN', 'DISASTER_OFFICER', 'RESCUE_TEAM'] },
+  { id: 'reports', label: 'Reports & Analytics', icon: 'FileText', path: '/command/reports', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST', 'AI_ANALYST'] },
+  { id: 'alerts', label: 'Alerts & Intel', icon: 'Bell', path: '/command/alerts', badge: 4, roles: ['ADMIN', 'DISASTER_OFFICER', 'RESCUE_TEAM'] },
+  { id: 'rescue-teams', label: 'Rescue Teams', icon: 'Users', path: '/command/rescue-teams', roles: ['ADMIN', 'DISASTER_OFFICER', 'RESCUE_TEAM'] },
+  { id: 'user-mgmt', label: 'User Management', icon: 'UserCog', path: '/command/users', roles: ['ADMIN'] },
+  { id: 'settings', label: 'Profile / Settings', icon: 'Settings', path: '/command/settings', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST', 'AI_ANALYST', 'RESCUE_TEAM'] },
+];

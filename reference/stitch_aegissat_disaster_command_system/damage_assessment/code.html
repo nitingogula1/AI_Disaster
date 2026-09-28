@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-low":"#eff4ff","surface-bright":"#f8f9ff","outline":"#707881","on-primary-container":"#fdfcff","tertiary-fixed":"#e9ddff","surface-dim":"#cbdbf5","surface-container-high":"#dce9ff","primary-fixed":"#cce5ff","surface":"#f8f9ff","primary-container":"#007bb9","secondary":"#565e74","primary":"#006194","background":"#f8f9ff","error-container":"#ffdad6","secondary-fixed-dim":"#bec6e0","tertiary":"#6b38d4","tertiary-fixed-dim":"#d0bcff","surface-container-highest":"#d3e4fe","inverse-primary":"#93ccff","on-surface-variant":"#3f4850","primary-fixed-dim":"#93ccff","on-tertiary-container":"#fffbff","on-secondary-fixed":"#131b2e","inverse-on-surface":"#eaf1ff","on-surface":"#0b1c30","on-tertiary":"#ffffff","on-error":"#ffffff","tertiary-container":"#8455ef","on-background":"#0b1c30","on-secondary":"#ffffff","on-secondary-fixed-variant":"#3f465c","on-secondary-container":"#5c647a","on-tertiary-fixed":"#23005c","on-primary":"#ffffff","on-error-container":"#93000a","surface-container-lowest":"#ffffff","error":"#ba1a1a","outline-variant":"#bfc7d2","secondary-container":"#dae2fd","on-tertiary-fixed-variant":"#5516be","surface-container":"#e5eeff","surface-tint":"#006398","on-primary-fixed":"#001d31","inverse-surface":"#213145","on-primary-fixed-variant":"#004b73","secondary-fixed":"#dae2fd","surface-variant":"#d3e4fe"},borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},spacing:{"space-md":"0.75rem","space-sm":"0.5rem","space-xl":"1.5rem","margin-mobile":"1rem","space-xs":"0.25rem","space-lg":"1rem","margin":"1.5rem","gutter-compact":"0.5rem","gutter":"1rem"},fontFamily:{"headline-sm":["Inter"],"headline-xl-mobile":["Inter"],"body-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"label-md":["Inter"],"tabular-data":["Inter"],"body-md":["Inter"],"headline-lg-mobile":["Inter"],"headline-xl":["Inter"],"body-sm":["Inter"],"headline-lg":["Inter"]},fontSize:{"headline-sm":["15px",{"lineHeight":"22px","letterSpacing":"-0.005em","fontWeight":"600"}],"headline-xl-mobile":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-lg":["15px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.03em","fontWeight":"600"}],"headline-md":["18px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"tabular-data":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"500"}],"body-md":["13px",{"lineHeight":"20px","fontWeight":"400"}],"headline-lg-mobile":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-xl":["30px",{"lineHeight":"38px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col flex-1 overflow-y-auto"><div class="h-16 flex items-center px-space-lg gap-space-md bg-inverse-surface border-b border-outline-variant/10"><img alt="SentinelAid Disaster Intelligence Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V1HSVBSv-hq0Xogw9g2jZ3ghKWKWZCw8pxdDSzfIRsa6ABFXgHsvdpKZ9PLFgjJaw4uJyx6CNaAUnSEZq6tyzMsQid2d-QQb30Web9OM9mv8V55GaguFqlyaYtL_CfSRSE2h4-Y3VWvZkyf2w8AlHZ94ZQ02b7aiNYRe0RrHokEGlkEnPGGVDIQw_7at0Ndb7qFbCzNrJ9lCcY66l3SFshtDXpUBJmsVzwjeT2tie7F_PcNkeraw8tNiY"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-surface-container-lowest font-bold tracking-tight">SentinelAid AI</span><span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">Disaster Command</span></div></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs text-secondary-fixed-dim font-label-sm text-label-sm uppercase tracking-wider font-semibold">Mission Navigation</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary text-on-primary font-semibold rounded-lg"><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined mr-space-md text-lg">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="disaster-events" href="#"><span class="material-symbols-outlined mr-space-md text-lg">warning</span><span class="font-body-md text-body-md">Disaster Events</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="satellite-images" href="#"><span class="material-symbols-outlined mr-space-md text-lg">satellite_alt</span><span class="font-body-md text-body-md">Satellite Images</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="ai-damage-detection" href="#"><span class="material-symbols-outlined mr-space-md text-lg">radar</span><span class="font-body-md text-body-md">AI Damage Detection</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="damage-assessment" href="#"><span class="material-symbols-outlined mr-space-md text-lg">analytics</span><span class="font-body-md text-body-md">Damage Assessment</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="rescue-priority" href="#"><span class="material-symbols-outlined mr-space-md text-lg">emergency_heat</span><span class="font-body-md text-body-md">Rescue Priority</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="gis-disaster-map" href="#"><span class="material-symbols-outlined mr-space-md text-lg">map</span><span class="font-body-md text-body-md">GIS Disaster Map</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="emergency-route-optimization" href="#"><span class="material-symbols-outlined mr-space-md text-lg">alt_route</span><span class="font-body-md text-body-md">Emergency Routes</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="reports-and-analytics" href="#"><span class="material-symbols-outlined mr-space-md text-lg">description</span><span class="font-body-md text-body-md">Reports &amp; Analytics</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="notifications-alerts" href="#"><div class="flex items-center"><span class="material-symbols-outlined mr-space-md text-lg">notifications</span><span class="font-body-md text-body-md">Alerts &amp; Intel</span></div><span class="bg-error text-on-error px-space-xs rounded-full font-label-sm text-label-sm font-semibold">4</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="rescue-teams" href="#"><span class="material-symbols-outlined mr-space-md text-lg">groups</span><span class="font-body-md text-body-md">Rescue Teams</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="user-management" href="#"><span class="material-symbols-outlined mr-space-md text-lg">badge</span><span class="font-body-md text-body-md">User Management</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-inverse-on-surface/80 hover:bg-surface-variant/10 hover:text-surface-container-lowest transition-colors" data-path="profile-settings" href="#"><span class="material-symbols-outlined mr-space-md text-lg">settings</span><span class="font-body-md text-body-md">Profile / Settings</span></a></nav></div></div><div class="p-space-md bg-inverse-surface border-t border-outline-variant/10"><div class="flex items-center gap-space-md"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1qSTjXxrEeWRmrsOCg-kmKMALzvstqEvNx_rKpBfDKQCjsYOpDGpe7OeM42G6Wbm73bUlBjExBWANnT3xNjLsqwx-Uw3P-c5ZOJi27n2HEaaqJOpYBOmTu4_OvZBOJ_4glZrrvExLNNx9baJaDfEhj4BSWzO_IISov0BrbamZGdMwZrsWmFi7QSjxSrQBqFyHJJQYyqpQi9KdROqGbTdpAqOB4d1_EGSvUPg-_QEMdURJ9xzvPwdv"/><div class="flex flex-col min-w-0 flex-1"><span class="font-headline-sm text-headline-sm text-surface-container-lowest truncate">Cmdr. Sarah Jenkins</span><span class="font-label-sm text-label-sm text-secondary-fixed-dim truncate">Disaster Response Officer</span></div></div><div class="mt-space-sm pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-inverse-on-surface/70"><span class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-fixed"></span>STAC &amp; AI: Online</span><span class="font-tabular-data text-tabular-data">v4.18</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md"><span class="material-symbols-outlined text-sm">home</span><span>/</span><span>Active Operation</span><span>/</span><span class="text-on-surface font-semibold">Intelligence Feed</span></div><div class="h-4 w-px bg-outline-variant/30 hidden lg:block"></div><div class="hidden lg:flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded-lg"><span class="material-symbols-outlined text-error text-sm">crisis_alert</span><span class="font-label-md text-label-md font-semibold text-on-surface">[ACTIVE CRITICAL] Cyclone Remal - Bay Area / Delta Sector 4</span><span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer">arrow_drop_down</span></div></div><div class="flex items-center gap-space-md"><div class="relative hidden xl:block w-72"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-base">search</span><input class="w-full pl-8 pr-space-md py-1 bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded-lg outline-none focus:ring-1 focus:ring-primary" placeholder="Search coords, zones, incident IDs..." type="text"/></div><div class="flex items-center gap-space-xs bg-error-container text-on-error-container px-space-md py-space-xs rounded-full font-label-sm text-label-sm font-bold tracking-wide"><span class="w-2 h-2 rounded-full bg-error animate-pulse"></span><span>THREAT LEVEL: CRITICAL (LEVEL 4)</span></div><div class="flex items-center gap-space-xs"><button class="flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-sm">satellite_alt</span><span class="hidden md:inline">Satellite Stream: Live</span></button><button class="relative p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error"></span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">fullscreen</span></button></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Sticky Operational Header & Breadcrumb Stream -->
+<section class="w-full bg-surface-container-lowest px-space-lg py-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="bg-primary text-on-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded uppercase tracking-wider font-semibold">Module 12</span>
+<span class="font-headline-lg text-headline-lg text-on-surface">Disaster Damage Assessment &amp; Structural Inventory</span>
+<span class="bg-error-container text-on-error-container font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span> Live STAC Sync
+          </span>
+</div>
+<div class="flex items-center gap-space-md mt-1 text-on-surface-variant font-body-sm text-body-sm flex-wrap">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-primary">cyclone</span> Incident: <strong class="text-on-surface font-semibold">Cyclone Remal (Delta Sector 4)</strong></span>
+<span class="hidden md:inline text-outline-variant">•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-tertiary">satellite_alt</span> Ingestion: <span class="font-tabular-data text-tabular-data text-on-surface">Sentinel-2 L2A &amp; InSAR Dual-Pass</span></span>
+<span class="hidden md:inline text-outline-variant">•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-secondary">grid_4x4</span> GSD: <span class="font-tabular-data text-tabular-data text-on-surface">10m MS + 3m PlanetScope Fusion</span></span>
+</div>
+</div>
+<!-- Action Group -->
+<div class="flex items-center gap-space-xs flex-wrap">
+<button class="bg-surface-container-low hover:bg-surface-container text-primary font-label-sm text-label-sm px-space-md py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-sm">cloud_sync</span>
+<span>Sync UN-SPIDER / FEMA</span>
+</button>
+<button class="bg-surface-container-low hover:bg-surface-container text-on-surface font-label-sm text-label-sm px-space-md py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Export Audit (PDF/CSV)</span>
+</button>
+<button class="bg-primary hover:bg-primary-container text-on-primary font-label-sm text-label-sm px-space-md py-1.5 rounded-lg flex items-center gap-1 font-semibold transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-sm">emergency_heat</span>
+<span>Promote to Rescue Queue</span>
+</button>
+</div>
+</div>
+</section>
+<div class="p-space-lg flex flex-col gap-space-lg">
+<!-- Severity Hierarchy KPI Metric Grid -->
+<section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-space-md">
+<!-- Total Inspected -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<span>Total Inspected</span>
+<span class="material-symbols-outlined text-primary text-base">domain</span>
+</div>
+<div class="my-space-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface font-tabular-data tracking-tight">4,280</span>
+</div>
+<div class="flex items-center justify-between text-secondary font-body-sm text-body-sm">
+<span class="bg-surface-container px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">100% of Sector</span>
+<span class="text-xs text-primary font-medium">10.4 sq km</span>
+</div>
+</div>
+<!-- Destroyed Grade 5 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider pl-1">
+<span class="text-error font-bold">Grade 5 Destroyed</span>
+<span class="material-symbols-outlined text-error text-base">collapse_all</span>
+</div>
+<div class="my-space-xs pl-1">
+<span class="font-headline-xl text-headline-xl text-error font-tabular-data tracking-tight">412</span>
+</div>
+<div class="flex items-center justify-between text-secondary font-body-sm text-body-sm pl-1">
+<span class="bg-error-container text-on-error-container font-semibold px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">9.6% Total</span>
+<span class="text-xs text-error font-semibold flex items-center"><span class="material-symbols-outlined text-xs mr-0.5">priority_high</span>Critical</span>
+</div>
+</div>
+<!-- Severely Damaged Grade 4 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary"></div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider pl-1">
+<span class="text-tertiary font-bold">Grade 4 Severe</span>
+<span class="material-symbols-outlined text-tertiary text-base">gavel</span>
+</div>
+<div class="my-space-xs pl-1">
+<span class="font-headline-xl text-headline-xl text-on-surface font-tabular-data tracking-tight">714</span>
+</div>
+<div class="flex items-center justify-between text-secondary font-body-sm text-body-sm pl-1">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed font-semibold px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">16.7% Total</span>
+<span class="text-xs text-tertiary font-medium">Structural Fail</span>
+</div>
+</div>
+<!-- Moderately Damaged Grade 3 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider pl-1">
+<span class="text-primary font-bold">Grade 3 Moderate</span>
+<span class="material-symbols-outlined text-primary text-base">broken_image</span>
+</div>
+<div class="my-space-xs pl-1">
+<span class="font-headline-xl text-headline-xl text-on-surface font-tabular-data tracking-tight">482</span>
+</div>
+<div class="flex items-center justify-between text-secondary font-body-sm text-body-sm pl-1">
+<span class="bg-primary-fixed text-on-primary-fixed font-semibold px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">11.3% Total</span>
+<span class="text-xs text-primary font-medium">Partial Loss</span>
+</div>
+</div>
+<!-- Minor Damage Grade 2 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider pl-1">
+<span class="text-secondary font-bold">Grade 2 Minor</span>
+<span class="material-symbols-outlined text-secondary text-base">home_repair_service</span>
+</div>
+<div class="my-space-xs pl-1">
+<span class="font-headline-xl text-headline-xl text-on-surface font-tabular-data tracking-tight">620</span>
+</div>
+<div class="flex items-center justify-between text-secondary font-body-sm text-body-sm pl-1">
+<span class="bg-surface-container-high text-on-surface-variant font-medium px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">14.5% Total</span>
+<span class="text-xs text-secondary font-medium">Habitable</span>
+</div>
+</div>
+<!-- Undamaged Grade 1 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-container"></div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider pl-1">
+<span class="text-on-surface font-bold">Grade 1 Intact</span>
+<span class="material-symbols-outlined text-primary-container text-base">verified</span>
+</div>
+<div class="my-space-xs pl-1">
+<span class="font-headline-xl text-headline-xl text-on-surface font-tabular-data tracking-tight">2,052</span>
+</div>
+<div class="flex items-center justify-between text-secondary font-body-sm text-body-sm pl-1">
+<span class="bg-surface-container-low text-primary font-semibold px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">47.9% Total</span>
+<span class="text-xs text-primary font-medium">Safe Haven</span>
+</div>
+</div>
+</section>
+<!-- Tactical Assessment Split: Geospatial Canvas & Sector Analytical Console -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- Left/Center: Interactive GIS Damage Canvas (7 Cols) -->
+<section class="xl:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-md relative">
+<!-- Canvas Bar: Basemap toggles & layer controls -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm bg-surface-container-low p-space-sm rounded-lg">
+<div class="flex items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold mr-1">Layer Overlays:</span>
+<button class="bg-primary text-on-primary font-label-sm text-label-sm px-space-sm py-1 rounded flex items-center gap-1 shadow-xs" type="button">
+<span class="material-symbols-outlined text-xs">apartment</span> Footprints
+            </button>
+<button class="bg-surface-container text-on-surface hover:bg-surface-container-high font-label-sm text-label-sm px-space-sm py-1 rounded flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-xs text-error">local_hospital</span> Critical Infra
+            </button>
+<button class="bg-surface-container text-on-surface hover:bg-surface-container-high font-label-sm text-label-sm px-space-sm py-1 rounded flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-xs text-primary">water</span> Flood Polyg. (1.2m+)
+            </button>
+<button class="bg-surface-container text-on-surface hover:bg-surface-container-high font-label-sm text-label-sm px-space-sm py-1 rounded flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-xs text-tertiary">grain</span> InSAR Coherence
+            </button>
+</div>
+<!-- Basemap Toggle -->
+<div class="flex items-center bg-surface-container-high rounded p-0.5">
+<button class="px-2 py-0.5 text-xs font-semibold rounded bg-surface-container-lowest text-on-surface shadow-xs" type="button">Optical</button>
+<button class="px-2 py-0.5 text-xs font-semibold rounded text-on-surface-variant hover:text-on-surface" type="button">NDWI Water</button>
+<button class="px-2 py-0.5 text-xs font-semibold rounded text-on-surface-variant hover:text-on-surface" type="button">False Color IR</button>
+</div>
+</div>
+<!-- Geospatial Viewport Simulation -->
+<div class="relative w-full h-[520px] rounded-lg overflow-hidden bg-inverse-surface shadow-inner flex flex-col justify-between">
+<!-- Background Synthetic Satellite Layer -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center opacity-70 filter saturate-150 contrast-125" data-location="Sundarbans Delta, Bangladesh" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCjlM6AtTsQLbNx1FfOtqQLoeybCMSrdOPgnwJM9DJAEY1tPwjR72g71G1ai1_unUQ-IAlhPHbgcCPYvhZMFC8xpTN88FxHc1xUYXTjUGEFKZmgAr90Bub4fDcSdNSwhAdcUrknyDtZjuFDWio8RZp2Oge5CudH5JKAqIO1uGkFIeuFKY5iHjnaZzgTn3na212IsLsjVxX-4SCR1lV7PoOUVa80UUPCt1PKhVedY_K9GEnW5v77sNc2')"></div>
+<!-- Synthetic Inundation and Damage Vector Overlay SVG -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<!-- Flood Plain Inundation Zone (NDWI &gt; 0.28) -->
+<polygon fill="rgba(0, 123, 185, 0.28)" points="120,40 380,110 520,310 440,490 80,480 30,220" stroke="#007bb9" stroke-dasharray="4 2" stroke-width="1.5"></polygon>
+<polygon fill="rgba(0, 123, 185, 0.18)" points="460,80 780,140 820,380 620,490 510,340" stroke="#007bb9" stroke-width="1"></polygon>
+<!-- Severed Bridge Span BRG-019 -->
+<line stroke="#ba1a1a" stroke-dasharray="6 3" stroke-width="4" x1="330" x2="410" y1="210" y2="235"></line>
+<!-- Building Footprint Clusters (Grade 5 Red, Grade 4 Orange, Grade 3 Amber, Grade 1 Blue/Green) -->
+<!-- Destroyed Cluster -->
+<rect fill="#ba1a1a" fill-opacity="0.85" height="18" rx="1" width="22" x="220" y="260"></rect>
+<rect fill="#ba1a1a" fill-opacity="0.85" height="14" rx="1" width="18" x="250" y="275"></rect>
+<rect fill="#ba1a1a" fill-opacity="0.85" height="20" rx="1" width="28" x="235" y="295"></rect>
+<rect fill="#6b38d4" fill-opacity="0.85" height="16" rx="1" width="16" x="280" y="285"></rect>
+<!-- Moderate / Severe Cluster -->
+<rect fill="#6b38d4" fill-opacity="0.85" height="24" rx="1" width="24" x="470" y="190"></rect>
+<rect fill="#006194" fill-opacity="0.85" height="18" rx="1" width="20" x="510" y="210"></rect>
+<rect fill="#ba1a1a" fill-opacity="0.85" height="22" rx="1" width="30" x="495" y="245"></rect>
+<rect fill="#006194" fill-opacity="0.85" height="14" rx="1" width="16" x="540" y="235"></rect>
+<!-- Intact Sector Cluster -->
+<rect fill="#007bb9" fill-opacity="0.85" height="22" rx="1" width="26" x="140" y="90"></rect>
+<rect fill="#007bb9" fill-opacity="0.85" height="28" rx="1" width="32" x="180" y="80"></rect>
+<rect fill="#007bb9" fill-opacity="0.85" height="20" rx="1" width="20" x="225" y="95"></rect>
+<!-- Hospital Focal Pin Target -->
+<circle class="animate-ping" cx="342" cy="184" fill="none" opacity="0.6" r="28" stroke="#ba1a1a" stroke-width="1.5"></circle>
+<circle cx="342" cy="184" fill="#ba1a1a" r="7"></circle>
+<circle cx="342" cy="184" fill="none" r="14" stroke="#ffffff" stroke-width="2"></circle>
+</svg>
+<!-- Top HUD: Coordinates & Operational Telemetry -->
+<div class="relative z-10 m-space-sm flex items-center justify-between">
+<div class="bg-inverse-surface/85 backdrop-blur-md px-space-md py-1.5 rounded text-inverse-on-surface flex items-center gap-space-md font-tabular-data text-tabular-data shadow-md">
+<span class="flex items-center gap-1 text-primary-fixed"><span class="w-2 h-2 rounded-full bg-error animate-pulse"></span> GIS Center: 21°44'38.2"N 89°18'24.6"E</span>
+<span class="text-outline-variant/40">|</span>
+<span class="text-surface-container-highest">Scale 1:4,500</span>
+<span class="text-outline-variant/40">|</span>
+<span class="text-surface-container-highest">Sensor: MSI 12-Band</span>
+</div>
+<!-- Map Tool Floating Quickdock -->
+<div class="bg-surface-container-lowest/90 backdrop-blur-md p-1 rounded-lg shadow-md flex items-center gap-1">
+<button class="w-7 h-7 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container rounded" title="Measure Distance" type="button">
+<span class="material-symbols-outlined text-sm">straighten</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container rounded" title="Polygon Area Inspection" type="button">
+<span class="material-symbols-outlined text-sm">pentagon</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container rounded" title="Swipe Dual Compare" type="button">
+<span class="material-symbols-outlined text-sm">compare</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container rounded" title="Reset Orientation" type="button">
+<span class="material-symbols-outlined text-sm">navigation</span>
+</button>
+</div>
+</div>
+<!-- Highlighted Structure Tactical Pin Modal / Inspector Card -->
+<div class="relative z-20 mx-space-sm mb-space-sm self-start max-w-lg bg-surface-container-lowest/95 backdrop-blur-md p-space-md rounded-xl shadow-xl">
+<div class="flex items-start justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="bg-error text-on-error px-1.5 py-0.5 rounded font-label-sm text-label-sm font-bold tracking-wide">GRADE 4 SEVERE</span>
+<span class="font-tabular-data text-tabular-data text-secondary font-semibold">#BLD-8821</span>
+<span class="bg-error-container text-on-error-container font-label-sm text-label-sm px-1.5 py-0.5 rounded font-bold">P1 Triage Priority</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mt-1">Coastal District Hospital - Wing B (Emergency / Maternity)</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Catastrophic roof collapse, internal load-bearing structural shearing, surrounded by 1.3m standing storm-surge floodwater.</p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-base">close</span>
+</button>
+</div>
+<!-- Mini Inspector Telemetry Grid -->
+<div class="grid grid-cols-3 gap-space-xs mt-space-sm bg-surface-container-low p-space-xs rounded-lg font-tabular-data text-tabular-data">
+<div class="flex flex-col">
+<span class="text-secondary font-label-sm text-label-sm">AI Confidence</span>
+<span class="font-bold text-on-surface">96.2% (ResNet-Seg)</span>
+</div>
+<div class="flex flex-col">
+<span class="text-secondary font-label-sm text-label-sm">Inundation Level</span>
+<span class="font-bold text-error">1.3m (Surge Flow)</span>
+</div>
+<div class="flex flex-col">
+<span class="text-secondary font-label-sm text-label-sm">Civilian Density</span>
+<span class="font-bold text-error">~65 trapped</span>
+</div>
+</div>
+<div class="mt-space-sm flex items-center justify-between pt-1">
+<span class="text-xs text-secondary flex items-center gap-1 font-body-sm text-body-sm"><span class="material-symbols-outlined text-xs text-primary">verified_user</span> Drone Recon Verified #UAV-04</span>
+<div class="flex items-center gap-1">
+<button class="bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-xs font-semibold px-2.5 py-1 rounded" type="button">View Crop</button>
+<button class="bg-error hover:bg-on-error-container text-on-error text-xs font-bold px-3 py-1 rounded flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-xs">emergency</span> Dispatch SRT-Alpha
+                </button>
+</div>
+</div>
+</div>
+<!-- Bottom Map Legend Bar -->
+<div class="relative z-10 m-space-sm self-end bg-inverse-surface/85 backdrop-blur-md px-space-md py-1.5 rounded text-inverse-on-surface flex items-center gap-space-md text-xs">
+<span class="text-surface-container-highest font-bold uppercase text-[10px]">HAZUS / EMS-98 Severity:</span>
+<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-error rounded-xs"></span> Destroyed</div>
+<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-tertiary rounded-xs"></span> Severe</div>
+<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-primary rounded-xs"></span> Moderate</div>
+<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-primary-container rounded-xs"></span> Intact</div>
+<div class="flex items-center gap-1 ml-2"><span class="w-2.5 h-2.5 bg-primary/40 rounded-xs"></span> Waterlogged</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Analytical Breakdown, Class Distribution & AI Confidence (4 Cols) -->
+<section class="xl:col-span-4 flex flex-col gap-space-md">
+<!-- Damage by Infrastructure Class -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-base">category</span>
+              Damage by Asset Class
+            </h3>
+<span class="text-xs bg-surface-container-low text-secondary px-2 py-0.5 rounded font-tabular-data text-tabular-data">Sector 4 Inventory</span>
+</div>
+<!-- Stacked Categorical Bars -->
+<div class="flex flex-col gap-space-sm font-body-sm text-body-sm">
+<!-- Residential Dwellings -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-secondary">cottage</span> Residential Dwellings
+                </span>
+<span class="font-tabular-data text-tabular-data font-semibold text-error">820 impacted <span class="text-secondary font-normal">(72% High)</span></span>
+</div>
+<div class="w-full h-2 rounded bg-surface-container-low overflow-hidden flex">
+<div class="bg-error h-full" style="width: 48%"></div>
+<div class="bg-tertiary h-full" style="width: 24%"></div>
+<div class="bg-primary h-full" style="width: 18%"></div>
+<div class="bg-surface-container-highest h-full" style="width: 10%"></div>
+</div>
+</div>
+<!-- Bridges & Transport Networks -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-secondary">alt_route</span> Bridges &amp; Access Spans
+                </span>
+<span class="font-tabular-data text-tabular-data font-semibold text-error">42 severed <span class="text-secondary font-normal">(8 Cut off)</span></span>
+</div>
+<div class="w-full h-2 rounded bg-surface-container-low overflow-hidden flex">
+<div class="bg-error h-full" style="width: 65%"></div>
+<div class="bg-tertiary h-full" style="width: 25%"></div>
+<div class="bg-surface-container-highest h-full" style="width: 10%"></div>
+</div>
+</div>
+<!-- Commercial / Industrial Units -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-secondary">storefront</span> Commercial / Warehousing
+                </span>
+<span class="font-tabular-data text-tabular-data font-semibold text-on-surface">142 impacted <span class="text-secondary font-normal">(34% High)</span></span>
+</div>
+<div class="w-full h-2 rounded bg-surface-container-low overflow-hidden flex">
+<div class="bg-tertiary h-full" style="width: 34%"></div>
+<div class="bg-primary h-full" style="width: 40%"></div>
+<div class="bg-surface-container-highest h-full" style="width: 26%"></div>
+</div>
+</div>
+<!-- Educational & Shelters -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-secondary">school</span> Schools &amp; Designated Shelters
+                </span>
+<span class="font-tabular-data text-tabular-data font-semibold text-tertiary">24 impacted <span class="text-error font-semibold">(4 Critical)</span></span>
+</div>
+<div class="w-full h-2 rounded bg-surface-container-low overflow-hidden flex">
+<div class="bg-error h-full" style="width: 20%"></div>
+<div class="bg-tertiary h-full" style="width: 45%"></div>
+<div class="bg-primary-container h-full" style="width: 35%"></div>
+</div>
+</div>
+<!-- Healthcare & Emergency -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-error">local_hospital</span> Healthcare Facilities
+                </span>
+<span class="font-tabular-data text-tabular-data font-semibold text-error">6 impacted <span class="text-error font-bold">(2 Critical)</span></span>
+</div>
+<div class="w-full h-2 rounded bg-surface-container-low overflow-hidden flex">
+<div class="bg-error h-full" style="width: 33%"></div>
+<div class="bg-tertiary h-full" style="width: 33%"></div>
+<div class="bg-primary h-full" style="width: 34%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Ensemble Validation & High-Confidence Metrics -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-base">psychology</span>
+              AI Verification Telemetry
+            </h3>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm px-1.5 py-0.5 rounded font-bold">94.6% Mean Conf</span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant">Model Architecture:</span>
+<span class="font-semibold text-on-surface font-tabular-data text-tabular-data">ResNet-50 + Siamese SegFormer</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant">Drone Ground-Truth Matches:</span>
+<span class="font-semibold text-primary font-tabular-data text-tabular-data">182 / 185 (98.4% alignment)</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant">InSAR Decorrelation Threshold:</span>
+<span class="font-semibold text-on-surface font-tabular-data text-tabular-data">γ &lt; 0.31 (High Confidence)</span>
+</div>
+</div>
+<!-- Impact Projections Banner -->
+<div class="grid grid-cols-2 gap-space-sm mt-1">
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase">Displaced Civilians</span>
+<span class="font-headline-md text-headline-md text-error font-tabular-data font-bold mt-0.5">~14,800</span>
+<span class="text-xs text-on-surface-variant">Across 6 wards</span>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase">Est. Asset Loss</span>
+<span class="font-headline-md text-headline-md text-on-surface font-tabular-data font-bold mt-0.5">$84.2M</span>
+<span class="text-xs text-on-surface-variant">Replacement value</span>
+</div>
+</div>
+</div>
+<!-- High Risk Geo-Alert Card -->
+<div class="bg-error-container text-on-error-container p-space-md rounded-xl shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-error text-lg">crisis_alert</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-error-container">Critical Route Isolation Alert</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-error-container/90">
+            Secondary surge barrier failure at coordinates <span class="font-tabular-data text-tabular-data font-bold">21°44'11"N</span> has isolated <strong class="underline">3 critical shelters</strong> in Ward 9. Surface vehicular access completely severed. Marine or aerial airdrop required within 4 hours.
+          </p>
+<div class="flex items-center gap-space-xs mt-1">
+<button class="bg-error text-on-error hover:bg-on-error-container font-label-sm text-label-sm px-space-md py-1 rounded font-bold shadow-xs" type="button">
+              View Ward 9 Corridor
+            </button>
+<button class="bg-surface-container-lowest/80 text-on-surface hover:bg-surface-container-lowest font-label-sm text-label-sm px-space-sm py-1 rounded font-semibold" type="button">
+              Log Incident
+            </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Detailed Asset Damage Inventory Table -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-md">
+<!-- Table Header & Filter Toolbar -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-md">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Asset Damage Assessment Inventory</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time AI classified structural features with flood telemetry and rescue queue routing.</p>
+</div>
+<!-- Filter Controls -->
+<div class="flex items-center gap-space-sm flex-wrap">
+<!-- Search box -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-base">search</span>
+<input class="w-full pl-8 pr-space-sm py-1 text-xs bg-surface-container-low text-on-surface rounded-lg outline-none focus:ring-1 focus:ring-primary" placeholder="Filter by ID, name, road..." type="text"/>
+</div>
+<!-- Type Dropdown -->
+<select class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-sm py-1 rounded-lg outline-none cursor-pointer">
+<option>All Asset Types</option>
+<option>Healthcare &amp; Clinics</option>
+<option>Schools &amp; Shelters</option>
+<option>Bridges &amp; Transport</option>
+<option>Residential Dwellings</option>
+<option>Water Treatment Plants</option>
+</select>
+<!-- Severity Filter -->
+<select class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-sm py-1 rounded-lg outline-none cursor-pointer">
+<option>All Severities (Grades 1-5)</option>
+<option>Grade 5 (Destroyed)</option>
+<option>Grade 4 (Severe)</option>
+<option>Grade 3 (Moderate)</option>
+<option>Inundated (&gt;1.0m)</option>
+</select>
+<button class="bg-surface-container-low hover:bg-surface-container text-on-surface font-label-sm text-label-sm p-1.5 rounded-lg flex items-center" title="Refresh STAC Table" type="button">
+<span class="material-symbols-outlined text-base">refresh</span>
+</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left font-body-sm text-body-sm border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-2.5 px-space-sm rounded-l">
+<input class="rounded accent-primary" type="checkbox"/>
+</th>
+<th class="py-2.5 px-space-sm">Asset ID &amp; Location</th>
+<th class="py-2.5 px-space-sm">Category</th>
+<th class="py-2.5 px-space-sm">Damage Grade &amp; Failure Mode</th>
+<th class="py-2.5 px-space-sm">Flood Depth</th>
+<th class="py-2.5 px-space-sm">AI Conf.</th>
+<th class="py-2.5 px-space-sm">Coordinates</th>
+<th class="py-2.5 px-space-sm">Rescue Status</th>
+<th class="py-2.5 px-space-sm rounded-r text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="text-on-surface">
+<!-- Row 1: Hospital (Grade 4) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-sm">
+<input checked="" class="rounded accent-primary" type="checkbox"/>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">BLD-8821</span>
+<span class="text-xs text-on-surface-variant truncate max-w-xs">Coastal District Hospital - Wing B</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-xs font-semibold flex items-center w-max gap-1">
+<span class="material-symbols-outlined text-xs">local_hospital</span> Medical
+                </span>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="font-semibold text-error font-tabular-data text-tabular-data">Grade 4: Severe</span>
+<span class="text-xs text-secondary">(Roof Shearing)</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container-high text-error font-bold px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">1.3m (Surge)</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="font-tabular-data text-tabular-data font-semibold text-primary">96.2%</span>
+</td>
+<td class="py-space-sm px-space-sm font-tabular-data text-tabular-data text-secondary">
+                21.7439°N, 89.3068°E
+              </td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-error text-on-error font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 w-max">
+<span class="w-1.5 h-1.5 rounded-full bg-on-error animate-ping"></span> Enqueued P1-01
+                </span>
+</td>
+<td class="py-space-sm px-space-sm text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container rounded text-primary" title="Locate on Map" type="button">
+<span class="material-symbols-outlined text-base">my_location</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="View Satellite Crop" type="button">
+<span class="material-symbols-outlined text-base">zoom_in</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="Inspect Telemetry" type="button">
+<span class="material-symbols-outlined text-base">analytics</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Bridge Severance (Grade 5) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-sm">
+<input checked="" class="rounded accent-primary" type="checkbox"/>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">BRG-0019</span>
+<span class="text-xs text-on-surface-variant truncate max-w-xs">Old Tidal Sluice Causeway Bridge</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container text-on-surface px-2 py-0.5 rounded text-xs font-semibold flex items-center w-max gap-1">
+<span class="material-symbols-outlined text-xs">alt_route</span> Transport
+                </span>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="font-semibold text-error font-tabular-data text-tabular-data">Grade 5: Destroyed</span>
+<span class="text-xs text-secondary">(Span Washed Away)</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container-high text-error font-bold px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">2.8m (Channel)</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="font-tabular-data text-tabular-data font-semibold text-primary">98.9%</span>
+</td>
+<td class="py-space-sm px-space-sm font-tabular-data text-tabular-data text-secondary">
+                21.7381°N, 89.2942°E
+              </td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 w-max">
+                  Route Severed
+                </span>
+</td>
+<td class="py-space-sm px-space-sm text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container rounded text-primary" title="Locate on Map" type="button">
+<span class="material-symbols-outlined text-base">my_location</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="View Satellite Crop" type="button">
+<span class="material-symbols-outlined text-base">zoom_in</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="Inspect Telemetry" type="button">
+<span class="material-symbols-outlined text-base">analytics</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: School Shelter (Grade 3) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-sm">
+<input checked="" class="rounded accent-primary" type="checkbox"/>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">SCH-0402</span>
+<span class="text-xs text-on-surface-variant truncate max-w-xs">Sector 4 Higher Secondary Shelter</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container-high text-on-surface px-2 py-0.5 rounded text-xs font-semibold flex items-center w-max gap-1">
+<span class="material-symbols-outlined text-xs">school</span> Education
+                </span>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="font-semibold text-tertiary font-tabular-data text-tabular-data">Grade 3: Moderate</span>
+<span class="text-xs text-secondary">(Perimeter Breached)</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container text-on-surface font-semibold px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">0.6m (Courtyard)</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="font-tabular-data text-tabular-data font-semibold text-primary">93.4%</span>
+</td>
+<td class="py-space-sm px-space-sm font-tabular-data text-tabular-data text-secondary">
+                21.7512°N, 89.3120°E
+              </td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 w-max">
+                  Enqueued P2-06
+                </span>
+</td>
+<td class="py-space-sm px-space-sm text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container rounded text-primary" title="Locate on Map" type="button">
+<span class="material-symbols-outlined text-base">my_location</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="View Satellite Crop" type="button">
+<span class="material-symbols-outlined text-base">zoom_in</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="Inspect Telemetry" type="button">
+<span class="material-symbols-outlined text-base">analytics</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Residential Cluster B (Grade 5) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-sm">
+<input class="rounded accent-primary" type="checkbox"/>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">RES-8840</span>
+<span class="text-xs text-on-surface-variant truncate max-w-xs">Riverside Embankment Cluster B (32 units)</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container-low text-secondary px-2 py-0.5 rounded text-xs font-semibold flex items-center w-max gap-1">
+<span class="material-symbols-outlined text-xs">cottage</span> Residential
+                </span>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="font-semibold text-error font-tabular-data text-tabular-data">Grade 5: Destroyed</span>
+<span class="text-xs text-secondary">(Complete Inundation)</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container-high text-error font-bold px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">2.1m (High Surge)</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="font-tabular-data text-tabular-data font-semibold text-primary">97.8%</span>
+</td>
+<td class="py-space-sm px-space-sm font-tabular-data text-tabular-data text-secondary">
+                21.7290°N, 89.2811°E
+              </td>
+<td class="py-space-sm px-space-sm">
+<button class="bg-primary hover:bg-primary-container text-on-primary font-label-sm text-label-sm px-2 py-0.5 rounded font-semibold" type="button">
+                  + Add to Rescue
+                </button>
+</td>
+<td class="py-space-sm px-space-sm text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container rounded text-primary" title="Locate on Map" type="button">
+<span class="material-symbols-outlined text-base">my_location</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="View Satellite Crop" type="button">
+<span class="material-symbols-outlined text-base">zoom_in</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="Inspect Telemetry" type="button">
+<span class="material-symbols-outlined text-base">analytics</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Community Water Station (Grade 2) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-sm">
+<input class="rounded accent-primary" type="checkbox"/>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">WTR-0114</span>
+<span class="text-xs text-on-surface-variant truncate max-w-xs">Municipal Water Filtration Booster Plant</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container text-on-surface px-2 py-0.5 rounded text-xs font-semibold flex items-center w-max gap-1">
+<span class="material-symbols-outlined text-xs">water_drop</span> Utility
+                </span>
+</td>
+<td class="py-space-sm px-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="font-semibold text-on-surface font-tabular-data text-tabular-data">Grade 2: Minor</span>
+<span class="text-xs text-secondary">(Electrical Substation Dry)</span>
+</div>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container-low text-secondary font-medium px-1.5 py-0.5 rounded font-tabular-data text-tabular-data">0.2m (Drainable)</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="font-tabular-data text-tabular-data font-semibold text-primary">91.7%</span>
+</td>
+<td class="py-space-sm px-space-sm font-tabular-data text-tabular-data text-secondary">
+                21.7588°N, 89.3245°E
+              </td>
+<td class="py-space-sm px-space-sm">
+<span class="bg-surface-container-low text-secondary font-label-sm text-label-sm px-2 py-0.5 rounded-full font-medium uppercase tracking-wider flex items-center gap-1 w-max">
+                  Operational
+                </span>
+</td>
+<td class="py-space-sm px-space-sm text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container rounded text-primary" title="Locate on Map" type="button">
+<span class="material-symbols-outlined text-base">my_location</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="View Satellite Crop" type="button">
+<span class="material-symbols-outlined text-base">zoom_in</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded text-on-surface-variant" title="Inspect Telemetry" type="button">
+<span class="material-symbols-outlined text-base">analytics</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination and Record Counter -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-space-sm pt-space-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="font-tabular-data text-tabular-data">Showing 1 to 5 of 4,280 surveyed structural footprints (Filter applied: Sector 4)</span>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 bg-surface-container-low rounded hover:bg-surface-container text-xs font-semibold disabled:opacity-40" disabled="" type="button">Previous</button>
+<button class="px-2.5 py-1 bg-primary text-on-primary rounded text-xs font-semibold" type="button">1</button>
+<button class="px-2.5 py-1 bg-surface-container-low rounded hover:bg-surface-container text-xs font-semibold" type="button">2</button>
+<button class="px-2.5 py-1 bg-surface-container-low rounded hover:bg-surface-container text-xs font-semibold" type="button">3</button>
+<span class="px-1 text-xs">...</span>
+<button class="px-2.5 py-1 bg-surface-container-low rounded hover:bg-surface-container text-xs font-semibold" type="button">856</button>
+<button class="px-2 py-1 bg-surface-container-low rounded hover:bg-surface-container text-xs font-semibold" type="button">Next</button>
+</div>
+</div>
+</section>
+<!-- Visual Satellite Evidence Modal Crop Showcase (3-Card Carousel) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="relative h-44 w-full bg-cover bg-center" data-alt="High resolution commercial satellite optical crop of a concrete hospital complex with extensive roof destruction, debris piles, and surrounding muddy flood water in Cyclone Remal delta zone." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrOGyBxIuOzm5pYYn3kp8LQAT_qLjX9Pokv4ky5Ab8V2EADY6hK3bmrr-BjcAJA3oJmTamVhbtHDHGty-eVtY4tQmfs8_3hXSDN_ltJe9z-PXt_hh12AAHnWtHql1TNVWaftA22ALYOP7X2ee5jylaKV0CYBsZoWJyrCv4yM-5mqih5S5z0feA81pfpmovyFQ7RJGvCnaoxTTsLo93E8RQIYjzQrNVNaHgd9YZXrQWLs4LTyOfdINu')">
+<span class="absolute top-2 left-2 bg-error text-on-error font-label-sm text-label-sm px-2 py-0.5 rounded font-bold">#BLD-8821 Evidence</span>
+<span class="absolute bottom-2 right-2 bg-inverse-surface/80 text-inverse-on-surface font-tabular-data text-[10px] px-1.5 py-0.5 rounded backdrop-blur-sm">PlanetScope 3m Ortho</span>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-1">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Wing B Structural Collapse</span>
+<span class="text-xs text-error font-bold font-tabular-data">Conf: 96.2%</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-1">Multi-pass difference indicates 74% surface perimeter shearing compared to baseline pre-cyclone tile 2024-05-18.</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-xs">
+<span class="text-secondary font-tabular-data">T+18h Post-Event</span>
+<span class="text-primary font-semibold hover:underline cursor-pointer">Spectral Decomp →</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="relative h-44 w-full bg-cover bg-center" data-alt="Satellite imagery showing a concrete bridge severed by intense river currents, bridge deck displaced in water, surrounded by flooded tropical marshlands." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCOrTdvneOOoUT-wWcdwIToZiTAzMhd80F3wXcCJLJiwetwwE5DPT_tF9Z9LJlFzixB1I-vefDu6Ty6IhSQrO9FyK8Pr6Lt0AZbLu6aNBmZJd-L_DLfjBgU9A8ZqXYo_WEsFna2-Rclz0KLourXwSU6ivf6uABKxKMwUGkF6ygt5UImu_IiJGTrWN06mR5nP9PbQzB_eqcnKxWYCHzIcNVnBq9UwIw0NG7-Wi1DbCRTiYzyxqkawL55')">
+<span class="absolute top-2 left-2 bg-error text-on-error font-label-sm text-label-sm px-2 py-0.5 rounded font-bold">#BRG-0019 Evidence</span>
+<span class="absolute bottom-2 right-2 bg-inverse-surface/80 text-inverse-on-surface font-tabular-data text-[10px] px-1.5 py-0.5 rounded backdrop-blur-sm">Sentinel-2 MSI 10m</span>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-1">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Span Rupture &amp; Road Cut</span>
+<span class="text-xs text-error font-bold font-tabular-data">Conf: 98.9%</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-1">Major arterial causeway severed. InSAR phase coherence dropped to 0.12 confirming structural disconnection.</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-xs">
+<span class="text-secondary font-tabular-data">T+12h Post-Event</span>
+<span class="text-primary font-semibold hover:underline cursor-pointer">Spectral Decomp →</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="relative h-44 w-full bg-cover bg-center" data-alt="Overhead drone orthophoto mosaic of a rural flooded settlement with corrugated sheet roofs submerged under turbid brown cyclone water in coastal delta." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAxFj2k6R0ExSiOFjC9Ozj9phDUxK3fPdxSvYtXTt70mcqt9RfKYHaXBoA3vWswwKfb56IKyl2SA_fWbroaI9qYTDIBo2514DADsLekdHoHvfwgS3zhxmSL3YbtBsh5IIff6qZVQE0-VvPEU9__dMNxIloRB2ttzsIHDLhRCuMyreg-6gW5Sb3Q1pVvFV1E0D6J99nCFU6RQrqSgapCgCSAS7xgvAvqM9Wrv0lfZ8CF03amJ8Zgdna3')">
+<span class="absolute top-2 left-2 bg-tertiary text-on-tertiary font-label-sm text-label-sm px-2 py-0.5 rounded font-bold">#RES-8840 Evidence</span>
+<span class="absolute bottom-2 right-2 bg-inverse-surface/80 text-inverse-on-surface font-tabular-data text-[10px] px-1.5 py-0.5 rounded backdrop-blur-sm">UAV Recon Flight #04</span>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-1">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Embankment Residential Surge</span>
+<span class="text-xs text-tertiary font-bold font-tabular-data">Conf: 97.8%</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-1">High-resolution drone orthomosaic confirms 32 thatch and tin dwelling structures inundated past roof level.</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-xs">
+<span class="text-secondary font-tabular-data">T+6h Post-Event</span>
+<span class="text-primary font-semibold hover:underline cursor-pointer">Spectral Decomp →</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Tactical Command Action Dock -->
+<aside class="sticky bottom-0 z-30 bg-inverse-surface text-inverse-on-surface px-space-lg py-space-sm shadow-xl flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary-fixed animate-pulse"></span>
+<span class="font-headline-sm text-headline-sm font-bold text-surface-container-lowest">Selected: 3 High-Impact Structures</span>
+</div>
+<span class="text-secondary-fixed-dim hidden md:inline text-xs font-tabular-data">(BLD-8821, BRG-0019, SCH-0402)</span>
+</div>
+<div class="flex items-center gap-space-xs flex-wrap">
+<button class="bg-surface-variant/20 hover:bg-surface-variant/30 text-surface-container-lowest font-label-sm text-label-sm px-space-md py-1.5 rounded-lg flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">flight_takeoff</span>
+<span>Task UAV Flight Recon</span>
+</button>
+<button class="bg-surface-variant/20 hover:bg-surface-variant/30 text-surface-container-lowest font-label-sm text-label-sm px-space-md py-1.5 rounded-lg flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">share_location</span>
+<span>Export GeoJSON Layer</span>
+</button>
+<button class="bg-error hover:bg-on-error-container text-on-error font-label-sm text-label-sm px-space-lg py-1.5 rounded-lg font-bold flex items-center gap-1.5 shadow-md transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">assignment_turned_in</span>
+<span>Push Batch to Rescue Priority Triage</span>
+</button>
+</div>
+</aside>
+</div>
+<script>
+  // Simple interactive micro-behaviors for Damage Assessment Canvas
+  document.addEventListener('DOMContentLoaded', () => {
+    // Map view button interactions
+    const filterButtons = document.querySelectorAll('button');
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // Prevent default form submits
+        if (!btn.getAttribute('type') || btn.getAttribute('type') === 'button') {
+          // Subtle active feedback
+          btn.style.transform = 'scale(0.98)';
+          setTimeout(() => {
+            btn.style.transform = '';
+          }, 100);
+        }
+      });
+    });
+  });
+</script></main></div></body></html>
