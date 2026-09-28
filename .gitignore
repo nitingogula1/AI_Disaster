@@ -23,6 +23,8 @@ dist/
 
 # SQLite Databases & temporary storage
 *.db
+backend/test_out/
+test_out/
 *.sqlite
 *.sqlite3
 backend/sentinelaid.db*

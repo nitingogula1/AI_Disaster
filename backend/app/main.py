@@ -12,7 +12,7 @@ from app.api import (
     auth, users, dashboard, disasters, incidents,
     gis, satellite, ai_detection, damage, rescue,
     routes, alerts, reports, operations, commands,
-    system, export
+    system, export, places
 )
 
 setup_logging()
@@ -125,6 +125,7 @@ app.include_router(operations.router, prefix=api_v1)
 app.include_router(commands.router, prefix=api_v1)
 app.include_router(system.router, prefix=api_v1)
 app.include_router(export.router, prefix=api_v1)
+app.include_router(places.router, prefix=api_v1)
 
 @app.get("/api/satellite/test-planetary-computer", tags=["Satellite"])
 async def test_planetary_computer_direct():

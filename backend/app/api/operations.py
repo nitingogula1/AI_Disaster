@@ -3,7 +3,16 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.operation import Operation
+from pydantic import BaseModel, Field
 from app.schemas.common import success_response
+from app.services.satellite_hub_service import satellite_hub_service
+
+class OperationAOIRequest(BaseModel):
+    name: Optional[str] = None
+    region: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    bbox: Optional[List[float]] = None  # [min_lon, min_lat, max_lon, max_lat]
 
 router = APIRouter(prefix="/operations", tags=["Operations"])
 
@@ -123,3 +132,73 @@ def activate_operation(id: str, db: Session = Depends(get_db)):
         "status": target.status,
         "target_bbox": target.target_bbox or DEFAULT_TARGET_BBOX
     }, message=f"Operation {target.id} is now ACTIVE")
+
+@router.post("/{id}/aoi")
+def set_operation_aoi(id: str, payload: OperationAOIRequest, db: Session = Depends(get_db)):
+    """Sets or updates the operation location, name, region, and target AOI bounding box."""
+    target = db.query(Operation).filter((Operation.id == id) | (Operation.id == "EVT-8821-BGD") | (Operation.id == "CY-2025-05B")).first()
+    if not target:
+        target = Operation(
+            id=id,
+            name=payload.name or f"Operation {id}",
+            region=payload.region or "Disaster Zone",
+            severity="CRITICAL",
+            status="ACTIVE"
+        )
+        db.add(target)
+
+    if payload.name:
+        target.name = payload.name
+    if payload.region:
+        target.region = payload.region
+
+    bbox = payload.bbox
+    if not bbox and payload.latitude is not None and payload.longitude is not None:
+        delta = 0.02
+        bbox = [
+            round(payload.longitude - delta, 4),
+            round(payload.latitude - delta, 4),
+            round(payload.longitude + delta, 4),
+            round(payload.latitude + delta, 4),
+        ]
+
+    if bbox:
+        if len(bbox) != 4:
+            raise HTTPException(status_code=400, detail="bbox must be [min_lon, min_lat, max_lon, max_lat]")
+        w, s, e, n = bbox
+        if not (-180 <= w < e <= 180 and -90 <= s < n <= 90):
+            raise HTTPException(status_code=400, detail="Invalid coordinates: must satisfy -180 <= west < east <= 180 and -90 <= south < north <= 90")
+        target.target_bbox = {
+            "min_lon": float(w),
+            "min_lat": float(s),
+            "max_lon": float(e),
+            "max_lat": float(n)
+        }
+        # Also sync with satellite hub AOI
+        satellite_hub_service.set_aoi(
+            operation_id=target.id,
+            bbox=[float(w), float(s), float(e), float(n)],
+            db=db,
+            region=target.region,
+            incident_name=target.name
+        )
+
+    db.commit()
+    db.refresh(target)
+
+    bbox_list = [
+        target.target_bbox["min_lon"],
+        target.target_bbox["min_lat"],
+        target.target_bbox["max_lon"],
+        target.target_bbox["max_lat"]
+    ] if target.target_bbox else None
+
+    return success_response(data={
+        "id": target.id,
+        "name": target.name,
+        "region": target.region,
+        "status": target.status,
+        "target_bbox": target.target_bbox,
+        "bbox": bbox_list
+    }, message=f"Operation {target.id} AOI updated successfully")
+

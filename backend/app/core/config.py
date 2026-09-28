@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     PLANETARY_COMPUTER_URL: str = "https://planetarycomputer.microsoft.com/api/stac/v1"
     ROUTING_PROVIDER_URL: str = ""
     ROUTING_PROVIDER_KEY: str = ""
+    GOOGLE_MAPS_API_KEY: str = Field(default="", validation_alias=AliasChoices("GOOGLE_MAPS_API_KEY", "GOOGLE_PLACES_API_KEY"))
     AI_MODEL_PATH: str = ""
 
     @field_validator("DEBUG", mode="before")
