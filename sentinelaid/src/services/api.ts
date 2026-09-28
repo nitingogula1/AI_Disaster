@@ -589,6 +589,37 @@ export const satelliteService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  async compareScenes(payload: {
+    pre_scene_id: string;
+    post_scene_id: string;
+    method?: string;
+    threshold?: number;
+  }) {
+    const res = await api.post('/satellite/compare', payload);
+    return res.data.data;
+  }
+};
+
+export interface PlaceItem {
+  name: string;
+  latitude: number;
+  longitude: number;
+  bbox: [number, number, number, number];
+  country?: string;
+  region?: string;
+}
+
+export const placesService = {
+  async searchPlaces(query: string): Promise<{ places: PlaceItem[]; provider: string; google_configured: boolean; message: string }> {
+    const res = await api.get('/places/search', { params: { q: query } });
+    return res.data.data;
+  },
+
+  async getStatus(): Promise<{ google_maps_configured: boolean; provider: string; manual_entry_supported: boolean; instructions: string }> {
+    const res = await api.get('/places/status');
+    return res.data.data;
   }
 };
 

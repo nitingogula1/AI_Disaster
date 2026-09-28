@@ -26,7 +26,8 @@ from app.schemas.satellite import (
     PreprocessingRequest,
     PreprocessingResponse,
     FloodAnalysisExecutionRequest,
-    IndexRequest
+    IndexRequest,
+    CompareScenesRequest
 )
 from app.schemas.common import success_response
 
@@ -326,6 +327,36 @@ def get_scene_image(id: str, type: str = "rgb", db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error rendering image for scene '{id}': {str(e)}")
     raise HTTPException(status_code=404, detail=f"Image product '{type}' for scene '{id}' not found")
+
+@router.get("/previews/{filename}")
+def get_preview_file(filename: str):
+    """Serves generated raster previews, mask overlays, and thumbnails."""
+    safe_name = os.path.basename(filename)
+    for folder in [raster_engine.previews_dir, settings.UPLOAD_DIR]:
+        path = os.path.join(folder, safe_name)
+        if os.path.isfile(path):
+            return FileResponse(path, media_type="image/png")
+    raise HTTPException(status_code=404, detail=f"Preview file '{safe_name}' not found")
+
+@router.post("/compare")
+def compare_satellite_scenes(payload: CompareScenesRequest, db: Session = Depends(get_db)):
+    """Aligns pre- and post-disaster rasters, measures surface water from actual pixels, and calculates new inundation."""
+    try:
+        result = raster_engine.compare_scenes(
+            pre_scene_id=payload.pre_scene_id,
+            post_scene_id=payload.post_scene_id,
+            method=payload.method or "MNDWI",
+            threshold=payload.threshold if payload.threshold is not None else 0.05
+        )
+        return success_response(data=result, message="Flood comparison calculated successfully from raster pixels")
+    except FileNotFoundError as fnf:
+        raise HTTPException(status_code=404, detail=str(fnf))
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except NotImplementedError as nie:
+        raise HTTPException(status_code=501, detail=str(nie))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Flood comparison failed: {str(e)}")
 
 # -------------------------------------------------------------
 # 6. Direct Ingestion & Roles

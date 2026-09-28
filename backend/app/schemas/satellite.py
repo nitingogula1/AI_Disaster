@@ -130,3 +130,10 @@ class PreprocessingResponse(BaseModel):
 class IndexRequest(BaseModel):
     scene_id: str = Field(..., min_length=1)
     threshold: float = Field(0.0, ge=-1, le=1)
+
+class CompareScenesRequest(BaseModel):
+    pre_scene_id: str = Field(..., min_length=1)
+    post_scene_id: str = Field(..., min_length=1)
+    method: Optional[str] = Field("MNDWI", description="MNDWI or NDWI")
+    threshold: Optional[float] = Field(0.05, ge=-1.0, le=1.0)
+

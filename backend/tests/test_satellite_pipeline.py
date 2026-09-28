@@ -271,3 +271,68 @@ def test_product_xml_calibration_uses_declared_offsets():
     assert calibration["B11"] == (0.0001, -0.1)
     with pytest.raises(ValueError, match="offset"):
         PlanetaryComputerProvider.parse_calibration("<root><BOA_QUANTIFICATION_VALUE>10000</BOA_QUANTIFICATION_VALUE></root>", "05.10")
+
+def test_places_search_coordinates_and_status():
+    resp = client.get("/api/v1/places/search?q=22.8456,%2089.5403")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["provider"] == "coordinates"
+    assert len(data["places"]) == 1
+    place = data["places"][0]
+    assert abs(place["latitude"] - 22.8456) < 0.001
+    assert abs(place["longitude"] - 89.5403) < 0.001
+    assert len(place["bbox"]) == 4
+
+    status_resp = client.get("/api/v1/places/status")
+    assert status_resp.status_code == 200
+    status_data = status_resp.json()["data"]
+    assert "google_maps_configured" in status_data
+    assert "manual_entry_supported" in status_data
+
+def test_compare_scenes_dry_vs_dry(tmp_path, db):
+    pre_sid = register(db, fixture_raster(tmp_path/"pre_dry.tif", water=False))
+    post_sid = register(db, fixture_raster(tmp_path/"post_dry.tif", water=False))
+
+    res = raster_engine.compare_scenes(pre_sid, post_sid, method="MNDWI", threshold=0.0)
+    assert res["pre_area_km2"] == 0.0
+    assert res["post_area_km2"] == 0.0
+    assert res["newly_flooded_area_km2"] == 0.0
+    assert res["polygon_count"] == 0
+    assert res["difference_geojson"]["features"] == []
+    assert res["processing_status"] == "COMPLETED"
+
+def test_compare_scenes_dry_vs_wet(tmp_path, db):
+    pre_sid = register(db, fixture_raster(tmp_path/"pre_dry2.tif", water=False))
+    post_sid = register(db, fixture_raster(tmp_path/"post_wet.tif", water=True))
+
+    res = raster_engine.compare_scenes(pre_sid, post_sid, method="MNDWI", threshold=0.0)
+    assert res["pre_area_km2"] == 0.0
+    assert res["post_area_km2"] > 0.0
+    assert res["newly_flooded_area_km2"] > 0.0
+    assert abs(res["newly_flooded_area_km2"] - res["post_area_km2"]) < 1e-6
+    assert res["percentage_change"] == 100.0
+    assert res["polygon_count"] >= 1
+    assert len(res["difference_geojson"]["features"]) >= 1
+    assert res["difference_geojson"]["features"][0]["geometry"]["type"] in ("Polygon", "MultiPolygon")
+    assert Path(raster_engine.previews_dir, res["difference_mask_preview"].split("/")[-1]).is_file()
+
+def test_compare_scenes_api_endpoint(tmp_path, db):
+    pre_sid = register(db, fixture_raster(tmp_path/"api_pre.tif", water=False))
+    post_sid = register(db, fixture_raster(tmp_path/"api_post.tif", water=True))
+
+    resp = client.post("/api/v1/satellite/compare", json={
+        "pre_scene_id": pre_sid,
+        "post_scene_id": post_sid,
+        "method": "MNDWI",
+        "threshold": 0.0
+    })
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["success"] is True
+    data = body["data"]
+    assert data["pre_scene"]["id"] == pre_sid
+    assert data["post_scene"]["id"] == post_sid
+    assert data["newly_flooded_area_km2"] > 0.0
+    assert data["polygon_count"] >= 1
+    assert "difference_mask_preview" in data
+
