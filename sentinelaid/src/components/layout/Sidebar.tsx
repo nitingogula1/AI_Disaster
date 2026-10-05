@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, AlertTriangle, Satellite, Brain, ClipboardList,
-  ShieldAlert, Map, Route, FileText, Bell, Users, UserCog, Settings
+  ShieldAlert, Map, Route, FileText, Bell, Users, UserCog, Settings, Crosshair
 } from 'lucide-react';
 import SentinelAidLogo from '../common/SentinelAidLogo';
 import { useAuthStore } from '../../store/authStore';
@@ -10,7 +10,7 @@ import { hasAccess } from '../../store/authStore';
 
 const iconMap: Record<string, React.ElementType> = {
   LayoutDashboard, AlertTriangle, Satellite, Brain, ClipboardList,
-  ShieldAlert, Map, Route, FileText, Bell, Users, UserCog, Settings,
+  ShieldAlert, Map, Route, FileText, Bell, Users, UserCog, Settings, Crosshair
 };
 
 export default function Sidebar() {

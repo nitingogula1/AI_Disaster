@@ -5,7 +5,6 @@ import CommandLayout from './components/layout/CommandLayout';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import DisasterEventsPage from './pages/DisasterEvents/DisasterEventsPage';
 import GISMapPage from './pages/GISMap/GISMapPage';
-import SatelliteAcquisitionPage from './pages/SatelliteAcquisition/SatelliteAcquisitionPage';
 import SatelliteComparisonPage from './pages/SatelliteComparison/SatelliteComparisonPage';
 import AIDamageDetectionPage from './pages/AIDamageDetection/AIDamageDetectionPage';
 import DamageAssessmentPage from './pages/DamageAssessment/DamageAssessmentPage';
@@ -16,6 +15,7 @@ import { ReportsPage } from './pages/Reports/ReportsPage';
 import { AlertsPage } from './pages/Alerts/AlertsPage';
 import { UserManagementPage } from './pages/Users/UserManagementPage';
 import { SettingsPage } from './pages/Settings/SettingsPage';
+import DroneReconPage from './pages/DroneRecon/DroneReconPage';
 
 export default function App() {
   return (
@@ -30,8 +30,9 @@ export default function App() {
           <Route index element={<DashboardPage />} />
           <Route path="events" element={<DisasterEventsPage />} />
           <Route path="gis" element={<GISMapPage />} />
-          <Route path="satellite" element={<SatelliteAcquisitionPage />} />
+          <Route path="satellite" element={<Navigate to="/command" replace />} />
           <Route path="satellite-comparison" element={<SatelliteComparisonPage />} />
+          <Route path="drone-recon" element={<DroneReconPage />} />
           <Route path="ai-detection" element={<AIDamageDetectionPage />} />
           <Route path="damage" element={<DamageAssessmentPage />} />
           <Route path="rescue-priority" element={<RescuePriorityPage />} />
@@ -44,6 +45,13 @@ export default function App() {
           <Route path="*" element={<Navigate to="/command" replace />} />
         </Route>
 
+                {/* Top-Level Direct Aliases */}
+        <Route path="/recon" element={<Navigate to="/command/drone-recon" replace />} />
+        <Route path="/drone-recon" element={<Navigate to="/command/drone-recon" replace />} />
+        <Route path="/route-optimization" element={<Navigate to="/command/routes" replace />} />
+        <Route path="/routes" element={<Navigate to="/command/routes" replace />} />
+        <Route path="/gis" element={<Navigate to="/command/gis" replace />} />
+        <Route path="/dashboard" element={<Navigate to="/command" replace />} />
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

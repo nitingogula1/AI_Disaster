@@ -102,7 +102,10 @@ def list_operations(db: Session = Depends(get_db)):
 
 @router.get("/{id}")
 def get_operation(id: str, db: Session = Depends(get_db)):
-    op = db.query(Operation).filter((Operation.id == id) | (Operation.id == "EVT-8821-BGD") | (Operation.id == "CY-2025-05B")).first()
+    op = db.query(Operation).filter(Operation.id == id).first()
+    if not op:
+        # Check alias or legacy fallback
+        op = db.query(Operation).filter((Operation.id == "EVT-8821-BGD") | (Operation.id == "CY-2025-05B")).first()
     if not op:
         raise HTTPException(status_code=404, detail=f"Operation {id} not found")
     return success_response(data={
@@ -117,7 +120,11 @@ def get_operation(id: str, db: Session = Depends(get_db)):
 
 @router.post("/{id}/activate")
 def activate_operation(id: str, db: Session = Depends(get_db)):
-    target = db.query(Operation).filter((Operation.id == id) | (Operation.id == "EVT-8821-BGD") | (Operation.id == "CY-2025-05B")).first()
+    target = db.query(Operation).filter(Operation.id == id).first()
+    if not target:
+        # Check fallback only if id matches legacy code
+        if id in ("EVT-8821-BGD", "CY-2025-05B"):
+            target = db.query(Operation).filter((Operation.id == "EVT-8821-BGD") | (Operation.id == "CY-2025-05B")).first()
     if not target:
         raise HTTPException(status_code=404, detail=f"Operation {id} not found")
     

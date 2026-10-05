@@ -7,7 +7,7 @@ router = APIRouter(prefix="/routes", tags=["Routes"])
 
 @router.get("")
 def list_available_routes():
-    res = routing_service.optimize_route([21.870, 89.600], [21.840, 89.540])
+    res = routing_service.optimize_route([27.6842, 85.2945], [27.6885, 85.2915])
     routes = [res["selected_route"]] + res["alternative_routes"]
     return success_response(data=routes)
 

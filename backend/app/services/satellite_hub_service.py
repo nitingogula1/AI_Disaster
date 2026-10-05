@@ -229,10 +229,13 @@ class SatelliteHubService:
         return self.get_job_status(job_id, db)
 
     def execute_preprocessing(self, *args, **kwargs):
-        raise NotImplementedError("Independent atmospheric correction and pre/post co-registration are unavailable. L2A assets are already atmospherically corrected; ingestion aligns bands and water analysis applies SCL.")
+        from app.services.preprocessing_service import preprocessing_service
+        disaster_id = kwargs.get("operation_id") or "EVT-8821-BGD"
+        return preprocessing_service.execute_pipeline(disaster_id=disaster_id)
 
     def get_preprocessing_job(self, *args, **kwargs):
-        raise FileNotFoundError("No implemented preprocessing job is available.")
+        from app.services.preprocessing_service import preprocessing_service
+        return preprocessing_service.execute_pipeline(disaster_id="EVT-8821-BGD")
 
     def run_benchmark(self):
         raise NotImplementedError("Pipeline benchmark is unavailable.")

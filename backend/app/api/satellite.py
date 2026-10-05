@@ -644,10 +644,14 @@ def get_product_output(product_id: str, kind: str, db: Session = Depends(get_db)
 
 @router.post("/process")
 def process_satellite_imagery(req: PreprocessingRequest, db: Session = Depends(get_db)):
-    res = satellite_hub_service.execute_preprocessing(
-        operation_id="EVT-8821-BGD",
-        scene_id=req.post_image_id or "scn-001",
-        stages=["RADIOMETRIC", "ATMOSPHERIC", "CLOUD_MASK", "COREGISTRATION"],
-        db=db
+    from app.services.preprocessing_service import preprocessing_service
+    res = preprocessing_service.execute_pipeline(
+        disaster_id=req.disaster_id or "EVT-8821-BGD",
+        pre_image_id=req.pre_image_id,
+        post_image_id=req.post_image_id,
+        calculate_mndwi=req.calculate_mndwi,
+        calculate_ndvi=req.calculate_ndvi,
+        cloud_masking=req.cloud_masking,
+        resample_resolution=req.resample_resolution
     )
     return success_response(data=res)

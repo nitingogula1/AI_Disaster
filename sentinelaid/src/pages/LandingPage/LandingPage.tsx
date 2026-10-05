@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Satellite, Brain, Map, ShieldAlert, Route, FileText, Zap, Layers, Target, Radio } from 'lucide-react';
+import { Satellite, Brain, Map, ShieldAlert, Route, FileText, Zap, Layers, Target, Radio, ExternalLink } from 'lucide-react';
 import SentinelAidLogo from '../../components/common/SentinelAidLogo';
 import ApiStatusIndicator from '../../components/common/ApiStatusIndicator';
 
@@ -7,7 +7,7 @@ const NAV_LINKS = ['Solutions', 'Satellite & AI Tech', 'GIS Mapping', 'Rescue Op
 
 const FEATURES = [
   { icon: Satellite, title: 'Automated STAC Satellite Ingestion', desc: 'Real-time querying of Microsoft Planetary Computer Sentinel-2 Level-2A imagery with automated cloud masking using Scene Classification Layer (SCL) filtering.', protocol: 'Telemetry Protocol', value: 'STAC API v1.0 • COG Streaming' },
-  { icon: Brain, title: 'Deep Learning Damage Detection', desc: 'Dual-stream Siamese CNN & Vision Transformer models detecting building structural collapses, partial failures, and debris spreads from pre/post imagery passes.', protocol: 'Model Architecture', value: 'Siamese SegFormer + FPN Decoder' },
+  { icon: Brain, title: 'Spectral Overlap Damage Heuristic', desc: 'Heuristic spatial intersection of inundation masks with building coordinates to detect structural flooding, cutoff clusters, and submerged sectors.', protocol: 'Engine Architecture', value: 'MNDWI / Water Mask Spatial Overlap' },
   { icon: Layers, title: 'Spectral Water & Flood Indexing', desc: 'High-precision MNDWI & NDWI indices mapping water inundation dynamics, shoreline variations, and submerged municipal infrastructure boundaries.', protocol: 'Spectral Math', value: '(Green - SWIR) / (Green + SWIR)' },
   { icon: ShieldAlert, title: 'Life-Safety Rescue Prioritization', desc: 'Multi-criteria decision engine dynamically evaluating building occupancy, casualty risk, critical healthcare proximity, and population density metrics.', protocol: 'Triage Engine', value: 'Multi-Attribute Utility Theory (MAUT)' },
   { icon: Route, title: 'Dynamic Graph Route Optimization', desc: 'A* & Dijkstra pathfinding algorithms routing first responders around flooded segments, collapsed overpasses, and heavy obstacle debris corridors.', protocol: 'Routing Topology', value: 'OSM Directed Graph + Dynamic Edge Weights' },
@@ -121,7 +121,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-[12px] text-white/60 mt-2">
-                  <span>AI INFERENCE: Dual-Stream Siamese ResNet5G</span>
+                  <span>DAMAGE ESTIMATE: Spectral Overlap Analysis</span>
                   <span>•</span>
                   <span>CLOUD MASK (SCL): 0.82% Obscured</span>
                 </div>
@@ -132,7 +132,7 @@ export default function LandingPage() {
           {/* Stats strip */}
           <div className="grid grid-cols-3 gap-4 mt-6">
             {[
-              { value: '94.2%', label: 'AI Damage Confidence via Siamese v3T', icon: '🎯' },
+              { value: 'HEURISTIC', label: 'Damage Grade Estimation (Spectral Overlap)', icon: '🎯' },
               { value: '10m Res', label: 'Ground Spatial Resolution via Sentinel-2', icon: '🛰️' },
               { value: '< 15 Mins', label: 'Turnaround from Orbital Pass to Field', icon: '⚡' },
             ].map((s, i) => (
@@ -142,6 +142,143 @@ export default function LandingPage() {
                   <div className="text-[18px] font-bold text-text-primary tabular-nums">{s.value}</div>
                   <div className="text-[11px] text-text-muted">{s.label}</div>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Global Disaster & Historical Floods Monitor (Public User View) */}
+      <section className="py-16 px-6 bg-slate-900 text-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-sky-400 text-xs font-bold uppercase tracking-wider mb-1.5">
+                <Radio className="w-4 h-4 animate-pulse" />
+                GLOBAL FLOOD RECONNAISSANCE & HISTORICAL ARCHIVE
+              </div>
+              <h2 className="text-[28px] font-bold text-white tracking-tight">
+                Historical Disaster Telemetry & Inundation Models
+              </h2>
+              <p className="text-slate-400 text-sm mt-1 max-w-2xl">
+                Explore real satellite radar and optical imagery datasets across major historic flood surges including Nepal 2024, Pakistan 2022, and Bangladesh.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/login')}
+              className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded-lg transition self-start md:self-auto flex items-center gap-1.5 shadow-sm"
+            >
+              Access Complete Registry <ExternalLink size={13} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                flag: '🇳🇵',
+                title: 'Nepal 2024 Monsoon Flash Floods',
+                location: 'Kathmandu Basin, Bagmati River & Dhading',
+                area: '1,850 km²',
+                population: '165,000',
+                crest: '+4.2m Bagmati Surge',
+                satellite: 'Sentinel-1 SAR + Sentinel-2 L2A',
+                status: 'HISTORICAL ARCHIVE',
+                color: 'border-l-sky-500'
+              },
+              {
+                flag: '🇵🇰',
+                title: 'Pakistan 2022 Indus River Mega Flood',
+                location: 'Sindh Province & Lake Manchar Basin',
+                area: '32,000 km²',
+                population: '33,000,000',
+                crest: '+5.8m Indus Overflow',
+                satellite: 'Sentinel-1 SAR C-Band Dual Pol',
+                status: 'HISTORICAL ARCHIVE',
+                color: 'border-l-emerald-500'
+              },
+              {
+                flag: '🇧🇩',
+                title: 'Bangladesh 2024 Feni & Muhuri Floods',
+                location: 'Feni, Cumilla & Sylhet Division',
+                area: '2,100 km²',
+                population: '5,800,000',
+                crest: '+3.4m Levee Overtop',
+                satellite: 'Sentinel-1 SAR + PlanetScope',
+                status: 'HISTORICAL ARCHIVE',
+                color: 'border-l-indigo-500'
+              },
+              {
+                flag: '🇮🇳',
+                title: 'Wayanad 2024 Debris Flow & Mud Surge',
+                location: 'Meppadi & Chooralmala, Kerala, India',
+                area: '380 km²',
+                population: '12,400',
+                crest: '+6.2m Debris Surge',
+                satellite: 'Sentinel-2 MSI + ALOS PALSAR',
+                status: 'HISTORICAL ARCHIVE',
+                color: 'border-l-amber-500'
+              },
+              {
+                flag: '🇱🇾',
+                title: 'Libya Storm Daniel Derna Dam Breach',
+                location: 'Wadi Derna Canyon, Cyrenaica',
+                area: '940 km²',
+                population: '44,000',
+                crest: '+18.0m Flash Wave',
+                satellite: 'Sentinel-2 MSI + WorldView-3',
+                status: 'HISTORICAL ARCHIVE',
+                color: 'border-l-red-500'
+              },
+              {
+                flag: '🇧🇩',
+                title: 'Cyclone Remal & Estuary Inundation',
+                location: 'Bay of Bengal & South Delta Coastline',
+                area: '1,420 km²',
+                population: '42,000',
+                crest: '+3.8m Flood Crest',
+                satellite: 'Sentinel-2 L2A NDWI',
+                status: 'ACTIVE DEPLOYMENT',
+                color: 'border-l-red-600'
+              }
+            ].map((f, idx) => (
+              <div
+                key={idx}
+                className={`bg-slate-950/80 border border-slate-800 rounded-xl p-4 border-l-4 ${f.color} hover:border-slate-700 transition`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xl">{f.flag}</span>
+                  <span className={`px-2 py-0.5 text-[9px] font-bold rounded ${
+                    f.status.includes('ACTIVE') 
+                      ? 'bg-red-500/20 text-red-400 border border-red-500/40' 
+                      : 'bg-slate-800 text-slate-400'
+                  }`}>
+                    {f.status}
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-white mb-1">{f.title}</h3>
+                <p className="text-xs text-slate-400 mb-3">{f.location}</p>
+
+                <div className="grid grid-cols-2 gap-2 text-[10px] font-mono bg-slate-900 p-2 rounded-lg border border-slate-800 mb-3">
+                  <div>
+                    <span className="text-slate-500 block">AFFECTED AREA</span>
+                    <strong className="text-sky-300">{f.area}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">PEAK SURGE</span>
+                    <strong className="text-amber-400">{f.crest}</strong>
+                  </div>
+                </div>
+
+                <div className="text-[10px] text-slate-500 mb-3 truncate">
+                  🛰 Sensor: <strong className="text-slate-400">{f.satellite}</strong>
+                </div>
+
+                <button
+                  onClick={() => navigate('/login')}
+                  className="w-full py-1.5 bg-slate-800 hover:bg-sky-600 hover:text-white text-slate-300 text-xs font-semibold rounded-lg transition text-center"
+                >
+                  Analyze Event in Command Center →
+                </button>
               </div>
             ))}
           </div>

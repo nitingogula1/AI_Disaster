@@ -257,3 +257,43 @@ def test_reports_generate_and_download():
     assert dl_resp.status_code == 200
     assert dl_resp.headers["content-type"] == "application/pdf"
     assert len(dl_resp.content) > 100
+
+def test_drone_pipeline_and_dispatch():
+    # 1. List drone missions
+    missions_resp = client.get("/api/v1/drone/missions")
+    assert missions_resp.status_code == 200
+    missions = missions_resp.json()["data"]
+    assert len(missions) >= 1
+    mission_id = missions[0]["id"]
+
+    # 2. Mission detail with elevation subtraction profile
+    detail_resp = client.get(f"/api/v1/drone/missions/{mission_id}")
+    assert detail_resp.status_code == 200
+    detail = detail_resp.json()["data"]
+    assert detail["mission"]["avg_water_depth_m"] > 0
+    assert len(detail["elevation_profile"]["transect_points"]) >= 5
+    assert len(detail["evacuation_routes"]) >= 2
+    assert len(detail["detections"]) >= 2
+
+    # 3. GeoJSON export
+    geojson_resp = client.get(f"/api/v1/drone/missions/{mission_id}/geojson")
+    assert geojson_resp.status_code == 200
+    assert geojson_resp.json()["type"] == "FeatureCollection"
+    assert len(geojson_resp.json()["features"]) >= 3
+
+    # 4. Trigger analysis
+    analyze_resp = client.post("/api/v1/drone/missions/analyze", json={
+        "target_sector": "Trishuli Secondary School Shelter",
+        "flight_altitude_m": 65.0,
+        "baseline_ground_elevation_m": 2.6,
+        "simulated_flood_surge_m": 3.8
+    })
+    assert analyze_resp.status_code == 200
+    assert analyze_resp.json()["data"]["water_depth_avg_m"] == 1.2
+    assert analyze_resp.json()["data"]["total_survivors_detected"] == 48
+
+    # 5. Live UAV Telemetry
+    telem_resp = client.get("/api/v1/drone/live-telemetry")
+    assert telem_resp.status_code == 200
+    assert telem_resp.json()["data"]["battery_percent"] == 84
+

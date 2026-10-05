@@ -54,10 +54,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 // Role-based access helper
 export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   ADMIN: ['*'],
-  DISASTER_OFFICER: ['dashboard', 'events', 'gis-map', 'satellite', 'ai-detection', 'damage', 'rescue-priority', 'routes', 'rescue-teams', 'reports', 'alerts', 'settings'],
-  GIS_ANALYST: ['dashboard', 'gis-map', 'satellite', 'reports', 'settings'],
-  AI_ANALYST: ['dashboard', 'satellite', 'ai-detection', 'damage', 'reports', 'settings'],
-  RESCUE_TEAM: ['dashboard', 'rescue-priority', 'routes', 'rescue-teams', 'alerts', 'settings'],
+  DISASTER_OFFICER: ['dashboard', 'events', 'gis-map', 'satellite', 'drone-recon', 'ai-detection', 'damage', 'rescue-priority', 'routes', 'rescue-teams', 'reports', 'alerts', 'settings'],
+  GIS_ANALYST: ['dashboard', 'events', 'gis-map', 'satellite', 'drone-recon', 'reports', 'settings'],
+  AI_ANALYST: ['dashboard', 'events', 'satellite', 'drone-recon', 'ai-detection', 'damage', 'reports', 'settings'],
+  RESCUE_TEAM: ['dashboard', 'events', 'drone-recon', 'rescue-priority', 'routes', 'rescue-teams', 'alerts', 'settings'],
 };
 
 export function hasAccess(role: UserRole, pageId: string): boolean {

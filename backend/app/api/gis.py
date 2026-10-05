@@ -28,12 +28,12 @@ def build_buildings_geojson(db: Session, op_id: str = "CY-2025-05B") -> Dict[str
     bld_q = db.query(DamageDetection).filter(DamageDetection.object_type == "BUILDING").all()
     features = []
     
-    # Priority target: Sector 4B High School Shelter
+    # Priority target: Trishuli Secondary School Shelter
     features.append({
         "type": "Feature",
         "properties": {
             "id": "TGT-4B-SHELTER",
-            "name": "Sector 4B - High School Shelter",
+            "name": "Trishuli Secondary School Shelter",
             "is_priority_target": True,
             "structural_grade": "Grade 3 (Heavy)",
             "water_depth": "1.4m (Surging)",

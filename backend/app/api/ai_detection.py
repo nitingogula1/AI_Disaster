@@ -5,7 +5,6 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.services.ai_detection_service import ai_detection_service
-from app.services.satellite_hub_service import satellite_hub_service
 from app.schemas.damage import AIDetectionRequest
 from app.schemas.satellite import AIDamageSegmentationRequest
 from app.schemas.common import success_response
@@ -33,6 +32,24 @@ def get_ai_job(job_id: str):
 
 @router.post("/damage-detection")
 def run_damage_detection(req: AIDetectionRequest, db: Session = Depends(get_db)):
+    # If ML model weights are not loaded, deep learning inference is unavailable (501)
+    if not ai_detection_service.has_trained_weights():
+        # If explicitly requesting heuristic fallback, return spectral heuristic estimate
+        if req.model_name and req.model_name.upper() == "HEURISTIC":
+            result = ai_detection_service.run_detection(
+                disaster_id=req.disaster_id,
+                model_name="HEURISTIC",
+                confidence_threshold=req.confidence_threshold or 0.85,
+                db=db
+            )
+            return success_response(data=result, message="Spectral heuristic damage estimation completed")
+        
+        # Otherwise, report 501 Not Implemented honestly
+        raise HTTPException(
+            status_code=501,
+            detail="Trained deep-learning damage detection model checkpoint is unavailable. Use model_name='HEURISTIC' for spectral overlap approximation."
+        )
+
     result = ai_detection_service.run_detection(
         disaster_id=req.disaster_id,
         model_name=req.model_name or "SIAMESE",

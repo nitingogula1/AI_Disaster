@@ -1,0 +1,2655 @@
+import { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useAppStore } from '../../store/appStore';
+import { 
+  Navigation, Crosshair, Users, AlertTriangle, ShieldCheck, CheckCircle, 
+  Layers, Radio, Send, RefreshCw, Compass, Eye, ShieldAlert, 
+  Activity, ArrowRight, Zap, Droplets, Mountain, Video, Info, 
+  Plane, UploadCloud, X, Play, Camera, BatteryCharging, Wifi, 
+  Sliders, Maximize2, Sparkles, HelpCircle, ChevronRight, RotateCcw,
+  ExternalLink, Navigation2, Check, PhoneCall, RadioTower, AlertOctagon,
+  CheckCircle2, XCircle, Gauge, MapPin, Shield, Search, Globe
+} from 'lucide-react';
+import { MapContainer, TileLayer, Polygon, Polyline, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import { droneService, rescueService } from '../../services/api';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet icons
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+const createSurvivorIcon = (count: number, isSelected: boolean = false) => {
+  return L.divIcon({
+    className: 'custom-drone-survivor-icon',
+    html: `<div style="background-color: ${isSelected ? '#b91c1c' : '#dc2626'}; color: white; padding: 3px 8px; border-radius: 9999px; font-weight: 800; font-size: 11px; border: ${isSelected ? '3px solid #fef08a' : '2px solid white'}; box-shadow: 0 0 16px ${isSelected ? 'rgba(234,179,8,1)' : 'rgba(220,38,38,0.8)'}; white-space: nowrap; font-family: monospace; animation: pulse 1.5s infinite;">🚨 ${count} SURVIVORS</div>`,
+    iconSize: [110, 26],
+    iconAnchor: [55, 13],
+  });
+};
+
+const createHazardIcon = (label: string) => {
+  return L.divIcon({
+    className: 'custom-drone-hazard-icon',
+    html: `<div style="background-color: #ea580c; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; border: 1.5px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.5); white-space: nowrap; font-family: monospace;">⚠️ ${label}</div>`,
+    iconSize: [110, 22],
+    iconAnchor: [55, 11],
+  });
+};
+
+const createWaypointIcon = (label: string) => {
+  return L.divIcon({
+    className: 'custom-drone-waypoint-icon',
+    html: `<div style="background-color: #0284c7; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 9px; border: 1.5px solid #38bdf8; box-shadow: 0 2px 8px rgba(2,132,199,0.6); white-space: nowrap; font-family: monospace;">✈️ ${label}</div>`,
+    iconSize: [70, 20],
+    iconAnchor: [35, 10],
+  });
+};
+
+const createRiskProbeIcon = (riskTier: 'HIGH' | 'MEDIUM' | 'SAFE') => {
+  const bg = riskTier === 'HIGH' ? '#dc2626' : riskTier === 'MEDIUM' ? '#d97706' : '#16a34a';
+  const label = riskTier === 'HIGH' ? '🔴 HIGH RISK' : riskTier === 'MEDIUM' ? '🟡 MED RISK' : '🟢 SAFE ZONE';
+  return L.divIcon({
+    className: 'custom-risk-probe-icon',
+    html: `<div style="background-color: ${bg}; color: white; padding: 4px 10px; border-radius: 9999px; font-weight: 800; font-size: 11px; border: 2.5px solid white; box-shadow: 0 0 20px ${bg}; white-space: nowrap; font-family: monospace; animation: bounce 1.2s infinite;">📍 ${label}</div>`,
+    iconSize: [120, 28],
+    iconAnchor: [60, 14],
+  });
+};
+
+function MapUpdater({ 
+  center, 
+  flyTarget, 
+  zoomLevel = 15 
+}: { 
+  center: [number, number]; 
+  flyTarget?: [number, number] | null;
+  zoomLevel?: number;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (flyTarget) {
+      map.flyTo(flyTarget, zoomLevel, { duration: 1.5 });
+    } else {
+      map.setView(center, 15);
+    }
+  }, [center, flyTarget, zoomLevel, map]);
+  return null;
+}
+
+function MapClickHandler({ onMapClick }: { onMapClick: (latlng: { lat: number; lng: number }) => void }) {
+  useMapEvents({
+    click(e) {
+      onMapClick(e.latlng);
+    },
+  });
+  return null;
+}
+
+export interface PointRiskAssessment {
+  lat: number;
+  lng: number;
+  riskTier: 'HIGH' | 'MEDIUM' | 'SAFE';
+  waterDepthM: number;
+  groundDemM: number;
+  waterDsmM: number;
+  flowVelocityMs: number;
+  label: string;
+  passability: {
+    foot: boolean;
+    ambulance: boolean;
+    truck: boolean;
+    boat: boolean;
+    helicopter: boolean;
+  };
+  nearestSafeZone: {
+    name: string;
+    distanceM: number;
+    bearing: string;
+  };
+  recommendation: string;
+}
+
+export const evaluatePointRisk = (
+  lat: number, 
+  lng: number, 
+  missionId: string,
+  placeName?: string,
+  customElevation?: number
+): PointRiskAssessment => {
+  const isNepalSector = (missionId === 'drn-msn-nepal' || (lat > 27.5 && lat < 28.0 && lng > 85.0 && lng < 85.6));
+  const isBgdSector = (missionId === 'drn-msn-001' && (lat > 21.6 && lat < 22.2 && lng > 89.2 && lng < 89.8));
+  
+  if (isNepalSector) {
+    const dLat = (lat - 27.6835) * 111000;
+    const dLng = (lng - 85.2930) * 98000;
+    const distToBreachM = Math.sqrt(dLat * dLat + dLng * dLng);
+
+    const x = (lng - 85.2915) * 98000;
+    const y = (lat - 27.6815) * 111000;
+    const riverLen = Math.sqrt(588 * 588 + 777 * 777);
+    const crossDist = Math.abs(x * 777 - y * 588) / riverLen;
+
+    const waterDsmM = 1298.40;
+
+    if (crossDist < 170 || distToBreachM < 190) {
+      const depth = Math.min(2.40, Math.max(1.50, +(1.7 + (170 - crossDist) / 170 * 0.7).toFixed(2)));
+      return {
+        lat: +lat.toFixed(5),
+        lng: +lng.toFixed(5),
+        riskTier: 'HIGH',
+        waterDepthM: depth,
+        groundDemM: +(waterDsmM - depth).toFixed(1),
+        waterDsmM: waterDsmM,
+        flowVelocityMs: 2.4,
+        label: 'CRITICAL HIGH-SURGE INUNDATION (RIVERBED & UNDERPASS)',
+        passability: {
+          foot: false,
+          ambulance: false,
+          truck: false,
+          boat: true,
+          helicopter: true,
+        },
+        nearestSafeZone: {
+          name: 'Tribhuvan University High Ridge (Shelter LZ)',
+          distanceM: Math.round(320 + crossDist),
+          bearing: '038° NE',
+        },
+        recommendation: 'SEVERE DROWNING & WATER SUCTION: Complete closure for pedestrians and standard vehicles. Water depth >1.5m with 2.4 m/s violent current. Immediate APF Raft or Aerial Winch evacuation only.',
+      };
+    } else if (crossDist < 380) {
+      const depth = +(0.30 + ((380 - crossDist) / 210) * 0.85).toFixed(2);
+      return {
+        lat: +lat.toFixed(5),
+        lng: +lng.toFixed(5),
+        riskTier: 'MEDIUM',
+        waterDepthM: depth,
+        groundDemM: +(waterDsmM - depth).toFixed(1),
+        waterDsmM: waterDsmM,
+        flowVelocityMs: 0.8,
+        label: 'MODERATE RISK FLOODWAY (ROAD MARGINS & COMMERCE STRIP)',
+        passability: {
+          foot: false,
+          ambulance: false,
+          truck: depth <= 0.55,
+          boat: true,
+          helicopter: true,
+        },
+        nearestSafeZone: {
+          name: 'Kalanki Elevated Ridge Bypass',
+          distanceM: Math.round(210 + crossDist * 0.4),
+          bearing: '315° NW',
+        },
+        recommendation: 'CAUTION - PARTIAL FLOODING (0.3m - 1.2m): Submerged road shoulders. Dangerous foot suction for elderly and children. High-clearance tactical 4x4 trucks and amphibious craft authorized.',
+      };
+    } else {
+      const groundElev = +(1299.2 + (crossDist - 380) * 0.008).toFixed(1);
+      return {
+        lat: +lat.toFixed(5),
+        lng: +lng.toFixed(5),
+        riskTier: 'SAFE',
+        waterDepthM: 0.0,
+        groundDemM: groundElev,
+        waterDsmM: waterDsmM,
+        flowVelocityMs: 0.0,
+        label: 'SAFE HIGH GROUND HAVEN (ABOVE FLOOD DATUM)',
+        passability: {
+          foot: true,
+          ambulance: true,
+          truck: true,
+          boat: false,
+          helicopter: true,
+        },
+        nearestSafeZone: {
+          name: 'Current Staging Point (Safe Elevation)',
+          distanceM: 0,
+          bearing: 'ON-SITE',
+        },
+        recommendation: 'ZERO FLOOD RISK: Ground elevation is well above river crest datum. Safe for civilian assembly, field hospitals, supply staging, and helicopter landing.',
+      };
+    }
+  } else if (isBgdSector) {
+    const dLat = (lat - 21.8440) * 111000;
+    const dLng = (lng - 89.5440) * 102000;
+    const distToCenter = Math.sqrt(dLat * dLat + dLng * dLng);
+    const waterDsmM = 3.80;
+
+    if (distToCenter < 190) {
+      return {
+        lat: +lat.toFixed(5),
+        lng: +lng.toFixed(5),
+        riskTier: 'HIGH',
+        waterDepthM: 1.85,
+        groundDemM: 1.95,
+        waterDsmM: 3.80,
+        flowVelocityMs: 2.1,
+        label: 'HIGH RISK TIDAL SURGE BREACH (SECTOR 4B CULVERT)',
+        passability: { foot: false, ambulance: false, truck: false, boat: true, helicopter: true },
+        nearestSafeZone: { name: 'North High School Shelter Helipad', distanceM: 340, bearing: '040° NE' },
+        recommendation: 'CRITICAL SURGE INUNDATION: Submerged road and electrical hazard. Deploy Zodiac inflatables.',
+      };
+    } else if (distToCenter < 420) {
+      return {
+        lat: +lat.toFixed(5),
+        lng: +lng.toFixed(5),
+        riskTier: 'MEDIUM',
+        waterDepthM: 0.65,
+        groundDemM: 3.15,
+        waterDsmM: 3.80,
+        flowVelocityMs: 0.7,
+        label: 'MEDIUM RISK BUFFER ZONE (SUBMERGED LEVEE SLIPWAY)',
+        passability: { foot: false, ambulance: false, truck: true, boat: true, helicopter: true },
+        nearestSafeZone: { name: 'Coastal Embankment Ridge', distanceM: 180, bearing: '120° SE' },
+        recommendation: 'MODERATE DEPTH: Heavy high-clearance vehicles or amphibious craft required.',
+      };
+    } else {
+      return {
+        lat: +lat.toFixed(5),
+        lng: +lng.toFixed(5),
+        riskTier: 'SAFE',
+        waterDepthM: 0.0,
+        groundDemM: 4.20,
+        waterDsmM: 3.80,
+        flowVelocityMs: 0.0,
+        label: 'SAFE DRY ZONE (ELEVATED EMBANKMENT)',
+        passability: { foot: true, ambulance: true, truck: true, boat: false, helicopter: true },
+        nearestSafeZone: { name: 'Current Location (Dry Ground)', distanceM: 0, bearing: 'ON-SITE' },
+        recommendation: 'SAFE HIGH GROUND: Unaffected by flood surge. Safe for pedestrian staging and ambulances.',
+      };
+    }
+  } else {
+    // Universal Geocoded / Custom Search Assessment (e.g. Rajam, Andhra Pradesh, India or any global city)
+    const isAndhraPradesh = lat > 14 && lat < 20 && lng > 77 && lng < 85;
+    const baseElev = customElevation !== undefined 
+      ? customElevation 
+      : isAndhraPradesh 
+        ? 75.0 
+        : Math.max(15.0, +(Math.abs(Math.sin(lat) * 110 + Math.cos(lng) * 85)).toFixed(1));
+
+    const isLowland = baseElev < 15.0;
+    const depth = isLowland ? 0.35 : 0.0;
+    const tier: 'HIGH' | 'MEDIUM' | 'SAFE' = isLowland ? 'MEDIUM' : 'SAFE';
+    const cleanName = placeName ? placeName.split(',').slice(0, 2).join(', ') : `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+
+    return {
+      lat: +lat.toFixed(5),
+      lng: +lng.toFixed(5),
+      riskTier: tier,
+      waterDepthM: depth,
+      groundDemM: baseElev,
+      waterDsmM: +(baseElev + depth).toFixed(1),
+      flowVelocityMs: isLowland ? 0.2 : 0.0,
+      label: tier === 'SAFE' 
+        ? `STABLE ELEVATION HAVEN: ${cleanName.toUpperCase()}`
+        : `MODERATE DRAINAGE BASIN: ${cleanName.toUpperCase()}`,
+      passability: {
+        foot: true,
+        ambulance: true,
+        truck: true,
+        boat: false,
+        helicopter: true,
+      },
+      nearestSafeZone: {
+        name: `${cleanName} Emergency Staging / District HQ`,
+        distanceM: 350,
+        bearing: '045° NE',
+      },
+      recommendation: tier === 'SAFE'
+        ? `ZERO FLOOD RISK: Terrain elevation is ${baseElev}m ASL, significantly elevated above river/coastal flood baselines. All road infrastructures clear for ambulances, rescue transports, and emergency supply convoys. Excellent ground for relief staging and air operations.`
+        : `MODERATE RUNOFF HAZARD: Elevation is ${baseElev}m. Rainwater pooling possible in low-lying gutters. High-clearance vehicles and rescue assets operational.`,
+    };
+  }
+};
+
+export default function DroneReconPage() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { activeOperationId } = useAppStore();
+
+  const queryMission = searchParams.get('mission');
+  const querySector = searchParams.get('sector');
+
+  const getInitialMission = () => {
+    if (queryMission) return queryMission;
+    if (querySector === 'nepal' || activeOperationId?.includes('NEPAL') || activeOperationId?.includes('NPL')) {
+      return 'drn-msn-nepal';
+    }
+    return 'drn-msn-001';
+  };
+
+  const [selectedMissionId, setSelectedMissionId] = useState<string>(getInitialMission);
+  const [missionData, setMissionData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [dispatchingId, setDispatchingId] = useState<string | null>(null);
+  const [dispatchSuccess, setDispatchSuccess] = useState<string | null>(null);
+
+  // Selected survivor for map inspection & tracking
+  const [selectedSurvivorId, setSelectedSurvivorId] = useState<string | null>(null);
+  const [flyTarget, setFlyTarget] = useState<[number, number] | null>(null);
+  const [trackingSurvivor, setTrackingSurvivor] = useState<any | null>(null);
+  const [selectedTeamMap, setSelectedTeamMap] = useState<Record<string, string>>({});
+  
+  // Update mission if URL or active operation changes
+  useEffect(() => {
+    const target = queryMission || (querySector === 'nepal' || activeOperationId?.includes('NEPAL') || activeOperationId?.includes('NPL') ? 'drn-msn-nepal' : null);
+    if (target && target !== selectedMissionId) {
+      setSelectedMissionId(target);
+      setSelectedSurvivorId(null);
+      setFlyTarget(null);
+    }
+  }, [queryMission, querySector, activeOperationId]);
+  
+  // Layer Toggles
+  const [showDepthLayer, setShowDepthLayer] = useState(true);
+  const [showSurvivorLayer, setShowSurvivorLayer] = useState(true);
+  const [showBlockedLayer, setShowBlockedLayer] = useState(true);
+  const [showFlightPlanLayer, setShowFlightPlanLayer] = useState(false);
+  const [showRiskZonesLayer, setShowRiskZonesLayer] = useState(true);
+
+  // Interactive Risk Assessment Probe (When user clicks map or places pin)
+  const [riskProbe, setRiskProbe] = useState<PointRiskAssessment | null>(null);
+
+  const handleMapClick = (latlng: { lat: number; lng: number }) => {
+    const assessment = evaluatePointRisk(latlng.lat, latlng.lng, selectedMissionId);
+    setRiskProbe(assessment);
+    setFlyTarget([latlng.lat, latlng.lng]);
+  };
+
+  const handleQuickProbePreset = (tier: 'HIGH' | 'MEDIUM' | 'SAFE') => {
+    const isNepal = selectedMissionId === 'drn-msn-nepal';
+    let targetLat = 27.6835;
+    let targetLng = 85.2930;
+
+    if (isNepal) {
+      if (tier === 'HIGH') {
+        targetLat = 27.6835;
+        targetLng = 85.2930; // Balkhu Underpass (Deep flash surge)
+      } else if (tier === 'MEDIUM') {
+        targetLat = 27.6848;
+        targetLng = 85.2962; // Market approach road (Moderate flood)
+      } else {
+        targetLat = 27.6885;
+        targetLng = 85.2915; // Tribhuvan University Ridge (Dry Safe Zone)
+      }
+    } else {
+      if (tier === 'HIGH') {
+        targetLat = 21.8435;
+        targetLng = 89.5435;
+      } else if (tier === 'MEDIUM') {
+        targetLat = 21.8460;
+        targetLng = 89.5465;
+      } else {
+        targetLat = 21.8485;
+        targetLng = 89.5490;
+      }
+    }
+
+    const assessment = evaluatePointRisk(targetLat, targetLng, selectedMissionId);
+    setRiskProbe(assessment);
+    setFlyTarget([targetLat, targetLng]);
+  };
+
+  // Tactical Search Bar State & Filterable Entities
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [isSearchingGlobal, setIsSearchingGlobal] = useState(false);
+  const [globalResults, setGlobalResults] = useState<any[]>([]);
+  const [flyZoom, setFlyZoom] = useState(15);
+
+  const isNepal = selectedMissionId === 'drn-msn-nepal';
+
+  const searchableLocations = isNepal
+    ? [
+        {
+          id: 'drn-det-npl-001',
+          title: 'Balkhu Vegetable Market Rooftop',
+          subtitle: '42 Stranded Vendors • 1.90m Bagmati Surge',
+          type: 'SURVIVOR',
+          lat: 27.6842,
+          lng: 85.2945,
+          icon: '🚨',
+          chipStyle: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
+          label: '🚨 Balkhu (42 Souls)'
+        },
+        {
+          id: 'drn-det-npl-002',
+          title: 'Dhading Riverside Secondary School',
+          subtitle: '20 Trapped Students & Staff • 2.10m Torrent',
+          type: 'SURVIVOR',
+          lat: 27.6870,
+          lng: 85.2965,
+          icon: '🚨',
+          chipStyle: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
+          label: '🚨 Dhading School (20 Souls)'
+        },
+        {
+          id: 'drn-det-npl-003',
+          title: 'Balkhu Ring Road Underpass (Culvert Cut)',
+          subtitle: '2.20m Deep Flash Surge • Complete Vehicle Closure',
+          type: 'HAZARD',
+          lat: 27.6835,
+          lng: 85.2930,
+          icon: '⚠️',
+          chipStyle: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100',
+          label: '⚠️ Balkhu Underpass'
+        },
+        {
+          id: 'npl-sh-1',
+          title: 'Tribhuvan University High Ridge Haven',
+          subtitle: 'Elevation 1,301m • 0.0m Depth • Civilian Shelter & LZ',
+          type: 'SHELTER',
+          lat: 27.6885,
+          lng: 85.2915,
+          icon: '🟢',
+          chipStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
+          label: '🟢 Tribhuvan Ridge (Dry)'
+        },
+        {
+          id: 'npl-sh-2',
+          title: 'Kalanki Elevated Ridge Bypass',
+          subtitle: 'Elevation 1,299m • 0.3m Shoulder • Truck/Ambulance Drivable',
+          type: 'SHELTER',
+          lat: 27.6865,
+          lng: 85.2985,
+          icon: '🟢',
+          chipStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
+          label: '🟢 Kalanki Bypass'
+        },
+        {
+          id: 'npl-rt-1',
+          title: 'Bagmati North Levee Boat Slipway',
+          subtitle: '1.45m Flood Depth • Authorized APF Inflatable Route',
+          type: 'ROUTE',
+          lat: 27.6855,
+          lng: 85.2955,
+          icon: '🚤',
+          chipStyle: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100',
+          label: '🚤 North Levee Pass'
+        }
+      ]
+    : [
+        {
+          id: 'drn-det-001',
+          title: 'Coastal Primary School Rooftop',
+          subtitle: '32 Civilians Stranded • 1.60m Cyclone Surge',
+          type: 'SURVIVOR',
+          lat: 21.8452,
+          lng: 89.5448,
+          icon: '🚨',
+          chipStyle: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
+          label: '🚨 Primary School (32 Souls)'
+        },
+        {
+          id: 'drn-det-002',
+          title: 'Classroom Building A Roof',
+          subtitle: '16 Stranded Residents • 1.45m Water Depth',
+          type: 'SURVIVOR',
+          lat: 21.8465,
+          lng: 89.5460,
+          icon: '🚨',
+          chipStyle: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
+          label: '🚨 Building A (16 Souls)'
+        },
+        {
+          id: 'drn-det-003',
+          title: 'HWY-4B Submerged Culvert Cutoff',
+          subtitle: '1.85m Depth • Electrical Wire & Debris Logjam Hazard',
+          type: 'HAZARD',
+          lat: 21.8435,
+          lng: 89.5430,
+          icon: '⚠️',
+          chipStyle: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100',
+          label: '⚠️ HWY-4B Culvert'
+        },
+        {
+          id: 'bgd-sh-1',
+          title: 'Helipad LZ-1 (North High Ridge)',
+          subtitle: 'Elevation 4.2m • 0.0m Water Depth • Cyclone Shelter LZ',
+          type: 'SHELTER',
+          lat: 21.8480,
+          lng: 89.5480,
+          icon: '🟢',
+          chipStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
+          label: '🟢 LZ-1 High Ground'
+        },
+        {
+          id: 'bgd-rt-1',
+          title: 'West Levee Amphibious Slipway',
+          subtitle: '1.20m Depth • Passable for Amphibious Craft & ZAR',
+          type: 'ROUTE',
+          lat: 21.8448,
+          lng: 89.5448,
+          icon: '🚤',
+          chipStyle: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100',
+          label: '🚤 West Levee Slipway'
+        }
+      ];
+
+  // Live global geocoding debounced search using OpenStreetMap Nominatim
+  useEffect(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed.length < 2) {
+      setGlobalResults([]);
+      setIsSearchingGlobal(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const fetchGlobal = async () => {
+      setIsSearchingGlobal(true);
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(trimmed)}&limit=5&addressdetails=1`,
+          {
+            signal: controller.signal,
+            headers: {
+              'Accept-Language': 'en',
+            },
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const mapped = data.map((item: any) => ({
+            id: `osm-${item.place_id}`,
+            title: item.name || item.display_name.split(',')[0],
+            subtitle: item.display_name,
+            type: 'GEOCODE',
+            lat: parseFloat(item.lat),
+            lng: parseFloat(item.lon),
+            icon: '🌍',
+            chipStyle: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100',
+            label: `🌍 ${item.name || item.display_name.split(',')[0]}`
+          }));
+          setGlobalResults(mapped);
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.warn('Geocoding lookup error:', err);
+        }
+      } finally {
+        setIsSearchingGlobal(false);
+      }
+    };
+
+    const timer = setTimeout(fetchGlobal, 350);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [searchQuery]);
+
+  const localSearchResults = searchQuery.trim()
+    ? searchableLocations.filter(
+        (loc) =>
+          loc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          loc.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          loc.type.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
+
+  const searchResults = [...localSearchResults, ...globalResults];
+
+  const handleSelectSearchResult = async (item: any) => {
+    setSearchQuery(item.title);
+    setShowSearchDropdown(false);
+    const zoom = item.type === 'GEOCODE' ? 14 : 16;
+    setFlyZoom(zoom);
+    setFlyTarget([item.lat, item.lng]);
+
+    let customElev: number | undefined = undefined;
+    if (item.type === 'GEOCODE') {
+      try {
+        const elevRes = await fetch(
+          `https://api.open-meteo.com/v1/elevation?latitude=${item.lat.toFixed(4)}&longitude=${item.lng.toFixed(4)}`
+        );
+        if (elevRes.ok) {
+          const elevData = await elevRes.json();
+          if (elevData?.elevation?.[0] !== undefined) {
+            customElev = elevData.elevation[0];
+          }
+        }
+      } catch {
+        // fallback to regional baseline in evaluatePointRisk
+      }
+    }
+
+    const assessment = evaluatePointRisk(
+      item.lat, 
+      item.lng, 
+      selectedMissionId, 
+      item.subtitle || item.title, 
+      customElev
+    );
+    setRiskProbe(assessment);
+
+    if (item.type === 'SURVIVOR') {
+      const match = detections.find((d: any) => d.id === item.id || (Math.abs(d.latitude - item.lat) < 0.001 && Math.abs(d.longitude - item.lng) < 0.001));
+      if (match) setSelectedSurvivorId(match.id);
+    }
+  };
+
+  const handleSearchSubmit = () => {
+    if (localSearchResults.length > 0) {
+      handleSelectSearchResult(localSearchResults[0]);
+    } else if (globalResults.length > 0) {
+      handleSelectSearchResult(globalResults[0]);
+    } else if (searchQuery.trim().length > 0) {
+      setIsSearchingGlobal(true);
+      fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery.trim())}&limit=1&addressdetails=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      )
+        .then((r) => r.json())
+        .then((data) => {
+          if (data && data[0]) {
+            const item = {
+              id: `osm-${data[0].place_id}`,
+              title: data[0].name || data[0].display_name.split(',')[0],
+              subtitle: data[0].display_name,
+              type: 'GEOCODE',
+              lat: parseFloat(data[0].lat),
+              lng: parseFloat(data[0].lon),
+              icon: '🌍',
+            };
+            handleSelectSearchResult(item);
+          }
+        })
+        .catch(console.error)
+        .finally(() => setIsSearchingGlobal(false));
+    }
+  };
+
+  // Modals
+  const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showLiveStreamModal, setShowLiveStreamModal] = useState(false);
+  const [showFlightPlanModal, setShowFlightPlanModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  // Live Stream Controls
+  const [streamMode, setStreamMode] = useState<'RGB' | 'THERMAL'>('RGB');
+  const [aiBoundingBoxes, setAiBoundingBoxes] = useState(true);
+
+  // SAR Flight Plan Data
+  const [flightPlan, setFlightPlan] = useState<any>(null);
+  const [generatingFlightPlan, setGeneratingFlightPlan] = useState(false);
+
+  // Upload Imagery State
+  const [uploadDroneModel, setUploadDroneModel] = useState('DJI Matrice 300 RTK');
+  const [uploadSensorType, setUploadSensorType] = useState('RGB + NIR Dual Sensor');
+  const [uploadAltitude, setUploadAltitude] = useState(65);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const fetchMission = async (missionId: string = selectedMissionId) => {
+    try {
+      setLoading(true);
+      const res = await droneService.getMissionDetail(missionId);
+      if (res) {
+        setMissionData(res);
+      }
+    } catch (e) {
+      console.error('Failed to load drone mission detail:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMission(selectedMissionId);
+  }, [selectedMissionId]);
+
+  const handleSelectSurvivor = (survivor: any) => {
+    setSelectedSurvivorId(survivor.id);
+    setFlyTarget([survivor.latitude, survivor.longitude]);
+  };
+
+  const handleTriggerAnalysis = async () => {
+    try {
+      setAnalyzing(true);
+      await droneService.triggerFlightAnalysis({
+        target_sector: selectedMissionId === 'drn-msn-nepal' ? 'Bagmati River Corridor' : 'Sector 4B Delta',
+        drone_model: 'DJI Matrice 300 RTK + Zenmuse P1 / L1 LiDAR',
+        flight_altitude_m: selectedMissionId === 'drn-msn-nepal' ? 70.0 : 65.0,
+        baseline_ground_elevation_m: selectedMissionId === 'drn-msn-nepal' ? 1296.2 : 2.6,
+        simulated_flood_surge_m: selectedMissionId === 'drn-msn-nepal' ? 1298.4 : 1.2
+      });
+      await fetchMission();
+      setDispatchSuccess('Deep Learning Photogrammetry Pipeline re-run successfully!');
+      setTimeout(() => setDispatchSuccess(null), 4000);
+    } catch (e) {
+      console.error('Analysis failed:', e);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const handleResetMissionDetections = async () => {
+    try {
+      await droneService.resetMissionDetections(selectedMissionId);
+      await fetchMission();
+      setDispatchSuccess('All survivor detections reset to un-dispatched state for live demo.');
+      setTimeout(() => setDispatchSuccess(null), 4000);
+    } catch (e) {
+      console.error('Reset failed:', e);
+      // Fallback local reset
+      setMissionData((prev: any) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          detections: prev.detections.map((d: any) => ({
+            ...d,
+            is_rescued: false,
+            assigned_team_id: null
+          }))
+        };
+      });
+      setDispatchSuccess('Local survivor detections reset to un-dispatched state.');
+      setTimeout(() => setDispatchSuccess(null), 4000);
+    }
+  };
+
+  const handleResetSingleSurvivor = async (e: React.MouseEvent, detectionId: string) => {
+    e.stopPropagation();
+    try {
+      await droneService.resetSurvivorDetection(detectionId);
+      setMissionData((prev: any) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          detections: prev.detections.map((d: any) => 
+            d.id === detectionId ? { ...d, is_rescued: false, assigned_team_id: null } : d
+          )
+        };
+      });
+      setDispatchSuccess('Cluster status reset. Ready for dispatch.');
+      setTimeout(() => setDispatchSuccess(null), 3000);
+    } catch (err) {
+      console.error('Reset survivor error:', err);
+    }
+  };
+
+  const handleGenerateSARPlan = async () => {
+    try {
+      setGeneratingFlightPlan(true);
+      const isNepal = selectedMissionId === 'drn-msn-nepal';
+      const cLat = isNepal ? 27.6850 : 21.8450;
+      const cLng = isNepal ? 85.2950 : 89.5450;
+      const plan = await droneService.generateSARFlightPlan(cLat, cLng, isNepal ? 70.0 : 65.0);
+      setFlightPlan(plan);
+      setShowFlightPlanLayer(true);
+      setShowFlightPlanModal(true);
+    } catch (e) {
+      console.error('Failed to generate SAR flight plan:', e);
+    } finally {
+      setGeneratingFlightPlan(false);
+    }
+  };
+
+  const handleUploadSubmit = () => {
+    setIsUploading(true);
+    let p = 0;
+    const interval = setInterval(() => {
+      p += 20;
+      setUploadProgress(p);
+      if (p >= 100) {
+        clearInterval(interval);
+        setTimeout(async () => {
+          setIsUploading(false);
+          setShowUploadModal(false);
+          setUploadProgress(0);
+          await handleTriggerAnalysis();
+          setDispatchSuccess('Drone survey uploaded & full AI photogrammetry pipeline executed!');
+          setTimeout(() => setDispatchSuccess(null), 5000);
+        }, 600);
+      }
+    }, 250);
+  };
+
+  const handleDispatch = async (detectionId: string, teamId: string = 'RT-02') => {
+    try {
+      setDispatchingId(detectionId);
+      const res = await droneService.dispatchSurvivorRescue(detectionId, teamId, 'CRITICAL');
+      
+      setDispatchSuccess(
+        `Rescue Unit ${teamId} dispatched! Mission Code: ${res.data?.rescue_mission_code || 'MSN-SAR-001'}`
+      );
+      
+      setMissionData((prev: any) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          detections: prev.detections.map((d: any) => 
+            d.id === detectionId ? { ...d, is_rescued: true, assigned_team_id: teamId } : d
+          )
+        };
+      });
+
+      setTimeout(() => setDispatchSuccess(null), 6000);
+    } catch (e) {
+      console.error('Dispatch failed:', e);
+    } finally {
+      setDispatchingId(null);
+    }
+  };
+
+  const mission = missionData?.mission || {};
+  const detections = missionData?.detections || [];
+  const elevation = missionData?.elevation_profile || {};
+  const routes = missionData?.evacuation_routes || [];
+
+  return (
+    <div className="space-y-5 animate-fade-in p-2">
+      {/* Toast Alert */}
+      {dispatchSuccess && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-emerald-500 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
+          <CheckCircle className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+          <span className="text-sm font-semibold">{dispatchSuccess}</span>
+        </div>
+      )}
+
+      {/* Header & UAV Mission Console Banner */}
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-red-700 border border-red-200 flex items-center gap-1.5">
+                <Crosshair className="w-3.5 h-3.5" />
+                TACTICAL UAV / DRONE RECON • 2.4cm GSD PHOTOGRAMMETRY
+              </span>
+              <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                RTK ACCURACY ±1.8cm
+              </span>
+              <span className="text-xs font-mono text-slate-500">UAV CALLSIGN: EAGLE-01</span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">RECON SECTOR:</span>
+              <select
+                value={selectedMissionId}
+                onChange={(e) => {
+                  setSelectedMissionId(e.target.value);
+                  setSearchParams({ mission: e.target.value });
+                }}
+                className="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-900 text-xs font-bold rounded-lg px-2.5 py-1 focus:border-sky-500 outline-none cursor-pointer"
+              >
+                <option value="drn-msn-001">🇧🇩 Sector 4B Delta (Cyclone Remal, Bangladesh)</option>
+                <option value="drn-msn-nepal">🇳🇵 Bagmati River Basin (Nepal 2024 Monsoon Flood)</option>
+              </select>
+            </div>
+
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+              {mission.mission_name || 'Sector 4B Delta Evacuation Recon'}
+            </h1>
+            <p className="text-xs text-slate-600 mt-1 flex items-center gap-2">
+              <span>End-to-end aerial pipeline: Flight Photogrammetry → Orthomosaic (WebODM) → Deep Learning Segmentation (YOLOv8 / SegFormer) → Elevation Subtraction (DSM - DEM).</span>
+              <button 
+                onClick={() => setShowGuideModal(true)}
+                className="text-sky-600 hover:text-sky-700 font-bold underline flex items-center gap-0.5 text-xs inline-flex"
+              >
+                <HelpCircle className="w-3.5 h-3.5" /> How Pipeline Works?
+              </button>
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Live Camera Feed HUD Button */}
+            <button
+              onClick={() => setShowLiveStreamModal(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-sm transition border border-slate-700"
+            >
+              <Video className="w-3.5 h-3.5 text-red-400 animate-pulse" />
+              Live Drone Cam Feed
+            </button>
+
+            {/* SAR Grid Flight Planner Button */}
+            <button
+              onClick={handleGenerateSARPlan}
+              disabled={generatingFlightPlan}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-sm transition"
+            >
+              <Plane className={`w-3.5 h-3.5 ${generatingFlightPlan ? 'animate-bounce' : ''}`} />
+              {generatingFlightPlan ? 'Planning...' : 'SAR Grid Flight Plan'}
+            </button>
+
+            {/* Ingest Drone Survey Imagery */}
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition border border-slate-300"
+            >
+              <UploadCloud className="w-3.5 h-3.5 text-slate-600" />
+              Ingest Drone Photos
+            </button>
+
+            {/* Re-Run AI Pipeline */}
+            <button
+              onClick={handleTriggerAnalysis}
+              disabled={analyzing}
+              className="flex items-center gap-1.5 px-4 py-2 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-sm transition"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${analyzing ? 'animate-spin' : ''}`} />
+              {analyzing ? 'Processing...' : 'Re-Run Pipeline'}
+            </button>
+
+            {/* Reset All Detections Button for Interactive Testing */}
+            <button
+              onClick={handleResetMissionDetections}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold rounded-xl transition border border-amber-300 shadow-sm"
+              title="Reset survivor status to test dispatch workflow again"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-amber-700" />
+              Reset Demo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Tactical Sector Search & Quick-Target Filter */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative z-20">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+          {/* Search Input Box */}
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <Search className="w-4 h-4 text-slate-500" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onFocus={() => setShowSearchDropdown(true)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchDropdown(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSearchSubmit();
+                }
+              }}
+              placeholder={
+                isNepal
+                  ? 'Search any city, village, landmark or sector hotspot (e.g. "Rajam, Andhra Pradesh", "Balkhu", "Dhading")...'
+                  : 'Search any city, village, landmark or sector hotspot (e.g. "Rajam, Andhra Pradesh", "School", "Ridge")...'
+              }
+              className="w-full pl-10 pr-16 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-sm text-slate-800 placeholder-slate-400 border border-slate-200 focus:border-blue-500 rounded-xl outline-none transition font-medium shadow-inner"
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-1.5">
+              {isSearchingGlobal && (
+                <span title="Searching global geocoder...">
+                  <RefreshCw className="w-4 h-4 text-blue-500 animate-spin" />
+                </span>
+              )}
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setShowSearchDropdown(false);
+                  }}
+                  className="text-slate-400 hover:text-slate-600 p-0.5"
+                  title="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Autocomplete Dropdown Popover */}
+            {showSearchDropdown && searchQuery.trim().length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50 divide-y divide-slate-100 max-h-80 overflow-y-auto">
+                {isSearchingGlobal && (
+                  <div className="px-3.5 py-1.5 bg-blue-50/70 text-[11px] text-blue-700 flex items-center gap-1.5 font-medium border-b border-blue-100">
+                    <RefreshCw className="w-3 h-3 animate-spin text-blue-500" />
+                    Searching global OpenStreetMap satellite geocoder...
+                  </div>
+                )}
+
+                {searchResults.length > 0 ? (
+                  searchResults.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSelectSearchResult(item)}
+                      className="w-full text-left p-3 hover:bg-blue-50/70 transition flex items-center justify-between group"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="text-lg flex-shrink-0">{item.icon}</span>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-slate-800 group-hover:text-blue-700 truncate">
+                            {item.title}
+                          </div>
+                          <div className="text-[11px] text-slate-500 truncate">
+                            {item.subtitle}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0 pl-2">
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
+                          item.type === 'SURVIVOR' 
+                            ? 'bg-red-50 text-red-700 border-red-200' 
+                            : item.type === 'HAZARD' 
+                              ? 'bg-amber-50 text-amber-700 border-amber-200' 
+                              : item.type === 'SHELTER' 
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                : item.type === 'GEOCODE'
+                                  ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                                  : 'bg-sky-50 text-sky-700 border-sky-200'
+                        }`}>
+                          {item.type === 'GEOCODE' ? 'GLOBAL LOCATION' : item.type}
+                        </span>
+                        <span className="text-[10px] text-blue-600 font-bold group-hover:translate-x-0.5 transition hidden sm:inline">
+                          Fly & Probe →
+                        </span>
+                      </div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-xs text-slate-500">
+                    {isSearchingGlobal ? (
+                      <div className="flex flex-col items-center justify-center gap-2 py-2">
+                        <RefreshCw className="w-5 h-5 text-blue-500 animate-spin" />
+                        <span>Locating &ldquo;{searchQuery}&rdquo; on global satellite registry...</span>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div>No exact local matches found for &ldquo;<span className="font-semibold text-slate-700">{searchQuery}</span>&rdquo;.</div>
+                        <button
+                          onClick={handleSearchSubmit}
+                          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm"
+                        >
+                          <Globe className="w-3.5 h-3.5" /> Query Global OpenStreetMap for &ldquo;{searchQuery}&rdquo;
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Quick Filter Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-thin">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap pl-1 pr-0.5">
+              Tactical Targets:
+            </span>
+            {searchableLocations.map((loc) => (
+              <button
+                key={loc.id}
+                onClick={() => handleSelectSearchResult(loc)}
+                className={`text-[11px] font-bold px-2.5 py-1.5 rounded-lg border transition whitespace-nowrap shadow-xs flex items-center gap-1 ${loc.chipStyle}`}
+                title={`Focus map on ${loc.title} & evaluate risk profile`}
+              >
+                <span>{loc.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 4 Core Intelligence Pipeline Output Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Exact Flood Footprint */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-l-sky-500">
+          <div className="flex items-center justify-between text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
+            <span>1. EXACT FLOOD FOOTPRINT</span>
+            <Droplets className="w-4 h-4 text-sky-500" />
+          </div>
+          <div className="text-2xl font-bold text-slate-900 font-mono">
+            {((mission.flood_footprint_sqm || 68400) / 1000).toFixed(1)}k <span className="text-xs font-normal text-slate-500">m²</span>
+          </div>
+          <div className="text-[11px] text-slate-500 mt-1">
+            Orthomosaic High-Res Contour (2.4cm pixel resolution)
+          </div>
+        </div>
+
+        {/* Card 2: Water Depth (Elevation Subtraction) */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-l-blue-600">
+          <div className="flex items-center justify-between text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
+            <span>2. WATER DEPTH (DSM - DEM)</span>
+            <Mountain className="w-4 h-4 text-blue-600" />
+          </div>
+          <div className="text-2xl font-bold text-blue-700 font-mono">
+            {mission.avg_water_depth_m || 1.20}m <span className="text-xs font-normal text-slate-500">Avg Surge</span>
+          </div>
+          <div className="text-[11px] text-slate-500 mt-1">
+            Max depth: <strong className="text-slate-700">{mission.max_water_depth_m || 1.85}m</strong> (DSM minus DEM ground)
+          </div>
+        </div>
+
+        {/* Card 3: Blocked Evacuation Routes */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-l-orange-500">
+          <div className="flex items-center justify-between text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
+            <span>3. BLOCKED EVACUATION ROUTES</span>
+            <AlertTriangle className="w-4 h-4 text-orange-500" />
+          </div>
+          <div className="text-2xl font-bold text-orange-600 font-mono">
+            {mission.blocked_routes_detected || 3} <span className="text-xs font-normal text-slate-500">Cutoffs</span>
+          </div>
+          <div className="text-[11px] text-slate-500 mt-1">
+            {selectedMissionId === 'drn-msn-nepal' ? 'Balkhu Underpass submerged • North Levee open' : 'HWY-4B submerged • 1 levee pass open for boats'}
+          </div>
+        </div>
+
+        {/* Card 4: Stranded Survivors */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-l-red-500">
+          <div className="flex items-center justify-between text-red-600 text-[10px] font-bold uppercase tracking-wider mb-1">
+            <span>4. STRANDED SURVIVORS DETECTED</span>
+            <Users className="w-4 h-4 text-red-500" />
+          </div>
+          <div className="text-2xl font-bold text-red-600 font-mono">
+            {mission.total_survivors_detected || 48} <span className="text-xs font-normal text-slate-500">Souls</span>
+          </div>
+          <div className="text-[11px] text-red-700 font-medium mt-1">
+            2 Rooftop clusters flagged for immediate dispatch
+          </div>
+        </div>
+      </div>
+
+      {/* Main Grid: Leaflet Map & Stranded Survivors Live Action Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left Column: Drone Tactical Map (8 cols) */}
+        <div className="lg:col-span-8 space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg relative">
+            {/* Top Map Action Bar */}
+            <div className="p-3 bg-slate-950/90 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-white">
+              <div className="flex items-center gap-2">
+                <Crosshair className="w-4 h-4 text-red-400" />
+                <span className="font-semibold text-slate-200">
+                  {selectedMissionId === 'drn-msn-nepal' ? 'Bagmati River Drone Photogrammetry HUD' : 'Sector 4B Drone Photogrammetry HUD'}
+                </span>
+                <span className="px-2 py-0.5 bg-red-950 border border-red-700 text-[10px] font-mono text-red-300 rounded">
+                  UAV VECTOR HUD 1:2,500
+                </span>
+              </div>
+
+              {/* Layer Toggles */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowDepthLayer(!showDepthLayer)}
+                  className={`px-2.5 py-1 rounded text-[11px] font-medium transition ${
+                    showDepthLayer ? 'bg-sky-600 text-white' : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  Water Extent (DSM)
+                </button>
+                <button
+                  onClick={() => setShowSurvivorLayer(!showSurvivorLayer)}
+                  className={`px-2.5 py-1 rounded text-[11px] font-medium transition ${
+                    showSurvivorLayer ? 'bg-red-600 text-white' : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  Survivors ({detections.filter((d: any) => d.detection_type === 'SURVIVOR_CLUSTER').length})
+                </button>
+                <button
+                  onClick={() => setShowBlockedLayer(!showBlockedLayer)}
+                  className={`px-2.5 py-1 rounded text-[11px] font-medium transition ${
+                    showBlockedLayer ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  Blocked Cuts
+                </button>
+                <button
+                  onClick={() => setShowRiskZonesLayer(!showRiskZonesLayer)}
+                  className={`px-2.5 py-1 rounded text-[11px] font-medium transition flex items-center gap-1 ${
+                    showRiskZonesLayer ? 'bg-rose-700 text-white shadow-sm' : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  Risk Zones (🔴🟡🟢)
+                </button>
+                {flightPlan && (
+                  <button
+                    onClick={() => setShowFlightPlanLayer(!showFlightPlanLayer)}
+                    className={`px-2.5 py-1 rounded text-[11px] font-medium transition ${
+                      showFlightPlanLayer ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    SAR Grid
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Leaflet Map Canvas */}
+            <div className="h-[460px] relative">
+              <MapContainer
+                center={[mission.latitude || 21.8450, mission.longitude || 89.5450]}
+                zoom={15}
+                style={{ height: '100%', width: '100%' }}
+              >
+                <MapUpdater 
+                  center={[mission.latitude || 21.8450, mission.longitude || 89.5450]} 
+                  flyTarget={flyTarget}
+                  zoomLevel={flyZoom}
+                />
+                <MapClickHandler onMapClick={handleMapClick} />
+                <TileLayer
+                  attribution='&copy; OpenStreetMap'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+
+                {/* 1. HIGH RISK ZONE POLYGON (RED) */}
+                {showRiskZonesLayer && (
+                  <Polygon
+                    positions={
+                      selectedMissionId === 'drn-msn-nepal' || (mission.latitude && mission.latitude > 25)
+                        ? [
+                            [27.6815, 85.2915],
+                            [27.6835, 85.2930],
+                            [27.6855, 85.2950],
+                            [27.6875, 85.2965],
+                            [27.6870, 85.2980],
+                            [27.6845, 85.2960],
+                            [27.6825, 85.2935],
+                            [27.6815, 85.2915]
+                          ]
+                        : [
+                            [21.8430, 89.5420],
+                            [21.8440, 89.5450],
+                            [21.8465, 89.5455],
+                            [21.8460, 89.5470],
+                            [21.8435, 89.5460],
+                            [21.8425, 89.5430]
+                          ]
+                    }
+                    pathOptions={{
+                      color: '#dc2626',
+                      fillColor: '#ef4444',
+                      fillOpacity: 0.35,
+                      weight: 2
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-2 text-xs">
+                        <strong className="text-red-600 font-bold">🔴 HIGH RISK ZONE (SEVERE DANGER)</strong><br />
+                        Water Depth: <strong>1.50m &ndash; 2.40m</strong><br />
+                        Current: <strong>2.4 m/s violent torrent</strong><br />
+                        Status: Complete evacuation closure. Inflatables/Choppers only.
+                      </div>
+                    </Popup>
+                  </Polygon>
+                )}
+
+                {/* 2. MEDIUM RISK ZONE POLYGON (YELLOW/AMBER) */}
+                {showRiskZonesLayer && (
+                  <Polygon
+                    positions={
+                      selectedMissionId === 'drn-msn-nepal' || (mission.latitude && mission.latitude > 25)
+                        ? [
+                            [27.6805, 85.2900],
+                            [27.6830, 85.2915],
+                            [27.6865, 85.2935],
+                            [27.6890, 85.2960],
+                            [27.6885, 85.2995],
+                            [27.6850, 85.2985],
+                            [27.6820, 85.2955],
+                            [27.6805, 85.2900]
+                          ]
+                        : [
+                            [21.8415, 89.5405],
+                            [21.8430, 89.5470],
+                            [21.8475, 89.5485],
+                            [21.8480, 89.5415],
+                            [21.8415, 89.5405]
+                          ]
+                    }
+                    pathOptions={{
+                      color: '#d97706',
+                      fillColor: '#f59e0b',
+                      fillOpacity: 0.20,
+                      weight: 2,
+                      dashArray: '5 5'
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-2 text-xs">
+                        <strong className="text-amber-600 font-bold">🟡 MEDIUM RISK ZONE (CAUTION)</strong><br />
+                        Water Depth: <strong>0.30m &ndash; 1.20m</strong><br />
+                        Status: Submerged roads & market fringe. 4x4 Trucks & Boats only.
+                      </div>
+                    </Popup>
+                  </Polygon>
+                )}
+
+                {/* 3. SAFE ZONE POLYGON (GREEN) */}
+                {showRiskZonesLayer && (
+                  <Polygon
+                    positions={
+                      selectedMissionId === 'drn-msn-nepal' || (mission.latitude && mission.latitude > 25)
+                        ? [
+                            [27.6865, 85.2890],
+                            [27.6895, 85.2910],
+                            [27.6910, 85.2940],
+                            [27.6885, 85.2930],
+                            [27.6865, 85.2890]
+                          ]
+                        : [
+                            [21.8470, 89.5465],
+                            [21.8495, 89.5485],
+                            [21.8490, 89.5510],
+                            [21.8465, 89.5490]
+                          ]
+                    }
+                    pathOptions={{
+                      color: '#16a34a',
+                      fillColor: '#22c55e',
+                      fillOpacity: 0.25,
+                      weight: 2
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-2 text-xs">
+                        <strong className="text-emerald-600 font-bold">🟢 SAFE HIGH GROUND HAVEN</strong><br />
+                        Ground Elevation: <strong>1,299m+ (Above Crest)</strong><br />
+                        Water Depth: <strong>0.0m (Dry Land)</strong><br />
+                        Status: Designated Civilian Shelter & Helicopter LZ.
+                      </div>
+                    </Popup>
+                  </Polygon>
+                )}
+
+                {/* Interactive Clicked Risk Probe Marker */}
+                {riskProbe && (
+                  <>
+                    <Circle
+                      center={[riskProbe.lat, riskProbe.lng]}
+                      radius={60}
+                      pathOptions={{
+                        color: riskProbe.riskTier === 'HIGH' ? '#ef4444' : riskProbe.riskTier === 'MEDIUM' ? '#f59e0b' : '#22c55e',
+                        fillColor: riskProbe.riskTier === 'HIGH' ? '#ef4444' : riskProbe.riskTier === 'MEDIUM' ? '#f59e0b' : '#22c55e',
+                        fillOpacity: 0.3,
+                        weight: 2,
+                        dashArray: '3 3'
+                      }}
+                    />
+                    <Marker
+                      position={[riskProbe.lat, riskProbe.lng]}
+                      icon={createRiskProbeIcon(riskProbe.riskTier)}
+                    >
+                      <Popup>
+                        <div className="p-2.5 min-w-[220px] text-xs font-sans">
+                          <div className={`font-bold text-sm mb-1 ${
+                            riskProbe.riskTier === 'HIGH' ? 'text-red-600' : riskProbe.riskTier === 'MEDIUM' ? 'text-amber-600' : 'text-emerald-600'
+                          }`}>
+                            {riskProbe.riskTier === 'HIGH' ? '🔴 HIGH RISK ZONE' : riskProbe.riskTier === 'MEDIUM' ? '🟡 MEDIUM RISK ZONE' : '🟢 SAFE GROUND ZONE'}
+                          </div>
+                          <div className="text-[11px] text-slate-600 mb-2">{riskProbe.label}</div>
+                          <div className="bg-slate-50 border border-slate-200 rounded p-1.5 font-mono text-[11px] space-y-1 mb-2">
+                            <div>Water Depth: <strong>{riskProbe.waterDepthM}m</strong></div>
+                            <div>Ground DEM: <strong>{riskProbe.groundDemM}m</strong></div>
+                            <div>Water DSM: <strong>{riskProbe.waterDsmM}m</strong></div>
+                            <div>Flow Velocity: <strong>{riskProbe.flowVelocityMs} m/s</strong></div>
+                          </div>
+                          <div className="text-[10px] text-slate-500 font-semibold mb-2">
+                            Nearest Safe: <strong>{riskProbe.nearestSafeZone.name} ({riskProbe.nearestSafeZone.distanceM}m)</strong>
+                          </div>
+                          <button
+                            onClick={() => setRiskProbe(null)}
+                            className="w-full py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded text-[10px]"
+                          >
+                            Remove Pin
+                          </button>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  </>
+                )}
+
+                {/* Drone Flood Footprint Polygon */}
+                {showDepthLayer && (
+                  <Polygon
+                    positions={
+                      selectedMissionId === 'drn-msn-nepal' || (mission.latitude && mission.latitude > 25)
+                        ? [
+                            [27.6820, 85.2910],
+                            [27.6835, 85.2970],
+                            [27.6880, 85.2980],
+                            [27.6875, 85.2920],
+                            [27.6820, 85.2910]
+                          ]
+                        : [
+                            [21.8425, 89.5410],
+                            [21.8435, 89.5475],
+                            [21.8480, 89.5480],
+                            [21.8475, 89.5420],
+                            [21.8425, 89.5410]
+                          ]
+                    }
+                    pathOptions={{
+                      color: '#0284c7',
+                      fillColor: '#0284c7',
+                      fillOpacity: 0.35,
+                      weight: 3,
+                      dashArray: '4 4'
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-2 text-xs">
+                        <strong>Drone Flood Footprint</strong><br />
+                        Coverage: {(mission.flood_footprint_sqm || 68400).toLocaleString()} m²<br />
+                        Avg Water Depth: {mission.avg_water_depth_m || 1.2}m surge<br />
+                        Elevation Subtraction Confidence: {mission.ai_confidence || 97.4}%
+                      </div>
+                    </Popup>
+                  </Polygon>
+                )}
+
+                {/* Blocked Road Segment (Red/Orange dashed line) */}
+                {showBlockedLayer && (
+                  <Polyline
+                    positions={
+                      selectedMissionId === 'drn-msn-nepal' || (mission.latitude && mission.latitude > 25)
+                        ? [
+                            [27.6825, 85.2925],
+                            [27.6835, 85.2935],
+                            [27.6845, 85.2945]
+                          ]
+                        : [
+                            [21.8430, 89.5420],
+                            [21.8435, 89.5435],
+                            [21.8440, 89.5450]
+                          ]
+                    }
+                    pathOptions={{ color: '#ea580c', weight: 6, dashArray: '6,6' }}
+                  >
+                    <Popup>
+                      <div className="p-2 text-xs">
+                        <strong className="text-orange-600">BLOCKED ROAD CUTOFF</strong><br />
+                        Water Depth: {mission.max_water_depth_m || 1.85}m<br />
+                        Reason: Submerged arterial underpass / culvert hazard.
+                      </div>
+                    </Popup>
+                  </Polyline>
+                )}
+
+                {/* Passable Route */}
+                <Polyline
+                  positions={
+                    selectedMissionId === 'drn-msn-nepal' || (mission.latitude && mission.latitude > 25)
+                      ? [
+                          [27.6865, 85.2975],
+                          [27.6855, 85.2955],
+                          [27.6850, 85.2940]
+                        ]
+                      : [
+                          [21.8465, 89.5480],
+                          [21.8452, 89.5460],
+                          [21.8448, 89.5448]
+                        ]
+                  }
+                  pathOptions={{ color: '#10b981', weight: 4 }}
+                />
+
+                {/* SAR Lawnmower Grid Flight Path */}
+                {showFlightPlanLayer && flightPlan && (
+                  <>
+                    <Polyline
+                      positions={flightPlan.waypoints.map((wp: any) => [wp.lat, wp.lng])}
+                      pathOptions={{ color: '#818cf8', weight: 3, dashArray: '8,6' }}
+                    />
+                    {flightPlan.waypoints.map((wp: any) => (
+                      <Marker
+                        key={wp.waypoint_id}
+                        position={[wp.lat, wp.lng]}
+                        icon={createWaypointIcon(wp.waypoint_id)}
+                      >
+                        <Popup>
+                          <div className="p-2 text-xs">
+                            <strong className="text-indigo-600">{wp.waypoint_id}</strong><br />
+                            Altitude: {wp.alt_m}m AGL<br />
+                            Action: {wp.action}
+                          </div>
+                        </Popup>
+                      </Marker>
+                    ))}
+                  </>
+                )}
+
+                {/* Detections Markers */}
+                {detections.map((det: any) => {
+                  if (det.detection_type === 'SURVIVOR_CLUSTER' && showSurvivorLayer) {
+                    const isSelected = selectedSurvivorId === det.id;
+                    return (
+                      <div key={det.id}>
+                        {isSelected && (
+                          <Circle
+                            center={[det.latitude, det.longitude]}
+                            radius={50}
+                            pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.25, weight: 2, dashArray: '4 4' }}
+                          />
+                        )}
+                        <Marker
+                          position={[det.latitude, det.longitude]}
+                          icon={createSurvivorIcon(det.headcount, isSelected)}
+                          eventHandlers={{
+                            click: () => handleSelectSurvivor(det),
+                          }}
+                        >
+                          <Popup>
+                            <div className="p-2.5 min-w-[230px] text-xs">
+                              <div className="font-bold text-red-600 text-sm mb-1">{det.title}</div>
+                              <p className="text-slate-600 mb-2 leading-relaxed">{det.description}</p>
+                              <div className="bg-slate-50 border border-slate-200 rounded p-1.5 mb-2 font-mono text-[11px]">
+                                <div>Headcount: <strong>{det.headcount} civilians</strong></div>
+                                <div>Water Depth: <strong>{det.water_depth_m}m</strong></div>
+                                <div>Confidence: <strong>{(det.confidence * 100).toFixed(1)}%</strong></div>
+                              </div>
+                              {det.is_rescued ? (
+                                <div className="space-y-1.5">
+                                  <div className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded flex items-center justify-between">
+                                    <span>✓ Dispatched: {det.assigned_team_id || 'RT-02'}</span>
+                                    <span className="animate-pulse text-emerald-900">EN ROUTE</span>
+                                  </div>
+                                  <div className="flex gap-1.5">
+                                    <button
+                                      onClick={() => setTrackingSurvivor(det)}
+                                      className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-xs flex items-center justify-center gap-1 shadow-sm"
+                                    >
+                                      <Radio className="w-3.5 h-3.5" /> Track Unit
+                                    </button>
+                                    <button
+                                      onClick={(e) => handleResetSingleSurvivor(e, det.id)}
+                                      className="px-2 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-bold text-xs"
+                                      title="Reset status"
+                                    >
+                                      <RotateCcw className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => handleDispatch(det.id, selectedTeamMap[det.id] || 'RT-02')}
+                                  disabled={dispatchingId === det.id}
+                                  className="w-full py-2 rounded font-bold text-xs bg-red-600 hover:bg-red-700 text-white shadow transition flex items-center justify-center gap-1.5"
+                                >
+                                  <Radio className="w-3.5 h-3.5" /> 🚨 Dispatch Unit RT-02 Now
+                                </button>
+                              )}
+                            </div>
+                          </Popup>
+                        </Marker>
+                      </div>
+                    );
+                  }
+
+                  if (det.detection_type === 'BLOCKED_ROAD' && showBlockedLayer) {
+                    return (
+                      <Marker
+                        key={det.id}
+                        position={[det.latitude, det.longitude]}
+                        icon={createHazardIcon('Culvert Cut')}
+                      >
+                        <Popup>
+                          <div className="p-2 text-xs">
+                            <strong className="text-orange-600">{det.title}</strong>
+                            <p className="text-slate-600 mt-1">{det.description}</p>
+                            <div className="mt-1 font-mono">Depth: {det.water_depth_m}m</div>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    );
+                  }
+
+                  return null;
+                })}
+
+                {/* Tactical Risk Probe Pin (Interactive Drop / Search Target) */}
+                {riskProbe && (
+                  <Marker
+                    position={[riskProbe.lat, riskProbe.lng]}
+                    icon={createRiskProbeIcon(riskProbe.riskTier)}
+                  >
+                    <Popup>
+                      <div className="p-2.5 text-xs min-w-[220px]">
+                        <strong className={
+                          riskProbe.riskTier === 'HIGH' 
+                            ? 'text-red-600 font-bold' 
+                            : riskProbe.riskTier === 'MEDIUM' 
+                              ? 'text-amber-600 font-bold' 
+                              : 'text-emerald-600 font-bold'
+                        }>
+                          {riskProbe.label}
+                        </strong>
+                        <div className="mt-1.5 font-mono text-[11px] bg-slate-50 p-1.5 rounded border border-slate-200">
+                          <div>Water Depth: <strong>{riskProbe.waterDepthM}m</strong></div>
+                          <div>Ground Elevation: <strong>{riskProbe.groundDemM}m</strong></div>
+                          <div>Flow Current: <strong>{riskProbe.flowVelocityMs} m/s</strong></div>
+                        </div>
+                        <p className="mt-1.5 text-slate-600 text-[11px] leading-relaxed">
+                          {riskProbe.recommendation}
+                        </p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                )}
+              </MapContainer>
+            </div>
+
+            {/* Bottom HUD Ribbon */}
+            <div className="p-2.5 bg-slate-950 border-t border-slate-800 grid grid-cols-3 gap-2 text-xs font-mono text-slate-300">
+              <div>
+                <span className="text-slate-500 block text-[9px]">SURFACE DATUM</span>
+                <span className="font-bold text-white">3.80m Mean Water Table</span>
+              </div>
+              <div className="text-center">
+                <span className="text-slate-500 block text-[9px]">PHOTOGRAMMETRY STITCH</span>
+                <span className="font-bold text-emerald-400">WebODM Orthophoto 100% Valid</span>
+              </div>
+              <div className="text-right">
+                <span className="text-slate-500 block text-[9px]">RADIAL RESOLUTION</span>
+                <span className="font-bold text-sky-400">2.4 cm/pixel</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tactical Point Risk Inspector Panel (Interactive Click / Pin Placement) */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-rose-600" />
+                  Tactical Point Risk Inspector (High / Medium / Safe Zone Analysis)
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Click anywhere on the map above or use quick test buttons to drop a pin and inspect flood risk.
+                </p>
+              </div>
+
+              {/* Quick Preset Test Buttons */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  onClick={() => handleQuickProbePreset('HIGH')}
+                  className="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-800 text-[11px] font-bold rounded-lg transition border border-red-200 flex items-center gap-1"
+                >
+                  <AlertOctagon className="w-3 h-3 text-red-600" />
+                  Probe High Risk
+                </button>
+                <button
+                  onClick={() => handleQuickProbePreset('MEDIUM')}
+                  className="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-800 text-[11px] font-bold rounded-lg transition border border-amber-200 flex items-center gap-1"
+                >
+                  <AlertTriangle className="w-3 h-3 text-amber-600" />
+                  Probe Med Risk
+                </button>
+                <button
+                  onClick={() => handleQuickProbePreset('SAFE')}
+                  className="px-2.5 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-bold rounded-lg transition border border-emerald-200 flex items-center gap-1"
+                >
+                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                  Probe Safe Zone
+                </button>
+                {riskProbe && (
+                  <button
+                    onClick={() => setRiskProbe(null)}
+                    className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition"
+                    title="Clear Pin"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* If Risk Probe Active */}
+            {riskProbe ? (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                {/* Risk Level Banner */}
+                <div className={`p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                  riskProbe.riskTier === 'HIGH'
+                    ? 'bg-red-50 border-red-200 text-red-900'
+                    : riskProbe.riskTier === 'MEDIUM'
+                    ? 'bg-amber-50 border-amber-200 text-amber-900'
+                    : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                }`}>
+                  <div className="flex items-start sm:items-center gap-2.5">
+                    <span className={`p-2 rounded-lg text-white flex-shrink-0 ${
+                      riskProbe.riskTier === 'HIGH' ? 'bg-red-600' : riskProbe.riskTier === 'MEDIUM' ? 'bg-amber-600' : 'bg-emerald-600'
+                    }`}>
+                      {riskProbe.riskTier === 'HIGH' ? <AlertOctagon className="w-5 h-5" /> : riskProbe.riskTier === 'MEDIUM' ? <AlertTriangle className="w-5 h-5" /> : <ShieldCheck className="w-5 h-5" />}
+                    </span>
+                    <div>
+                      <div className="text-xs font-bold tracking-wide">
+                        {riskProbe.riskTier === 'HIGH' ? '🔴 HIGH RISK LEVEL: SEVERE FLOOD HAZARD' : riskProbe.riskTier === 'MEDIUM' ? '🟡 MEDIUM RISK LEVEL: CAUTIONARY FLOODWAY' : '🟢 ZERO RISK: DESIGNATED SAFE HIGH GROUND'}
+                      </div>
+                      <div className="text-[11px] opacity-80 mt-0.5">{riskProbe.label}</div>
+                    </div>
+                  </div>
+
+                  <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-white/80 border border-current self-start sm:self-auto">
+                    GPS: {riskProbe.lat}, {riskProbe.lng}
+                  </span>
+                </div>
+
+                {/* 4 Telemetry Metrics */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                    <span className="text-[10px] text-slate-500 uppercase block font-sans">WATER DEPTH</span>
+                    <strong className={`text-base ${riskProbe.waterDepthM >= 1.5 ? 'text-red-600' : riskProbe.waterDepthM > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                      {riskProbe.waterDepthM.toFixed(2)}m
+                    </strong>
+                  </div>
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                    <span className="text-[10px] text-slate-500 uppercase block font-sans">GROUND DEM</span>
+                    <strong className="text-base text-slate-800">{riskProbe.groundDemM.toFixed(1)}m</strong>
+                  </div>
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                    <span className="text-[10px] text-slate-500 uppercase block font-sans">WATER SURFACE DSM</span>
+                    <strong className="text-base text-blue-700">{riskProbe.waterDsmM.toFixed(1)}m</strong>
+                  </div>
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                    <span className="text-[10px] text-slate-500 uppercase block font-sans">FLOW VELOCITY</span>
+                    <strong className={`text-base ${riskProbe.flowVelocityMs > 1.5 ? 'text-red-600' : 'text-slate-800'}`}>
+                      {riskProbe.flowVelocityMs} m/s
+                    </strong>
+                  </div>
+                </div>
+
+                {/* Evacuation & Vehicle Passability Checklist */}
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                  <div className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                    VEHICLE & EVACUATION PASSABILITY CLEARANCE
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 ${
+                      riskProbe.passability.foot ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'
+                    }`}>
+                      {riskProbe.passability.foot ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <XCircle className="w-3.5 h-3.5 text-red-600" />}
+                      🚶 Pedestrian / Foot
+                    </span>
+                    <span className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 ${
+                      riskProbe.passability.ambulance ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'
+                    }`}>
+                      {riskProbe.passability.ambulance ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <XCircle className="w-3.5 h-3.5 text-red-600" />}
+                      🚑 Civilian Ambulances
+                    </span>
+                    <span className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 ${
+                      riskProbe.passability.truck ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'
+                    }`}>
+                      {riskProbe.passability.truck ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <XCircle className="w-3.5 h-3.5 text-red-600" />}
+                      🚜 4x4 Heavy Tactical Trucks
+                    </span>
+                    <span className={`px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 ${
+                      riskProbe.passability.boat ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-200 text-slate-600 border border-slate-300'
+                    }`}>
+                      {riskProbe.passability.boat ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <XCircle className="w-3.5 h-3.5 text-slate-400" />}
+                      🚤 Inflatable Rafts / Boats
+                    </span>
+                    <span className="px-2.5 py-1 rounded-md font-medium flex items-center gap-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      🚁 Helicopter LZ / Winch
+                    </span>
+                  </div>
+                </div>
+
+                {/* Operational Recommendation & Nearest Safe Haven */}
+                <div className="flex flex-col sm:flex-row items-stretch gap-2.5 text-xs">
+                  <div className="flex-1 p-3 bg-blue-50/60 border border-blue-200 rounded-xl">
+                    <span className="text-[10px] font-bold text-blue-800 uppercase block mb-1">CLOSEST HIGH-GROUND SAFE HAVEN</span>
+                    <div className="font-semibold text-slate-900">{riskProbe.nearestSafeZone.name}</div>
+                    <div className="text-[11px] text-blue-700 mt-0.5">
+                      Distance: <strong>{riskProbe.nearestSafeZone.distanceM}m</strong> &bull; Heading: <strong>{riskProbe.nearestSafeZone.bearing}</strong>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                    <span className="text-[10px] font-bold text-slate-600 uppercase block mb-1">FIELD ACTION RECOMMENDATION</span>
+                    <p className="text-[11px] text-slate-700 leading-relaxed">
+                      {riskProbe.recommendation}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Idle Prompt state */
+              <div 
+                onClick={() => handleQuickProbePreset('HIGH')}
+                className="p-4 border-2 border-dashed border-slate-200 hover:border-sky-400 rounded-xl text-center bg-slate-50/60 cursor-pointer transition"
+              >
+                <Crosshair className="w-6 h-6 text-slate-400 mx-auto mb-1 animate-pulse" />
+                <div className="text-xs font-bold text-slate-700">Click anywhere on the map above to drop a Risk Assessment Probe</div>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Calculates exact ground elevation, flood water depth, risk classification (High 🔴, Medium 🟡, Safe 🟢), and vehicle passability.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Elevation Subtraction (DSM - DEM) Transect Cross-Section */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <Mountain className="w-4 h-4 text-blue-600" />
+                  Elevation Subtraction Transect Profile (DSM Water Minus DEM Ground)
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Calculates real flood surge depth across 8 ground sampling stations
+                </p>
+              </div>
+              <span className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold rounded">
+                NET SURGE: +{elevation.net_surge_depth_m || 1.20}m
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 pt-2">
+              {(elevation.transect_points || []).map((pt: any, idx: number) => {
+                const isMax = pt.water_depth_m >= 1.8;
+                const isDry = pt.water_depth_m === 0;
+                return (
+                  <div
+                    key={idx}
+                    className={`p-2.5 rounded-lg border text-center transition ${
+                      isMax
+                        ? 'bg-red-50 border-red-300 ring-1 ring-red-400'
+                        : isDry
+                        ? 'bg-emerald-50 border-emerald-300'
+                        : 'bg-slate-50 border-slate-200'
+                    }`}
+                  >
+                    <div className="text-[10px] font-bold text-slate-600 truncate">{pt.station.split(' ')[0]}</div>
+                    <div className={`text-base font-bold font-mono my-1 ${
+                      isMax ? 'text-red-700' : isDry ? 'text-emerald-700' : 'text-blue-700'
+                    }`}>
+                      {pt.water_depth_m.toFixed(2)}m
+                    </div>
+                    <div className="text-[9px] font-mono text-slate-400 truncate">
+                      G:{pt.ground_dem_m}m | W:{pt.water_dsm_m}m
+                    </div>
+                    <div className={`text-[9px] font-bold uppercase mt-1 px-1 rounded truncate ${
+                      isMax ? 'bg-red-200 text-red-800' : isDry ? 'bg-emerald-200 text-emerald-800' : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {pt.status.replace('_', ' ')}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Stranded Survivors Queue & Evacuation Routes (4 cols) */}
+        <div className="lg:col-span-4 space-y-4">
+          {/* Stranded Survivors Priority Queue */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Users className="w-4 h-4 text-red-600" />
+                Drone-Detected Survivor Clusters ({detections.filter((d: any) => d.detection_type === 'SURVIVOR_CLUSTER').length})
+              </h3>
+              <span className="px-2 py-0.5 bg-red-100 text-red-800 text-[10px] font-bold rounded animate-pulse">
+                LIFE THREAT
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {detections
+                .filter((d: any) => d.detection_type === 'SURVIVOR_CLUSTER')
+                .map((survivor: any) => {
+                  const isSelected = selectedSurvivorId === survivor.id;
+                  const currentTeam = selectedTeamMap[survivor.id] || survivor.assigned_team_id || 'RT-02';
+
+                  return (
+                    <div
+                      key={survivor.id}
+                      onClick={() => handleSelectSurvivor(survivor)}
+                      className={`border rounded-xl p-3.5 transition cursor-pointer relative ${
+                        isSelected 
+                          ? 'border-red-500 bg-red-50 shadow-md ring-2 ring-red-400/50' 
+                          : 'border-red-200 bg-red-50/40 hover:bg-red-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-1.5 truncate max-w-[210px]">
+                          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${survivor.is_rescued ? 'bg-emerald-500' : 'bg-red-600 animate-ping'}`} />
+                          <span className="font-bold text-red-950 text-xs truncate">
+                            {survivor.title}
+                          </span>
+                        </div>
+                        <span className="px-2 py-0.5 bg-red-600 text-white font-mono font-bold text-[10px] rounded-full flex-shrink-0">
+                          {survivor.headcount} SOULS
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-slate-600 leading-relaxed mb-2.5">
+                        {survivor.description}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-2 text-[10px] font-mono bg-white p-2 rounded-lg border border-red-100 mb-3">
+                        <div>
+                          <span className="text-slate-400 block">WATER DEPTH</span>
+                          <strong className="text-blue-700">{survivor.water_depth_m}m</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">AI CONFIDENCE</span>
+                          <strong className="text-emerald-700">{(survivor.confidence * 100).toFixed(1)}%</strong>
+                        </div>
+                      </div>
+
+                      {/* Dispatched vs Ready for Dispatch State */}
+                      {survivor.is_rescued ? (
+                        <div className="space-y-2 pt-1" onClick={(e) => e.stopPropagation()}>
+                          <div className="p-2 bg-emerald-50 border border-emerald-200 rounded-lg text-[11px] flex items-center justify-between text-emerald-800">
+                            <span className="flex items-center gap-1.5 font-bold">
+                              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                              Unit Dispatched ({survivor.assigned_team_id || 'RT-02'})
+                            </span>
+                            <span className="text-[10px] font-mono bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded font-bold animate-pulse">
+                              EN ROUTE • ETA 8m
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => setTrackingSurvivor(survivor)}
+                              className="flex-1 py-1.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-sm transition flex items-center justify-center gap-1"
+                            >
+                              <Radio className="w-3.5 h-3.5" />
+                              Live Track Unit
+                            </button>
+                            <button
+                              onClick={() => navigate('/command/rescue')}
+                              className="py-1.5 px-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold rounded-lg text-xs border border-slate-300 transition flex items-center gap-1 shadow-sm"
+                              title="Open Rescue Operations Page"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                              SAR Matrix
+                            </button>
+                            <button
+                              onClick={(e) => handleResetSingleSurvivor(e, survivor.id)}
+                              className="py-1.5 px-2 bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-800 rounded-lg text-xs border border-slate-300 transition shadow-sm"
+                              title="Reset dispatch status to test again"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 pt-1" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center gap-1.5">
+                            <select
+                              value={selectedTeamMap[survivor.id] || 'RT-02'}
+                              onChange={(e) => setSelectedTeamMap(prev => ({ ...prev, [survivor.id]: e.target.value }))}
+                              className="flex-1 bg-white border border-slate-300 text-slate-800 text-[11px] font-semibold rounded-lg px-2 py-1.5 outline-none focus:border-red-500"
+                            >
+                              <option value="RT-02">RT-02: APF Inflatable Rafts (Water SAR)</option>
+                              <option value="RT-01">RT-01: Nepal Army Helicopter (Winch)</option>
+                              <option value="RT-03">RT-03: Red Cross Swiftwater Unit</option>
+                            </select>
+                          </div>
+
+                          <button
+                            onClick={() => handleDispatch(survivor.id, selectedTeamMap[survivor.id] || 'RT-02')}
+                            disabled={dispatchingId === survivor.id}
+                            className="w-full py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold rounded-lg text-xs shadow-sm transition flex items-center justify-center gap-1.5"
+                          >
+                            <Radio className={`w-3.5 h-3.5 ${dispatchingId === survivor.id ? 'animate-spin' : ''}`} />
+                            {dispatchingId === survivor.id ? 'Dispatching Field Unit...' : `🚨 Dispatch Unit ${selectedTeamMap[survivor.id] || 'RT-02'} Now`}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+
+          {/* Blocked vs. Passable Evacuation Routes Matrix */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Navigation className="w-4 h-4 text-sky-600" />
+                UAV Evaluated Evacuation Routes ({routes.length})
+              </h3>
+            </div>
+
+            <div className="space-y-2.5">
+              {routes.map((rte: any) => {
+                const isBlocked = rte.passability === 'IMPASSABLE_BLOCKED';
+                const isBoat = rte.passability === 'PASSABLE_BOAT_AMPHIBIOUS';
+                return (
+                  <div
+                    key={rte.route_id}
+                    className={`p-3 rounded-lg border text-xs transition ${
+                      isBlocked
+                        ? 'border-red-200 bg-red-50/50'
+                        : isBoat
+                        ? 'border-sky-200 bg-sky-50/50'
+                        : 'border-emerald-200 bg-emerald-50/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-slate-900 truncate">{rte.name}</span>
+                      <span className={`px-2 py-0.5 text-[9px] font-bold rounded ${
+                        isBlocked
+                          ? 'bg-red-200 text-red-900'
+                          : isBoat
+                          ? 'bg-sky-200 text-sky-900'
+                          : 'bg-emerald-200 text-emerald-900'
+                      }`}>
+                        {isBlocked ? 'BLOCKED' : isBoat ? 'BOAT ONLY' : 'OPEN'}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-slate-600 mb-1">{rte.obstruction}</div>
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                      <span>Water Depth: <strong>{rte.water_depth_m}m</strong></span>
+                      <span className="font-semibold text-slate-700">{rte.recommended_for.split('/')[0]}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 1. INTERACTIVE "HOW IT WORKS" PIPELINE ARCHITECTURE GUIDE MODAL */}
+      {/* ========================================================================= */}
+      {showGuideModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl text-white">
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between sticky top-0 bg-slate-900 z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400 flex items-center justify-center text-sky-400">
+                  <Info className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold">Drone Photogrammetry & Deep Learning Architecture</h2>
+                  <p className="text-xs text-slate-400">How SentinelAid transforms raw drone flights into sub-meter flood intelligence</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowGuideModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Visual Pipeline Flowchart */}
+              <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs">
+                <div className="text-sky-400 font-bold mb-3 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" /> COMPLETE END-TO-END PIPELINE FLOW
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <div className="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                    <div className="text-slate-400 text-[10px]">STEP 01</div>
+                    <div className="font-bold text-sky-300 mt-1">Drone UAV Flight</div>
+                    <div className="text-[11px] text-slate-400 mt-1">RGB + NIR dual cameras capture 65m AGL with 80% front overlap</div>
+                  </div>
+                  <div className="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                    <div className="text-slate-400 text-[10px]">STEP 02</div>
+                    <div className="font-bold text-emerald-300 mt-1">WebODM Stitching</div>
+                    <div className="text-[11px] text-slate-400 mt-1">Structure-from-Motion generates 2.4cm orthomosaic & 3D DSM</div>
+                  </div>
+                  <div className="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                    <div className="text-slate-400 text-[10px]">STEP 03</div>
+                    <div className="font-bold text-purple-300 mt-1">Deep Learning & Math</div>
+                    <div className="text-[11px] text-slate-400 mt-1">YOLOv8-Seg pixel classification + (DSM - DEM) depth calculation</div>
+                  </div>
+                  <div className="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                    <div className="text-slate-400 text-[10px]">STEP 04</div>
+                    <div className="font-bold text-red-300 mt-1">Tactical Action</div>
+                    <div className="text-[11px] text-slate-400 mt-1">Immediate survivor rescue dispatch & ambulance route clearances</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Elevation Subtraction Formula Explained */}
+              <div className="p-4 bg-blue-950/40 rounded-xl border border-blue-900/60">
+                <h3 className="font-bold text-blue-300 text-sm flex items-center gap-2 mb-2">
+                  <Mountain className="w-4 h-4 text-blue-400" />
+                  The Science: How Water Depth is Measured (Elevation Subtraction)
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed mb-3">
+                  Satellites can only detect <em>where</em> water is. Drones with photogrammetry or LiDAR can measure <em>how deep</em> the water is by subtracting baseline terrain height:
+                </p>
+                <div className="bg-slate-950 p-3 rounded-lg font-mono text-xs text-center border border-blue-800/80 text-blue-200">
+                  <strong className="text-emerald-400">Net Flood Surge Depth</strong> = <strong className="text-sky-300">DSM (Water Surface Datum)</strong> &minus; <strong className="text-orange-300">DEM (Pre-Disaster Ground Level)</strong>
+                </div>
+                <div className="text-[11px] text-slate-400 mt-2">
+                  Example in Sector 4B: The drone measures water surface at <strong>3.80m</strong> above sea level. The pre-flood baseline ground DEM was at <strong>2.60m</strong>.
+                  The resulting surge depth is <strong>3.80m &minus; 2.60m = 1.20m</strong>.
+                </div>
+              </div>
+
+              {/* The 4 Outputs Table */}
+              <div>
+                <h3 className="font-bold text-slate-200 text-sm mb-3">The 4 Mission-Critical Outputs Delivered:</h3>
+                <div className="space-y-2.5">
+                  <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400"><Droplets className="w-4 h-4" /></div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-200">1. Exact Flood Footprint</h4>
+                      <p className="text-[11px] text-slate-400">Centimeter-accurate vector polygons showing the precise water edge, capturing flooded streets, schoolyards, and yards that satellites miss.</p>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400"><Mountain className="w-4 h-4" /></div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-200">2. Water Depth Grids</h4>
+                      <p className="text-[11px] text-slate-400">Real-time depth measurements at every pixel. Determines if roads are passable by foot (&lt;0.15m), high-clearance truck (&lt;0.5m), or boat-only (&gt;0.8m).</p>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-orange-500/10 text-orange-400"><AlertTriangle className="w-4 h-4" /></div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-200">3. Blocked Evacuation Routes</h4>
+                      <p className="text-[11px] text-slate-400">Automated spatial intersection between roads and high flood depths. Identifies submerged culverts, washed-out asphalt, and reroutes ambulances.</p>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-red-500/10 text-red-400"><Users className="w-4 h-4" /></div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-200">4. Stranded Survivor Locations</h4>
+                      <p className="text-[11px] text-slate-400">Computer vision detects groups of people waving or stranded on rooftops. One click dispatches rescue team units (e.g. Unit RT-02) directly to their GPS coordinates.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-slate-800 bg-slate-950 flex justify-end">
+              <button
+                onClick={() => setShowGuideModal(false)}
+                className="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl transition"
+              >
+                Got It, Return to Drone Console
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2. LIVE DRONE AERIAL CAMERA HUD STREAM MODAL */}
+      {/* ========================================================================= */}
+      {showLiveStreamModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl text-white">
+            {/* Top Modal Bar */}
+            <div className="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                <span className="text-xs font-mono font-bold text-red-400 uppercase tracking-wider">LIVE RTSP STREAM &bull; UAV-EAGLE-01</span>
+                <span className="text-xs text-slate-500 font-mono">1080P @ 60FPS</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="bg-slate-800 p-1 rounded-lg flex items-center text-xs">
+                  <button 
+                    onClick={() => setStreamMode('RGB')}
+                    className={`px-3 py-1 rounded font-bold transition ${streamMode === 'RGB' ? 'bg-sky-600 text-white' : 'text-slate-400'}`}
+                  >
+                    RGB Optical
+                  </button>
+                  <button 
+                    onClick={() => setStreamMode('THERMAL')}
+                    className={`px-3 py-1 rounded font-bold transition ${streamMode === 'THERMAL' ? 'bg-amber-600 text-white' : 'text-slate-400'}`}
+                  >
+                    FLIR Thermal IR
+                  </button>
+                </div>
+                <button
+                  onClick={() => setAiBoundingBoxes(!aiBoundingBoxes)}
+                  className={`px-2.5 py-1 rounded text-xs font-bold transition border ${
+                    aiBoundingBoxes ? 'bg-emerald-950 border-emerald-600 text-emerald-300' : 'bg-slate-800 border-slate-700 text-slate-400'
+                  }`}
+                >
+                  AI Bounding: {aiBoundingBoxes ? 'ON' : 'OFF'}
+                </button>
+                <button 
+                  onClick={() => setShowLiveStreamModal(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 ml-2"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Video Canvas Simulated Viewport */}
+            <div className={`relative h-[500px] w-full overflow-hidden flex items-center justify-center transition-colors duration-500 ${
+              streamMode === 'RGB' ? 'bg-gradient-to-b from-sky-900 via-slate-800 to-slate-950' : 'bg-gradient-to-b from-purple-950 via-slate-900 to-black'
+            }`}>
+              {/* Background Simulated Landscape Gradients */}
+              <div className="absolute inset-0 opacity-40">
+                <div className="absolute top-1/4 left-1/4 w-96 h-48 rounded-full bg-blue-500/30 blur-3xl"></div>
+                <div className="absolute bottom-10 right-1/4 w-80 h-40 rounded-full bg-cyan-600/30 blur-2xl"></div>
+              </div>
+
+              {/* HUD Crosshairs Overlay */}
+              <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6 font-mono text-xs text-emerald-400/90">
+                {/* Top Telemetry */}
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div>ALT: <strong className="text-white">{selectedMissionId === 'drn-msn-nepal' ? '70.0m AGL' : '64.8m AGL'}</strong></div>
+                    <div>SPD: <strong className="text-white">28.4 km/h</strong></div>
+                    <div>GIMBAL PITCH: <strong className="text-white">-60.0°</strong></div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[10px] tracking-widest text-emerald-500">
+                      {selectedMissionId === 'drn-msn-nepal' ? 'BAGMATI BASIN • HEADING 045° NE' : 'DELTA SECTOR 4B • HEADING 082° ENE'}
+                    </div>
+                    <div className="w-36 h-1 bg-emerald-500/40 mx-auto mt-1 rounded"></div>
+                  </div>
+                  <div className="text-right">
+                    <div>GPS: <strong className="text-white">{selectedMissionId === 'drn-msn-nepal' ? '27.6850° N, 85.2950° E' : '21.8458° N, 89.5442° E'}</strong></div>
+                    <div>RTK FIX: <strong className="text-emerald-400">±1.8cm [FIXED]</strong></div>
+                    <div>BATTERY: <strong className="text-white">84% (32m REMAINING)</strong></div>
+                  </div>
+                </div>
+
+                {/* Center Reticle */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-emerald-500/30 rounded-full flex items-center justify-center pointer-events-none">
+                  <div className="w-6 h-0.5 bg-emerald-400"></div>
+                  <div className="h-6 w-0.5 bg-emerald-400 absolute"></div>
+                  <div className="absolute -top-6 text-[10px] text-emerald-300 font-bold">TARGET LOCK</div>
+                </div>
+
+                {/* Simulated AI Object Bounding Boxes */}
+                {aiBoundingBoxes && (
+                  <>
+                    {/* Bounding Box 1: Rooftop Survivors */}
+                    <div className="absolute top-[32%] left-[45%] border-2 border-red-500 bg-red-500/10 p-1 rounded font-mono text-[10px] text-white">
+                      <div className="bg-red-600 text-white px-1 font-bold inline-block">
+                        {selectedMissionId === 'drn-msn-nepal' ? 'SURVIVORS (42 SOULS) 98.5%' : 'SURVIVORS (35 SOULS) 98.4%'}
+                      </div>
+                      <div className="text-red-200 mt-1">
+                        {selectedMissionId === 'drn-msn-nepal' ? 'BALKHU VEGETABLE MARKET ROOF' : 'COASTAL PRIMARY SCHOOL ROOF'}
+                      </div>
+                    </div>
+
+                    {/* Bounding Box 2: Submerged Culvert */}
+                    <div className="absolute bottom-[28%] left-[22%] border-2 border-amber-500 bg-amber-500/10 p-1 rounded font-mono text-[10px] text-white">
+                      <div className="bg-amber-600 text-white px-1 font-bold inline-block">
+                        {selectedMissionId === 'drn-msn-nepal' ? 'ROAD CUTOFF (2.20m DEPTH) 99.2%' : 'ROAD CUTOFF (1.85m DEPTH) 96.1%'}
+                      </div>
+                      <div className="text-amber-200 mt-1">
+                        {selectedMissionId === 'drn-msn-nepal' ? 'BALKHU RING ROAD UNDERPASS' : 'HWY-4B WESTBOUND CULVERT'}
+                      </div>
+                    </div>
+
+                    {/* Bounding Box 3: Safe Landing Zone */}
+                    <div className="absolute top-[25%] right-[22%] border-2 border-emerald-500 bg-emerald-500/10 p-1 rounded font-mono text-[10px] text-white">
+                      <div className="bg-emerald-600 text-white px-1 font-bold inline-block">
+                        HIGH GROUND DROP ZONE 99.2%
+                      </div>
+                      <div className="text-emerald-200 mt-1">
+                        {selectedMissionId === 'drn-msn-nepal' ? 'NORTH LEVEE SLIPWAY (ELEV: 1298m)' : 'DRY LEVEE PASS (ELEV: 4.8m)'}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Bottom Status */}
+                <div className="flex justify-between items-end text-[11px]">
+                  <div>
+                    STREAM: <strong className="text-white">ENCRYPTED AES-256</strong> &bull; LATENCY: <strong className="text-emerald-300">42ms</strong>
+                  </div>
+                  <div className="text-right">
+                    CAMERA: <strong className="text-white">SONY FULL-FRAME 45MP SENSOR</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Controls */}
+            <div className="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3 text-slate-400">
+                <span className="flex items-center gap-1"><Wifi className="w-3.5 h-3.5 text-emerald-400" /> Link: 98%</span>
+                <span className="flex items-center gap-1"><BatteryCharging className="w-3.5 h-3.5 text-emerald-400" /> 84% Battery</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const firstDet = detections.find((d: any) => d.detection_type === 'SURVIVOR_CLUSTER');
+                    if (firstDet) handleDispatch(firstDet.id, 'RT-02');
+                    setShowLiveStreamModal(false);
+                  }}
+                  className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition flex items-center gap-1.5"
+                >
+                  <Radio className="w-3.5 h-3.5" /> Quick Dispatch RT-02 to Locked Crosshairs
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 3. SAR LAWNMOWER GRID FLIGHT PLANNER MODAL */}
+      {/* ========================================================================= */}
+      {showFlightPlanModal && flightPlan && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl text-white">
+            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-400 flex items-center justify-center text-indigo-400">
+                  <Plane className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold">Automated Search-and-Rescue Grid Flight Plan</h2>
+                  <p className="text-xs text-slate-400">Double-grid lawnmower pattern for photogrammetry reconstruction</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowFlightPlanModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              {/* Flight Metrics Summary */}
+              <div className="grid grid-cols-4 gap-3">
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                  <div className="text-[10px] text-slate-400 uppercase font-bold">FLIGHT DISTANCE</div>
+                  <div className="text-xl font-bold font-mono text-indigo-400 mt-0.5">{flightPlan.total_distance_km} km</div>
+                </div>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                  <div className="text-[10px] text-slate-400 uppercase font-bold">EST. FLIGHT TIME</div>
+                  <div className="text-xl font-bold font-mono text-emerald-400 mt-0.5">{flightPlan.estimated_flight_time_min} mins</div>
+                </div>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                  <div className="text-[10px] text-slate-400 uppercase font-bold">BATTERY DRAW</div>
+                  <div className="text-xl font-bold font-mono text-amber-400 mt-0.5">{flightPlan.battery_consumption_est_pct}%</div>
+                </div>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                  <div className="text-[10px] text-slate-400 uppercase font-bold">IMAGE OVERLAP</div>
+                  <div className="text-xl font-bold font-mono text-sky-400 mt-0.5">{flightPlan.overlap_forward_pct}% / {flightPlan.overlap_side_pct}%</div>
+                </div>
+              </div>
+
+              {/* Waypoints Sequence */}
+              <div>
+                <h4 className="text-xs font-bold text-slate-300 mb-2">Calculated Waypoints Sequence ({flightPlan.waypoints?.length} Waypoints)</h4>
+                <div className="max-h-48 overflow-y-auto space-y-1.5 border border-slate-800 rounded-xl p-2 bg-slate-950 font-mono text-[11px]">
+                  {flightPlan.waypoints?.map((wp: any) => (
+                    <div key={wp.waypoint_id} className="flex items-center justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
+                      <span className="font-bold text-indigo-300">{wp.waypoint_id}</span>
+                      <span className="text-slate-400">Lat: {wp.lat.toFixed(5)}, Lng: {wp.lng.toFixed(5)}</span>
+                      <span className="text-emerald-400">{wp.alt_m}m AGL</span>
+                      <span className="text-slate-300">{wp.action}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-xs text-slate-400 bg-indigo-950/30 p-3 rounded-xl border border-indigo-900/50">
+                💡 <strong>Notice:</strong> The computed flight path has been plotted as an overlay on the Tactical Drone Recon map. The drone will execute an automated photogrammetry pass with 80% overlap to enable WebODM orthomosaic stitching.
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-slate-800 bg-slate-950 flex justify-between items-center">
+              <span className="text-xs text-slate-400">Target Altitude: {flightPlan.flight_altitude_m}m AGL</span>
+              <button
+                onClick={() => setShowFlightPlanModal(false)}
+                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition"
+              >
+                Close & View Grid on Map
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 4. UPLOAD / INGEST DRONE AERIAL SURVEY IMAGERY MODAL */}
+      {/* ========================================================================= */}
+      {showUploadModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl text-white">
+            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400 flex items-center justify-center text-sky-400">
+                  <UploadCloud className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold">Ingest Tactical Drone Imagery</h2>
+                  <p className="text-xs text-slate-400">Upload geotagged flight photos for WebODM & AI processing</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowUploadModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              {/* Dropzone */}
+              <div className="border-2 border-dashed border-slate-700 hover:border-sky-500 rounded-xl p-6 text-center bg-slate-950 transition cursor-pointer">
+                <UploadCloud className="w-10 h-10 text-slate-500 mx-auto mb-2" />
+                <div className="text-sm font-bold text-slate-200">Drag & Drop Drone Flight Survey Images</div>
+                <p className="text-xs text-slate-500 mt-1">Supports DJI JPG, DNG, TIFF with EXIF GPS tags or GeoTIFF orthomosaic</p>
+                <div className="mt-3 inline-block px-3 py-1 bg-slate-800 text-xs font-semibold rounded-lg text-slate-300">
+                  Browse Flight Files (248 Photos Selected)
+                </div>
+              </div>
+
+              {/* Flight Specs Form */}
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-slate-400 font-bold mb-1">UAV Platform / Drone Model</label>
+                  <select 
+                    value={uploadDroneModel}
+                    onChange={(e) => setUploadDroneModel(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white"
+                  >
+                    <option>DJI Matrice 300 RTK</option>
+                    <option>DJI Mavic 3 Enterprise Thermal</option>
+                    <option>WingtraOne Gen II VTOL</option>
+                    <option>Autel EVO Max 4T</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">Payload Sensor</label>
+                    <select 
+                      value={uploadSensorType}
+                      onChange={(e) => setUploadSensorType(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white"
+                    >
+                      <option>RGB + NIR Dual Sensor</option>
+                      <option>Zenmuse P1 (45MP Full-Frame)</option>
+                      <option>Zenmuse L1 (LiDAR + RGB)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">Flight Altitude (AGL)</label>
+                    <input 
+                      type="number"
+                      value={uploadAltitude}
+                      onChange={(e) => setUploadAltitude(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar when uploading */}
+              {isUploading && (
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-mono">
+                    <span className="text-slate-400">Uploading & Stitches WebODM Orthophoto...</span>
+                    <span className="text-sky-400">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-sky-500 h-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t border-slate-800 bg-slate-950 flex justify-end gap-2">
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUploadSubmit}
+                disabled={isUploading}
+                className="px-5 py-2 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                {isUploading ? 'Processing Pipeline...' : 'Start Photogrammetry Pipeline'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 5. TACTICAL SAR LIVE DEPLOYMENT & RADIO TRACKING MODAL */}
+      {/* ========================================================================= */}
+      {trackingSurvivor && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl text-white">
+            {/* Header */}
+            <div className="p-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <Radio className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-bold text-white">Live SAR Unit Telemetry & Dispatch</h2>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 border border-emerald-700 text-emerald-300 font-mono">
+                      UNIT {trackingSurvivor.assigned_team_id || 'RT-02'} ACTIVE
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400">Real-time rescue vector tracking & hazard avoidance stream</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setTrackingSurvivor(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              {/* Mission Summary Banner */}
+              <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="text-[10px] text-slate-400 uppercase font-mono font-bold">TARGET SURVIVOR CLUSTER</div>
+                  <div className="font-bold text-white text-sm mt-0.5">{trackingSurvivor.title}</div>
+                  <div className="text-xs text-red-400 font-semibold mt-0.5">
+                    {trackingSurvivor.headcount} Souls trapped • {trackingSurvivor.water_depth_m}m flood surge
+                  </div>
+                </div>
+                <div className="text-right sm:border-l sm:border-slate-800 sm:pl-4">
+                  <div className="text-[10px] text-slate-400 uppercase font-mono font-bold">STATUS & SPEED</div>
+                  <div className="text-sm font-bold font-mono text-emerald-400 mt-0.5">12 knots (Transit)</div>
+                  <div className="text-xs text-slate-400">ETA: ~7 mins</div>
+                </div>
+              </div>
+
+              {/* Progress Milestones Tracker */}
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                <div className="text-[11px] font-bold text-slate-300 flex items-center justify-between">
+                  <span>DEPLOYMENT STAGES</span>
+                  <span className="text-emerald-400 font-mono">STAGE 3 OF 4</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-mono">
+                  <div className="p-2 rounded bg-emerald-950/60 border border-emerald-700/60 text-emerald-300">
+                    <Check className="w-3.5 h-3.5 mx-auto mb-1 text-emerald-400" />
+                    1. Acknowledged
+                  </div>
+                  <div className="p-2 rounded bg-emerald-950/60 border border-emerald-700/60 text-emerald-300">
+                    <Check className="w-3.5 h-3.5 mx-auto mb-1 text-emerald-400" />
+                    2. Craft Launched
+                  </div>
+                  <div className="p-2 rounded bg-sky-950 border border-sky-600 text-sky-200 font-bold">
+                    <Navigation2 className="w-3.5 h-3.5 mx-auto mb-1 text-sky-400" />
+                    3. River Transit
+                  </div>
+                  <div className="p-2 rounded bg-slate-900 border border-slate-800 text-slate-500">
+                    <Users className="w-3.5 h-3.5 mx-auto mb-1" />
+                    4. Extraction
+                  </div>
+                </div>
+              </div>
+
+              {/* Tactical Radio Transmissions Log */}
+              <div>
+                <div className="flex items-center justify-between text-xs font-bold text-slate-300 mb-1.5">
+                  <span className="flex items-center gap-1.5">
+                    <RadioTower className="w-4 h-4 text-sky-400" />
+                    Live Radio VHF Channel 16 / TAC-04 Transmissions
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">SECURE MESH</span>
+                </div>
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-[11px] space-y-2 max-h-36 overflow-y-auto">
+                  <div className="text-slate-400">
+                    <span className="text-sky-400">[00:41:10] HQ:</span> Drone UAV confirms {trackingSurvivor.headcount} souls on rooftop. Water depth {trackingSurvivor.water_depth_m}m.
+                  </div>
+                  <div className="text-slate-300">
+                    <span className="text-emerald-400">[00:41:28] RT-02:</span> Zodiac inflatable launched from Tribhuvan staging slipway.
+                  </div>
+                  <div className="text-amber-300">
+                    <span className="text-orange-400">[00:41:52] HQ WARNING:</span> Underpass impassable due to raging backflow. Divert via Bagmati North Levee track.
+                  </div>
+                  <div className="text-slate-200">
+                    <span className="text-emerald-400">[00:42:15] RT-02:</span> Copy underpass hazard. Rerouting along North Levee. 500m to survivor terrace.
+                  </div>
+                </div>
+              </div>
+
+              {/* Safety & Route Clearance Guidance */}
+              <div className="p-3 bg-indigo-950/30 border border-indigo-900/50 rounded-xl text-xs flex items-start gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+                <div className="text-slate-300 text-[11px] leading-relaxed">
+                  <strong>Tactical Routing Advisory:</strong> Ground navigation algorithms have redirected Unit {trackingSurvivor.assigned_team_id || 'RT-02'} along the safe Bagmati North Levee corridor, bypassing the submerged Balkhu underpass.
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="p-4 border-t border-slate-800 bg-slate-950 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <button
+                onClick={(e) => {
+                  handleResetSingleSurvivor(e, trackingSurvivor.id);
+                  setTrackingSurvivor(null);
+                }}
+                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition flex items-center gap-1.5"
+              >
+                <RotateCcw className="w-3.5 h-3.5" /> Reset Dispatch
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setTrackingSurvivor(null);
+                    navigate('/command/rescue');
+                  }}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Open Rescue Operations Matrix
+                </button>
+                <button
+                  onClick={() => setTrackingSurvivor(null)}
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

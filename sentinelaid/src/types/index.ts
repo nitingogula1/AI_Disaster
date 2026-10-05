@@ -224,6 +224,8 @@ export interface OptimizedRoute {
   waypoints: { name: string; position: [number, number] }[];
   path: [number, number][];
   details?: string;
+  turn_by_turn?: { km: number; instruction: string; detail?: string }[];
+  turnByTurn?: { km: number; instruction: string; detail?: string }[];
 }
 
 // --- Alerts ---

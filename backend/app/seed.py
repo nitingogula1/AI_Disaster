@@ -232,7 +232,7 @@ def seed_database():
                     team_size=6,
                     leader_name="Lt. Marcus Vance",
                     current_location="En Route to Zone 4B",
-                    current_mission="Delta Sector 4B Extraction",
+                    current_mission="Trishuli Valley Flood Extraction",
                     vehicle_type="Amphibious Craft B-14",
                     latitude=21.850,
                     longitude=89.550,
@@ -401,7 +401,7 @@ def seed_database():
                 Incident(
                     disaster_id="evt-remal-001",
                     incident_code="INC-402",
-                    title="Sector 4B - High School Shelter",
+                    title="Trishuli Secondary School Shelter",
                     description="Access cut off by 1.4m standing delta flash water. 320 civilians reported sheltering on level 2 roof.",
                     incident_type="FLASH_FLOOD",
                     severity="CRITICAL",

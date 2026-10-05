@@ -137,7 +137,7 @@ export default function DamageAssessmentPage() {
                       <h3 className="text-[14px] font-bold text-text-primary mt-1">{asset.location}</h3>
                       <p className="text-[11px] text-text-muted mt-1">Catastrophic roof collapse, internal load-bearing structural shearing, surrounded by 1.3m standing storm-surge floodwater.</p>
                       <div className="grid grid-cols-3 gap-2 mt-2 text-[10px]">
-                        <div><span className="text-text-muted block">AI Confidence</span><span className="font-bold tabular-nums">{asset.aiConfidence}% (ResNet-Seg)</span></div>
+                        <div><span className="text-text-muted block">Heuristic Confidence</span><span className="font-bold tabular-nums">{asset.aiConfidence}% (Spectral Overlap)</span></div>
                         <div><span className="text-text-muted block">Inundation Level</span><span className="font-bold text-critical">{asset.floodDepth}m ({asset.floodType})</span></div>
                         <div><span className="text-text-muted block">Civilian Density</span><span className="font-bold">~65 trapped</span></div>
                       </div>
@@ -182,11 +182,11 @@ export default function DamageAssessmentPage() {
           </div>
           <div className="bg-surface border border-border rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-[13px] font-semibold text-text-primary">AI Verification Telemetry</h3>
+              <h3 className="text-[13px] font-semibold text-text-primary">Damage Telemetry (Heuristic Overlap)</h3>
               <span className="px-2 py-0.5 bg-ai/10 text-ai text-[10px] font-bold rounded tabular-nums">94.6% Mean Conf</span>
             </div>
             <div className="space-y-1 text-[11px]">
-              <div className="flex justify-between"><span className="text-text-muted">Model Architecture:</span><span className="font-medium">ResNet-50 + Siamese SegFormer</span></div>
+              <div className="flex justify-between"><span className="text-text-muted">Assessment Method:</span><span className="font-medium">Spectral Overlap Heuristic (MNDWI / Water Mask)</span></div>
               <div className="flex justify-between"><span className="text-text-muted">Drone Ground-Truth Matches:</span><span className="font-medium tabular-nums">182 / 185 (98.4% alignment)</span></div>
               <div className="flex justify-between"><span className="text-text-muted">InSAR Decorrelation Threshold:</span><span className="font-medium tabular-nums">γ {'<'} 0.31 (High Confidence)</span></div>
             </div>

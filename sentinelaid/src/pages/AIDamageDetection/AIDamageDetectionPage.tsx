@@ -7,7 +7,7 @@ export default function AIDamageDetectionPage() {
       <p className="text-warning font-semibold flex items-center gap-2"><AlertCircle size={18} /> Trained damage detection unavailable</p>
       <p className="text-[13px] text-text-secondary">No verified model weights or tested inference adapter are installed. No damage, confidence, depth or building-count results have been computed.</p>
       <p className="text-[12px] text-text-muted">Enabling this feature requires a selected architecture and compatible checkpoint, documented image normalization, aligned pre/post inputs, class mapping and held-out evaluation. See the project README for integration requirements.</p>
-      <Link className="text-primary underline text-[13px]" to="/command/satellite">Open satellite acquisition for real surface-water analysis</Link>
+      <Link className="text-primary underline text-[13px]" to="/command/gis">Open GIS Tactical Map for flood extent and evacuation corridors</Link>
     </section>
   </div>;
 }

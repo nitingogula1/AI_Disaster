@@ -45,6 +45,22 @@ export const RescuePriorityPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* PRIORITY 1: UNMISSABLE SIMULATED SCENARIO WARNING BANNER */}
+      <div className="bg-amber-500 border-2 border-amber-700 text-slate-950 px-4 py-3 rounded-xl shadow-md flex items-center justify-between gap-3 font-sans">
+        <div className="flex items-center gap-3">
+          <span className="px-2.5 py-1 bg-black text-amber-300 font-mono font-black text-xs rounded tracking-widest uppercase flex items-center gap-1.5 shadow-sm shrink-0">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+            SIMULATED SCENARIO DATA — NOT LIVE
+          </span>
+          <span className="text-xs font-extrabold text-slate-950 tracking-tight">
+            TRAINING DRILL ENVIRONMENT: All casualty counts, priority triage ranks, and trapped civilian figures are synthetic scenario parameters. Do not use for real-life operational dispatch.
+          </span>
+        </div>
+        <span className="hidden lg:inline text-[11px] font-mono font-bold px-2 py-0.5 bg-amber-600 text-white rounded uppercase">
+          EXERCISE DRILL
+        </span>
+      </div>
+
       {/* Toast Notification */}
       {notification && (
         <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-emerald-500/50 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
@@ -66,7 +82,7 @@ export const RescuePriorityPage = () => {
                   Rescue Prioritization & Life-Safety Triage Matrix
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-red-700 border border-red-200">
-                  LIVE EXECUTION MODE
+                  SIMULATED DRILL SCENARIO (NOT LIVE CASUALTIES)
                 </span>
               </div>
               <p className="text-sm text-slate-600">

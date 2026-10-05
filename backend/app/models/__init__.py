@@ -18,6 +18,7 @@ from app.models.route import OptimizedRoute
 from app.models.alert import Alert
 from app.models.report import Report
 from app.models.command import TacticalCommand
+from app.models.drone import DroneMission, DroneDetection
 
 __all__ = [
     "User",
@@ -39,4 +40,6 @@ __all__ = [
     "Alert",
     "Report",
     "TacticalCommand",
+    "DroneMission",
+    "DroneDetection",
 ]

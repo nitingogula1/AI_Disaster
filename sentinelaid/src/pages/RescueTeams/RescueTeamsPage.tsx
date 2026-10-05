@@ -106,7 +106,7 @@ export const RescueTeamsPage = () => {
             <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-slate-600">
               <span className="flex items-center gap-1 font-medium text-slate-800">
                 <Navigation className="w-3.5 h-3.5 text-sky-600" />
-                Mission: Cyclone Remal - Delta Sector 4B Extraction
+                Mission: Cyclone Remal - Trishuli Valley Sector A Extraction
               </span>
               <span className="text-slate-300">|</span>
               <span>Lead Officer: <strong>Lt. Marcus Vance</strong></span>
@@ -316,7 +316,7 @@ export const RescueTeamsPage = () => {
                 A3
               </div>
               <div className="text-xs">
-                <div className="font-bold text-slate-800">Sector 4B Clinic & School</div>
+                <div className="font-bold text-slate-800">Trishuli River Corridor Clinic & School</div>
                 <div className="text-red-600 font-medium">ETA 14:48 (Critical Extraction)</div>
               </div>
             </div>
