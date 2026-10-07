@@ -6,7 +6,6 @@ import DashboardPage from './pages/Dashboard/DashboardPage';
 import DisasterEventsPage from './pages/DisasterEvents/DisasterEventsPage';
 import GISMapPage from './pages/GISMap/GISMapPage';
 import SatelliteComparisonPage from './pages/SatelliteComparison/SatelliteComparisonPage';
-import AIDamageDetectionPage from './pages/AIDamageDetection/AIDamageDetectionPage';
 import DamageAssessmentPage from './pages/DamageAssessment/DamageAssessmentPage';
 import { RescuePriorityPage } from './pages/RescuePriority/RescuePriorityPage';
 import { RouteOptimizationPage } from './pages/RouteOptimization/RouteOptimizationPage';
@@ -33,7 +32,6 @@ export default function App() {
           <Route path="satellite" element={<Navigate to="/command" replace />} />
           <Route path="satellite-comparison" element={<SatelliteComparisonPage />} />
           <Route path="drone-recon" element={<DroneReconPage />} />
-          <Route path="ai-detection" element={<AIDamageDetectionPage />} />
           <Route path="damage" element={<DamageAssessmentPage />} />
           <Route path="rescue-priority" element={<RescuePriorityPage />} />
           <Route path="routes" element={<RouteOptimizationPage />} />

@@ -32,7 +32,7 @@ def build_buildings_geojson(db: Session, op_id: str = "CY-2025-05B") -> Dict[str
     features.append({
         "type": "Feature",
         "properties": {
-            "id": "TGT-4B-SHELTER",
+            "id": "TGT-S4-SHELTER",
             "name": "Trishuli Secondary School Shelter",
             "is_priority_target": True,
             "structural_grade": "Grade 3 (Heavy)",

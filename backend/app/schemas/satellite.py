@@ -59,7 +59,7 @@ class AIDamageSegmentationRequest(BaseModel):
     operation_id: Optional[str] = "EVT-8821-BGD"
     pre_scene_id: Optional[str] = "scn-000"
     post_scene_id: str = Field(..., min_length=1)
-    model: Optional[str] = "ResNet-UNet"
+    model: Optional[str] = "Spectral Overlap Heuristic Engine (No ML Checkpoint)"
     confidence_threshold: Optional[float] = 0.70
 
 class FloodSceneSearchRequest(BaseModel):

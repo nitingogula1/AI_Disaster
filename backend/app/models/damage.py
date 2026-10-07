@@ -28,11 +28,27 @@ class DamageDetection(Base):
     geometry = Column(JSON, nullable=True)  # GeoJSON polygon/point
     area = Column(Float, default=0.0)  # sq meters
     
-    model_name = Column(String(100), default="Dual-Stream Siamese U-Net + Transformer CV")
+    model_name = Column(String(100), default="Spectral Overlap Heuristic Engine (No ML Checkpoint)")
     model_version = Column(String(50), default="v1.4")
     inference_time_ms = Column(Integer, default=1240)
     
     verified = Column(Boolean, default=False)
     rescue_status = Column(String(50), default="ENQUEUED")
     
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class BuildingFootprint(Base):
+    __tablename__ = "building_footprints"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    disaster_id = Column(String(36), ForeignKey("disaster_events.id"), nullable=True, index=True)
+    osm_id = Column(String(50), nullable=True, index=True)
+    name = Column(String(200), nullable=True)
+    geometry = Column(JSON, nullable=False)  # GeoJSON Polygon / MultiPolygon
+    properties = Column(JSON, nullable=True)  # OSM tags
+    centroid_lat = Column(Float, nullable=True)
+    centroid_lon = Column(Float, nullable=True)
+    area_sqm = Column(Float, default=0.0)
+    source = Column(String(50), default="OSM_OVERPASS")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

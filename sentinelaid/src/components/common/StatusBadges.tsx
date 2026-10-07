@@ -95,6 +95,7 @@ const teamStyles: Record<TeamStatus, string> = {
   RETURNING: 'bg-warning/10 text-warning border-warning/30',
   STANDBY: 'bg-panel text-text-secondary border-border',
   UNASSIGNED: 'bg-critical/10 text-critical border-critical/30',
+  DISPATCHED: 'bg-primary/10 text-primary border-primary/30',
 };
 
 export function TeamStatusBadge({ status }: { status: TeamStatus }) {

@@ -10,7 +10,7 @@ from app.schemas.common import success_response
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get("")
-def list_users(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def list_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
     data = [UserResponse.model_validate(u).model_dump() for u in users]
     return success_response(data=data)

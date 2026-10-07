@@ -53,7 +53,7 @@ class ReportService:
         text = [
             "• Sentinel-2 L2A & Sentinel-1A SAR dual pass co-registration completed with 98.2% spatial confidence.",
             "• MNDWI Inundation delta detected +18.64 sq km of surface water expansion across delta sector 4.",
-            "• 4,280 structures surveyed via Siamese SegFormer CV models. 1,126 Level 4/5 catastrophic failures identified.",
+            "• 4,280 structures surveyed via Multi-Spectral Change Detection Models. 1,126 Level 4/5 catastrophic failures identified.",
             "• Primary road cuts: 42 segments severed (18.4 km total network severed). Alternate Route A verified safe."
         ]
         y = height - 190
@@ -81,7 +81,7 @@ class ReportService:
         y -= 22
 
         table_rows = [
-            ("P1-01", "Zone 4B - Riverview", "1,240 (380 vulnerable)", "Amphibious Boat + Medevac", "RT-02 (En Route)"),
+            ("P1-01", "Sector 4 - Riverview", "1,240 (380 vulnerable)", "Amphibious Boat + Medevac", "RT-02 (En Route)"),
             ("P1-02", "Sector 7 - Central Levee", "920 (210 hospital)", "Heavy Lift Air Winch", "RT-05 (Standby)"),
             ("P1-03", "Old Town Island Sector 9", "860 souls", "Inflatable SAR Rafts", "UNASSIGNED"),
             ("P1-04", "East Port Harbor Basin", "640 trapped workers", "Tracked All-Terrain (BV-206)", "RT-09 (Deployed)")

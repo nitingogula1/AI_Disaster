@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.models.damage import DamageDetection
+from app.models.damage import DamageDetection, BuildingFootprint
 from app.services.damage_service import damage_service
 from app.schemas.damage import DamageDetectionItem, DamageSummary
 from app.schemas.common import success_response
@@ -14,8 +14,35 @@ def get_damage_summary_by_operation(operation_id: str, db: Session = Depends(get
     summary = damage_service.get_disaster_damage_summary(db, operation_id)
     return success_response(data=summary)
 
-@router.get("/{disaster_id}")
+@router.get("/{disaster_id}/summary")
+def get_damage_summary(disaster_id: str, db: Session = Depends(get_db)):
+    summary = damage_service.get_disaster_damage_summary(db, disaster_id)
+    return success_response(data=summary)
 
+@router.get("/{disaster_id}/footprints")
+def list_disaster_footprints(
+    disaster_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Returns persisted vector building footprints for the active disaster AOI.
+    """
+    footprints = db.query(BuildingFootprint).filter(BuildingFootprint.disaster_id == disaster_id).all()
+    items = []
+    for fp in footprints:
+        items.append({
+            "id": fp.id,
+            "osm_id": fp.osm_id,
+            "name": fp.name,
+            "centroid_lat": fp.centroid_lat,
+            "centroid_lon": fp.centroid_lon,
+            "area_sqm": fp.area_sqm,
+            "source": fp.source,
+            "properties": fp.properties
+        })
+    return success_response(data={"count": len(items), "footprints": items})
+
+@router.get("/{disaster_id}")
 def list_disaster_damage_assets(
     disaster_id: str,
     category: Optional[str] = None,
@@ -29,7 +56,6 @@ def list_disaster_damage_assets(
         query = query.filter(DamageDetection.damage_grade == grade)
 
     assets = query.all()
-    # Format to match frontend fields
     items = []
     for a in assets:
         items.append({
@@ -48,11 +74,6 @@ def list_disaster_damage_assets(
         })
 
     return success_response(data=items)
-
-@router.get("/{disaster_id}/summary")
-def get_damage_summary(disaster_id: str, db: Session = Depends(get_db)):
-    summary = damage_service.get_disaster_damage_summary(db, disaster_id)
-    return success_response(data=summary)
 
 @router.patch("/{id}/verify")
 def verify_damage_asset(id: str, verified: bool = Query(True), db: Session = Depends(get_db)):

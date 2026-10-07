@@ -578,7 +578,7 @@ const DISASTER_SCENARIOS: TacticalDisasterScenario[] = [
       activeDisasters: { value: '3 Ongoing', sublabel: '1 Critical, 2 Elevated' },
       affectedRegions: { value: '860 km²', sublabel: 'Nagavali Sub-Basin & Rajam Wards' },
       damagedBuildings: { value: '84', sublabel: '+11% vs T-24h (92% AI conf)' },
-      blockedRoads: { value: '3 Segments', sublabel: 'Palakonda Rd & Cherugudupeta Cut' },
+      blockedRoads: { value: '3 Segments', sublabel: 'Palakonda Rd & Saradhi Cut' },
       floodedArea: { value: '18.2 km²', sublabel: 'Agricultural Basin Surge' },
       priorityRescue: { value: '4 Red Zones', sublabel: '2,640 civilians at direct risk' },
     },
@@ -592,7 +592,7 @@ const DISASTER_SCENARIOS: TacticalDisasterScenario[] = [
       [18.468, 83.635]
     ],
     blockedRoadSegments: [
-      [[18.440, 83.645], [18.446, 83.652]], // Cherugudupeta culvert washout
+      [[18.440, 83.645], [18.446, 83.652]], // Saradhi culvert washout
     ],
     places: [
       {
@@ -636,20 +636,20 @@ const DISASTER_SCENARIOS: TacticalDisasterScenario[] = [
       },
       {
         id: 'place-ap-04',
-        name: 'Mushinivalasa',
+        name: 'Pogiri Riverbank Ward',
         district: 'Rajam',
         tier: 'HIGH',
-        pos: [18.4680, 83.6740],
-        depth: '1.1m',
-        depthM: 1.1,
-        population: 2100,
-        stranded: 36,
-        hazardReason: 'Agricultural perimeter overflow from irrigation canal breach.',
+        pos: [18.4720, 83.6350],
+        depth: '1.55m',
+        depthM: 1.55,
+        population: 2150,
+        stranded: 34,
+        hazardReason: 'Arterial bridgehead & riverbank flood breach.',
         status: 'Canal Breach'
       },
       {
         id: 'place-ap-05',
-        name: 'Cherugudupeta',
+        name: 'Saradhi Agricultural Ward',
         district: 'Rajam',
         tier: 'HIGH',
         pos: [18.4280, 83.6410],
@@ -709,7 +709,7 @@ const DISASTER_SCENARIOS: TacticalDisasterScenario[] = [
         id: 'haz-04',
         label: 'WATER 0.8m',
         pos: [18.440, 83.645],
-        detail: 'Cherugudupeta access culvert overflow. Passable only with high-clearance craft.'
+        detail: 'Saradhi access culvert overflow. Passable only with high-clearance craft.'
       }
     ]
   },

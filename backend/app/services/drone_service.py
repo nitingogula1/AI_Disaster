@@ -233,7 +233,7 @@ class DronePipelineService:
                 water_depth_m=1.85,
                 headcount=0,
                 passable_for="NONE",
-                road_segment_name="Sector 4 Access Boulevard (HWY-4B)",
+                road_segment_name="Sector 4 Access Boulevard (HWY-4)",
                 geometry={
                     "type": "LineString",
                     "coordinates": [

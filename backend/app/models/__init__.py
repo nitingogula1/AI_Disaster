@@ -12,7 +12,7 @@ from app.models.satellite import (
     ProcessingResult,
     FloodAnalysisResult,
 )
-from app.models.damage import DamageDetection
+from app.models.damage import DamageDetection, BuildingFootprint
 from app.models.rescue_team import RescueTeam, RescueMission
 from app.models.route import OptimizedRoute
 from app.models.alert import Alert
@@ -34,6 +34,7 @@ __all__ = [
     "ProcessingResult",
     "FloodAnalysisResult",
     "DamageDetection",
+    "BuildingFootprint",
     "RescueTeam",
     "RescueMission",
     "OptimizedRoute",

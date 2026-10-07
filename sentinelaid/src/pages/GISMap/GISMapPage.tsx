@@ -149,7 +149,7 @@ const getDistrictVillages = (districtName: string, baseLat: number, baseLng: num
   const isRajam = dLower.includes('rajam') || dLower.includes('srikakulam') || dLower.includes('vizianagaram') || dLower.includes('andhra');
   const isNepal = dLower.includes('nepal') || dLower.includes('kathmandu') || dLower.includes('trishuli') || dLower.includes('nuwakot') || dLower.includes('bagmati');
 
-  if (isRajam) {
+    if (isRajam) {
     return [
       {
         id: 'vil-r-1',
@@ -160,9 +160,9 @@ const getDistrictVillages = (districtName: string, baseLat: number, baseLng: num
         population: 1420,
         stranded: 58,
         status: 'Evacuation Critical (Boat/Air)',
-        lat: +(baseLat - 0.0125).toFixed(5),
-        lng: +(baseLng - 0.0110).toFixed(5),
-        bearing: '1.8 km SW'
+        lat: +(baseLat - 0.0200).toFixed(5),
+        lng: +(baseLng - 0.0220).toFixed(5),
+        bearing: '2.1 km SW'
       },
       {
         id: 'vil-r-2',
@@ -173,74 +173,74 @@ const getDistrictVillages = (districtName: string, baseLat: number, baseLng: num
         population: 2800,
         stranded: 42,
         status: 'Road Cutoff / Rooftop Rescue',
-        lat: +(baseLat - 0.0075).toFixed(5),
-        lng: +(baseLng + 0.0080).toFixed(5),
-        bearing: '1.1 km SE'
+        lat: +(baseLat - 0.0220).toFixed(5),
+        lng: +(baseLng + 0.0180).toFixed(5),
+        bearing: '1.9 km SE'
       },
       {
         id: 'vil-r-3',
-        name: 'Mushinivalasa',
+        name: 'Pogiri',
         tier: 'HIGH',
-        hazard_reason: 'Low-lying depression adjacent to seasonal stream. Water depth 1.40m. Muddy access pathways washed away.',
-        depth_m: 1.40,
-        population: 980,
-        stranded: 24,
-        status: 'Isolated Settlement',
-        lat: +(baseLat - 0.0160).toFixed(5),
-        lng: +(baseLng - 0.0040).toFixed(5),
-        bearing: '2.0 km South'
+        hazard_reason: 'Low riverbank settlement near arterial bridge on Suvarnamukhi/Vegavathi drainage. Water depth 1.55m. Access pathways washed out.',
+        depth_m: 1.55,
+        population: 2150,
+        stranded: 34,
+        status: 'Riverbank Breach / Cutoff',
+        lat: +(baseLat + 0.0240).toFixed(5),
+        lng: +(baseLng - 0.0220).toFixed(5),
+        bearing: '2.4 km NW'
       },
       {
         id: 'vil-r-4',
-        name: 'Cherugudupeta',
+        name: 'Saradhi',
         tier: 'MEDIUM',
-        hazard_reason: 'Road shoulder overflow (0.55m depth). Accessible by high-clearance 4x4 trucks & tractors.',
+        hazard_reason: 'Residential & agricultural border on eastern fringe of Rajam town. Road shoulder overflow (0.55m depth). Accessible by high-clearance 4x4 trucks & tractors.',
         depth_m: 0.55,
-        population: 1650,
+        population: 1850,
         stranded: 0,
         status: 'Flood Alert / Convoys Only',
-        lat: +(baseLat + 0.0135).toFixed(5),
-        lng: +(baseLng + 0.0140).toFixed(5),
-        bearing: '2.1 km NE'
+        lat: +(baseLat - 0.0020).toFixed(5),
+        lng: +(baseLng + 0.0320).toFixed(5),
+        bearing: '1.8 km East'
       },
       {
         id: 'vil-r-5',
-        name: 'Ambakhandi',
+        name: 'Maredubaka',
         tier: 'MEDIUM',
-        hazard_reason: 'Market fringe waterlogging (0.45m depth). Low-lying lanes blocked. Water receding slowly.',
+        hazard_reason: 'Canal overflow encroaching village approach road (0.45m depth). Low-lying lanes waterlogged. Receding slowly.',
         depth_m: 0.45,
-        population: 1120,
+        population: 1320,
         stranded: 0,
-        status: 'Accessible via Elevated Bypass',
-        lat: +(baseLat + 0.0055).toFixed(5),
-        lng: +(baseLng + 0.0115).toFixed(5),
-        bearing: '1.4 km East'
+        status: 'Accessible via Bypass',
+        lat: +(baseLat + 0.0240).toFixed(5),
+        lng: +(baseLng + 0.0220).toFixed(5),
+        bearing: '2.3 km NE'
       },
       {
         id: 'vil-r-6',
-        name: 'Sarveshwarapuram',
+        name: 'Gadimudidam',
         tier: 'MEDIUM',
-        hazard_reason: 'Agricultural field runoff approaching village perimeter (0.35m depth). Road passable with caution.',
-        depth_m: 0.35,
-        population: 890,
+        hazard_reason: 'Agricultural field runoff approaching village perimeter (0.38m depth). Road passable with caution.',
+        depth_m: 0.38,
+        population: 1480,
         stranded: 0,
         status: 'Caution Passable',
-        lat: +(baseLat + 0.0110).toFixed(5),
-        lng: +(baseLng - 0.0095).toFixed(5),
-        bearing: '1.6 km NW'
+        lat: +(baseLat - 0.0380).toFixed(5),
+        lng: +(baseLng - 0.0040).toFixed(5),
+        bearing: '3.6 km South'
       },
       {
         id: 'vil-r-7',
-        name: 'Sitampeta Ridge',
+        name: 'Kondampeta (GMRIT Campus)',
         tier: 'SAFE',
-        hazard_reason: 'Elevated dry ridge (64m MSL). Primary Medical Triage Unit & clean water dispensary station.',
+        hazard_reason: 'Elevated bedrock plateau (68m MSL). Designated District Civilian Relief Shelter, Triage Hospital & Helicopter LZ.',
         depth_m: 0.0,
         population: 0,
         stranded: 0,
-        status: 'Medical Relief Station',
-        lat: +(baseLat + 0.0180).toFixed(5),
-        lng: +(baseLng + 0.0050).toFixed(5),
-        bearing: '2.2 km North'
+        status: 'Primary Evacuation LZ',
+        lat: +(baseLat + 0.0340).toFixed(5),
+        lng: +(baseLng - 0.0020).toFixed(5),
+        bearing: '2.4 km North'
       }
     ];
   }

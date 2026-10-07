@@ -6,7 +6,7 @@ class AIDetectionRequest(BaseModel):
     disaster_id: str
     pre_scene_id: Optional[str] = None
     post_scene_id: Optional[str] = None
-    model_name: Optional[str] = "Dual-Stream Siamese U-Net + Transformer CV"
+    model_name: Optional[str] = "Spectral Overlap Heuristic Engine (No ML Checkpoint)"
     confidence_threshold: Optional[float] = 0.85
 
 class DamageDetectionItem(BaseModel):

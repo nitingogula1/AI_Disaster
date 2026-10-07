@@ -55,25 +55,37 @@ def update_team_status(id: str, status_val: str = Query(..., alias="status"), db
     return success_response(data={"id": team.id, "status": team.status}, message="Team status updated")
 
 @router.get("/priorities/{disaster_id}")
+def _format_priority_zone(p: dict) -> dict:
+    return {
+        "rank": p["rank"],
+        "zone": p["zone"],
+        "gridCoords": p.get("grid_coords") or p.get("gridCoords"),
+        "grid_coords": p.get("grid_coords") or p.get("gridCoords"),
+        "structuralDamage": p.get("structural_damage") or p.get("structuralDamage"),
+        "structural_damage": p.get("structural_damage") or p.get("structuralDamage"),
+        "populationAtRisk": p.get("population_at_risk") or p.get("populationAtRisk"),
+        "population_at_risk": p.get("population_at_risk") or p.get("populationAtRisk"),
+        "populationDetail": p.get("population_detail") or p.get("populationDetail"),
+        "population_detail": p.get("population_detail") or p.get("populationDetail"),
+        "cutoffLevel": p.get("cutoff_level") or p.get("cutoffLevel"),
+        "cutoff_level": p.get("cutoff_level") or p.get("cutoffLevel"),
+        "cutoffDetail": p.get("cutoff_detail") or p.get("cutoffDetail"),
+        "cutoff_detail": p.get("cutoff_detail") or p.get("cutoffDetail"),
+        "recommendedResponse": p.get("recommended_response") or p.get("recommendedResponse"),
+        "recommended_response": p.get("recommended_response") or p.get("recommendedResponse"),
+        "assignedUnit": p.get("assigned_unit") or p.get("assignedUnit"),
+        "assigned_unit": p.get("assigned_unit") or p.get("assignedUnit"),
+        "unitStatus": p.get("unit_status") or p.get("unitStatus"),
+        "unit_status": p.get("unit_status") or p.get("unitStatus"),
+        "priority": p["priority"],
+        "score": p.get("score", 0.0),
+        "factors": p.get("factors", {})
+    }
+
+@router.get("/priorities/{disaster_id}")
 def get_rescue_priorities(disaster_id: str, db: Session = Depends(get_db)):
     priorities = rescue_service.calculate_priorities(db, disaster_id)
-    # Format to match frontend fields
-    items = []
-    for p in priorities:
-        items.append({
-            "rank": p["rank"],
-            "zone": p["zone"],
-            "gridCoords": p["grid_coords"],
-            "structuralDamage": p["structural_damage"],
-            "populationAtRisk": p["population_at_risk"],
-            "populationDetail": p["population_detail"],
-            "cutoffLevel": p["cutoff_level"],
-            "cutoffDetail": p["cutoff_detail"],
-            "recommendedResponse": p["recommended_response"],
-            "assignedUnit": p["assigned_unit"],
-            "unitStatus": p["unit_status"],
-            "priority": p["priority"]
-        })
+    items = [_format_priority_zone(p) for p in priorities]
     return success_response(data=items)
 
 @router.post("/priorities/calculate")
@@ -86,7 +98,8 @@ def calculate_priorities(req: RescuePriorityCalculationRequest, db: Session = De
         req.water_surge_weight,
         req.cutoff_weight
     )
-    return success_response(data=results, message="AI Priority Matrix re-scored successfully")
+    items = [_format_priority_zone(p) for p in results]
+    return success_response(data=items, message="AI Priority Matrix re-scored successfully")
 
 @router.get("/missions")
 def list_missions(db: Session = Depends(get_db)):

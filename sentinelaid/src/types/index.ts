@@ -172,7 +172,7 @@ export interface DamageAsset {
 
 // --- Rescue ---
 export type RescuePriority = 'P1' | 'P2' | 'P3';
-export type TeamStatus = 'DEPLOYED' | 'EN_ROUTE' | 'ON_SITE' | 'RETURNING' | 'STANDBY' | 'UNASSIGNED';
+export type TeamStatus = 'DEPLOYED' | 'EN_ROUTE' | 'ON_SITE' | 'RETURNING' | 'STANDBY' | 'UNASSIGNED' | 'DISPATCHED';
 
 export interface RescueZone {
   rank: string;

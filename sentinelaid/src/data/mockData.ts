@@ -478,7 +478,7 @@ export const mockDamageAssets: DamageAsset[] = [
 export const mockRescueZones: RescueZone[] = [
   {
     rank: 'P1-01',
-    zone: 'Zone 4B - Riverview',
+    zone: 'Sector 4 - Riverview',
     gridCoords: "21°48'N 89°12'E",
     structuralDamage: 'Level 5 Catastrophic - Multi-story collapse',
     populationAtRisk: 1240,
@@ -601,7 +601,7 @@ export const mockRescueTeams: RescueTeam[] = [
     type: 'Water Rescue',
     status: 'EN_ROUTE',
     members: 6,
-    currentLocation: 'En Route to Zone 4B',
+    currentLocation: 'En Route to Sector 4',
     currentMission: 'Trishuli Valley Flood Evacuation',
     eta: 14,
     distance: 4.2,
@@ -738,7 +738,6 @@ export const navigationItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', path: '/command', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST', 'AI_ANALYST'] },
   { id: 'events', label: 'Disaster Events & Floods', icon: 'AlertTriangle', path: '/command/events', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST', 'AI_ANALYST', 'RESCUE_TEAM'] },
   { id: 'drone-recon', label: 'Tactical Drone Recon', icon: 'Crosshair', path: '/command/drone-recon', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST', 'AI_ANALYST', 'RESCUE_TEAM'] },
-  { id: 'ai-detection', label: 'AI Damage Detection', icon: 'Brain', path: '/command/ai-detection', roles: ['ADMIN', 'AI_ANALYST', 'DISASTER_OFFICER'] },
   { id: 'damage', label: 'Damage Assessment', icon: 'ClipboardList', path: '/command/damage', roles: ['ADMIN', 'DISASTER_OFFICER', 'AI_ANALYST'] },
   { id: 'rescue-priority', label: 'Rescue Priority', icon: 'ShieldAlert', path: '/command/rescue-priority', roles: ['ADMIN', 'DISASTER_OFFICER', 'RESCUE_TEAM'] },
   { id: 'gis-map', label: 'GIS Disaster Map', icon: 'Map', path: '/command/gis', roles: ['ADMIN', 'DISASTER_OFFICER', 'GIS_ANALYST'] },

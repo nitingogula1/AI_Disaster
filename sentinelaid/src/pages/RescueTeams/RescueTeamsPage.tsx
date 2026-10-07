@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Users, AlertTriangle, Radio, Phone, ShieldAlert, CheckCircle, 
-  Clock, Navigation, Droplets, Wind, Battery, Anchor, ChevronRight, 
-  Flame, Check, MessageSquare, AlertCircle
+  Users, AlertTriangle, Radio, ShieldAlert, CheckCircle, 
+  Clock, Navigation, Droplets, Battery, ChevronRight, 
+  Flame, Check, RefreshCw, MapPin, Compass, Shield
 } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { mockRescueTeams } from '../../data/mockData';
+import { rescueService } from '../../services/api';
+import type { RescueTeam, TeamStatus } from '../../types';
+import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -16,24 +18,101 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-const createConsolePin = (text: string, color: string) => {
+const createTeamPin = (text: string, color: string, isSelected: boolean = false) => {
   return L.divIcon({
     className: 'console-pin',
-    html: `<div style="background-color: ${color}; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; font-family: monospace; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">${text}</div>`,
-    iconSize: [60, 24],
-    iconAnchor: [30, 12],
+    html: `<div style="background-color: ${color}; color: white; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px; font-family: monospace; border: ${isSelected ? '3px solid #facc15' : '2px solid white'}; box-shadow: 0 4px 12px rgba(0,0,0,0.5); white-space: nowrap; transform: ${isSelected ? 'scale(1.1)' : 'scale(1)'}; transition: all 0.2s;">${text}</div>`,
+    iconSize: [80, 26],
+    iconAnchor: [40, 13],
   });
 };
 
+function MapRecenter({ center }: { center: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(center, 13, { duration: 1 });
+  }, [center, map]);
+  return null;
+}
+
 export const RescueTeamsPage = () => {
-  const [task1Completed, setTask1Completed] = useState(false);
-  const [headcount, setHeadcount] = useState(45);
-  const [sosActive, setSosActive] = useState(false);
+  const [teams, setTeams] = useState<RescueTeam[]>([]);
+  const [selectedTeamId, setSelectedTeamId] = useState<string>('RT-02');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
+  const [sosActive, setSosActive] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const loadTeams = async () => {
+    setLoading(true);
+    try {
+      const data = await rescueService.getTeams();
+      if (data && data.length > 0) {
+        setTeams(data);
+        if (!data.some(t => t.id === selectedTeamId)) {
+          setSelectedTeamId(data[0].id);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load rescue teams:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTeams();
+  }, []);
+
+  const selectedTeam = teams.find(t => t.id === selectedTeamId) || teams[0];
+
+  const handleStatusChange = async (newStatus: TeamStatus) => {
+    if (!selectedTeam) return;
+    setUpdatingStatus(true);
+    try {
+      await rescueService.updateTeamStatus(selectedTeam.id, newStatus);
+      setTeams(prev => prev.map(t => t.id === selectedTeam.id ? { ...t, status: newStatus } : t));
+      showToast(`${selectedTeam.name} status updated to ${newStatus}`);
+    } catch (err) {
+      console.error('Failed to update status:', err);
+      showToast(`Error updating ${selectedTeam.name} status`);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  // Metrics
+  const activeTeamsCount = teams.filter(t => t.status !== 'STANDBY').length;
+  const deployedCount = teams.filter(t => t.status === 'DEPLOYED' || t.status === 'ON_SITE').length;
+  const dispatchedCount = teams.filter(t => t.status === 'DISPATCHED' || t.status === 'EN_ROUTE').length;
+  const totalPersonnel = teams.reduce((acc, t) => acc + (t.members || 0), 0);
+  const avgFuel = teams.length ? Math.round(teams.reduce((acc, t) => acc + (t.fuel || 80), 0) / teams.length) : 80;
+
+  const currentCenter: [number, number] = selectedTeam?.gpsPosition || [21.848, 89.545];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'DEPLOYED': return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+      case 'ON_SITE': return 'bg-blue-100 text-blue-800 border-blue-300';
+      case 'DISPATCHED':
+      case 'EN_ROUTE': return 'bg-amber-100 text-amber-800 border-amber-300';
+      default: return 'bg-slate-100 text-slate-800 border-slate-300';
+    }
+  };
+
+  const getStatusPinColor = (status: string) => {
+    switch (status) {
+      case 'DEPLOYED': return '#059669';
+      case 'ON_SITE': return '#2563eb';
+      case 'DISPATCHED':
+      case 'EN_ROUTE': return '#d97706';
+      default: return '#64748b';
+    }
   };
 
   return (
@@ -52,8 +131,8 @@ export const RescueTeamsPage = () => {
           <div className="flex items-center gap-3">
             <Flame className="w-6 h-6" />
             <div>
-              <div className="font-bold text-base">EMERGENCY SOS BROADCAST ACTIVE</div>
-              <div className="text-xs text-red-100">All local SAR units & air medevac alerted to your live GPS coordinates!</div>
+              <div className="font-bold text-base">EMERGENCY SOS BROADCAST ACTIVE FOR {selectedTeam?.name || 'UNIT'}</div>
+              <div className="text-xs text-red-100">Live coordinates broadcasted to Incident Command & Air Medevac: {selectedTeam?.gpsPosition?.join(', ')}</div>
             </div>
           </div>
           <button 
@@ -61,167 +140,203 @@ export const RescueTeamsPage = () => {
               setSosActive(false);
               showToast("SOS alert cancelled. Resuming standard operations.");
             }}
-            className="px-4 py-1.5 bg-white text-red-700 font-bold text-xs rounded-lg shadow"
+            className="px-4 py-1.5 bg-white text-red-700 font-bold text-xs rounded-lg shadow hover:bg-red-50 transition"
           >
             Cancel SOS
           </button>
         </div>
       )}
 
-      {/* Tactical Priority Top Strip */}
-      <div className="bg-red-600 text-white px-4 py-2.5 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs font-semibold shadow-sm">
+      {/* Top Banner Strip */}
+      <div className="bg-slate-900 border border-slate-800 text-white px-4 py-3 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-sm">
         <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 bg-red-800 rounded text-[10px] font-mono tracking-wider uppercase">
-            TACTICAL PRIORITY RED
+          <span className="px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px] font-mono tracking-wider uppercase font-bold">
+            LIVE REGISTRY CONNECTED
           </span>
-          <span>Water surge rising +0.15m/hr. Target cutoff window closes at 16:45 Local.</span>
+          <span className="text-slate-300 font-medium">
+            Active Fleet Telemetry & SAR Dispatch: {teams.length} Registered Field Teams
+          </span>
         </div>
-        <div className="flex items-center gap-3 font-mono text-[11px] opacity-90">
-          <span>MIL-GRID: 88Q-ED-4109</span>
-          <span>•</span>
-          <span>ENCRYPTED L3</span>
-        </div>
-      </div>
-
-      {/* Header & Console Identity */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-                DEPLOYED IN FIELD
-              </span>
-              <span className="text-xs font-mono text-slate-500">UNIT ID: RT-02</span>
-              <span className="text-slate-300">•</span>
-              <span className="text-xs text-slate-600 font-medium">Amphibious Craft B-14</span>
-              <span className="text-slate-300">•</span>
-              <span className="text-xs text-slate-500 font-mono">Iridium/Starlink Dual Sync</span>
-            </div>
-
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-              Rescue Team Field Console - Unit RT-02 (Water Rescue & Evac)
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-slate-600">
-              <span className="flex items-center gap-1 font-medium text-slate-800">
-                <Navigation className="w-3.5 h-3.5 text-sky-600" />
-                Mission: Cyclone Remal - Trishuli Valley Sector A Extraction
-              </span>
-              <span className="text-slate-300">|</span>
-              <span>Lead Officer: <strong>Lt. Marcus Vance</strong></span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => showToast("PTT Voice Comms opened to Tactical Net 4.")}
-              className="flex items-center gap-2 px-4 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-semibold rounded-xl transition-colors shadow-sm"
-            >
-              <Radio className="w-4 h-4 text-sky-600" />
-              PTT Radio
-            </button>
-            <button 
-              onClick={() => setSosActive(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-colors shadow-md animate-pulse"
-            >
-              <ShieldAlert className="w-4 h-4" />
-              SOS EMERGENCY / BACKUP
-            </button>
-          </div>
+        <div className="flex items-center gap-3 font-mono text-[11px] text-slate-400">
+          <button 
+            onClick={loadTeams}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white text-xs transition"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            Refresh Telemetry
+          </button>
         </div>
       </div>
 
-      {/* 5 Tactical Status Metric Cards */}
+      {/* Fleet KPI Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {/* Card 1 */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
-            <span>ACTIVE INCIDENTS</span>
-            <AlertTriangle className="w-3.5 h-3.5 text-slate-400" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono">3</div>
-          <div className="text-xs text-slate-500 mt-1">1 Underway • 2 Staged</div>
-        </div>
-
-        {/* Card 2 */}
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-l-red-500">
-          <div className="flex items-center justify-between text-red-600 text-[10px] font-bold uppercase tracking-wider mb-1">
-            <span>IMMEDIATE PRIORITY</span>
-            <span className="w-2 h-2 rounded-full bg-red-500"></span>
-          </div>
-          <div className="text-lg font-bold text-red-600 font-mono">#INC-402</div>
-          <div className="text-xs font-semibold text-slate-800 truncate">High School Cutoff Point</div>
-          <div className="text-[10px] text-red-700 font-bold mt-0.5">STRUCTURAL COMPROMISE</div>
-        </div>
-
-        {/* Card 3 */}
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
-            <span>AWAITING EXTRAC.</span>
+            <span>ACTIVE TEAMS</span>
             <Users className="w-3.5 h-3.5 text-slate-400" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono">320 <span className="text-xs font-normal text-slate-500">Souls</span></div>
-          <div className="text-xs text-red-600 font-medium mt-1">18 Critical Medical triage</div>
+          <div className="text-2xl font-bold text-slate-900 font-mono">{activeTeamsCount} / {teams.length}</div>
+          <div className="text-xs text-slate-500 mt-1">{deployedCount} Deployed in Field</div>
         </div>
 
-        {/* Card 4 */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-l-emerald-500">
+          <div className="flex items-center justify-between text-emerald-600 text-[10px] font-bold uppercase tracking-wider mb-1">
+            <span>DEPLOYED ON-SITE</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </div>
+          <div className="text-2xl font-bold text-emerald-600 font-mono">{deployedCount}</div>
+          <div className="text-xs text-slate-600 mt-1 font-medium">{totalPersonnel} First Responders</div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-l-amber-500">
+          <div className="flex items-center justify-between text-amber-600 text-[10px] font-bold uppercase tracking-wider mb-1">
+            <span>DISPATCHED / EN ROUTE</span>
+            <Navigation className="w-3.5 h-3.5 text-amber-500" />
+          </div>
+          <div className="text-2xl font-bold text-amber-600 font-mono">{dispatchedCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Transit Corridor Active</div>
+        </div>
+
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
-            <span>ETA DESTINATION</span>
+            <span>SELECTED TEAM SPEED</span>
             <Clock className="w-3.5 h-3.5 text-slate-400" />
           </div>
-          <div className="text-2xl font-bold text-sky-600 font-mono">14 <span className="text-xs font-normal text-slate-500">Minutes</span></div>
-          <div className="text-xs text-slate-500 mt-1 truncate">Via West Levee Bypass</div>
+          <div className="text-2xl font-bold text-sky-600 font-mono">
+            {selectedTeam?.speed || 0} <span className="text-xs font-normal text-slate-500">knots</span>
+          </div>
+          <div className="text-xs text-slate-500 mt-1 truncate">Heading {selectedTeam?.heading || 0}&deg;</div>
         </div>
 
-        {/* Card 5 */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
-            <span>FLOOD DEPTH</span>
-            <Droplets className="w-3.5 h-3.5 text-slate-400" />
+            <span>AVG FLEET FUEL</span>
+            <Battery className="w-3.5 h-3.5 text-slate-400" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono">1.2m</div>
-          <div className="text-xs text-emerald-600 font-semibold mt-1">Amphibious Nav OK</div>
+          <div className="text-2xl font-bold text-emerald-600 font-mono">{avgFuel}%</div>
+          <div className="text-xs text-slate-500 mt-1">Selected Unit: {selectedTeam?.fuel || 80}%</div>
         </div>
       </div>
 
-      {/* Main Grid: HUD Navigation Map & Tactical Incident Actions */}
+      {/* Team Selection Tabs */}
+      <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 px-1">
+          Select Field Rescue Team Console:
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+          {teams.map(t => {
+            const isSel = t.id === selectedTeam?.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setSelectedTeamId(t.id)}
+                className={`text-left p-3 rounded-xl border transition-all ${
+                  isSel 
+                    ? 'border-sky-500 bg-sky-50/70 shadow-sm ring-1 ring-sky-400' 
+                    : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-mono font-bold text-xs text-slate-900">{t.id}</span>
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${getStatusColor(t.status)}`}>
+                    {t.status}
+                  </span>
+                </div>
+                <div className="text-xs font-bold text-slate-800 truncate">{t.name}</div>
+                <div className="text-[11px] text-slate-500 mt-0.5 truncate">{t.type} &bull; {t.members} Crew</div>
+                <div className="text-[10px] text-slate-400 mt-1 flex items-center justify-between font-mono">
+                  <span>Fuel: {t.fuel || 80}%</span>
+                  <span>{t.speed || 0} kt</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Selected Team Header */}
+      {selectedTeam && (
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                <span className={`px-2.5 py-0.5 rounded text-[11px] font-bold border flex items-center gap-1.5 ${getStatusColor(selectedTeam.status)}`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+                  {selectedTeam.status}
+                </span>
+                <span className="text-xs font-mono text-slate-500">UNIT CODE: {selectedTeam.id}</span>
+                <span className="text-slate-300">&bull;</span>
+                <span className="text-xs text-slate-700 font-semibold">{selectedTeam.vehicleType || 'Standard SAR Craft'}</span>
+                <span className="text-slate-300">&bull;</span>
+                <span className="text-xs text-slate-500 font-mono">GPS: {selectedTeam.gpsPosition?.map(c => c.toFixed(4)).join(', ')}</span>
+              </div>
+
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+                {selectedTeam.name} - {selectedTeam.type}
+              </h1>
+
+              <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-slate-600">
+                <span className="flex items-center gap-1 font-medium text-slate-800">
+                  <Navigation className="w-3.5 h-3.5 text-sky-600" />
+                  Location: <strong>{selectedTeam.currentLocation}</strong>
+                </span>
+                <span className="text-slate-300">|</span>
+                <span className="text-slate-700">
+                  Mission: <strong>{selectedTeam.currentMission || 'Active Search & Evacuation'}</strong>
+                </span>
+                <span className="text-slate-300">|</span>
+                <span>Crew: <strong>{selectedTeam.members} Specialists</strong></span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => showToast(`PTT Radio opened to Tactical Comms Channel ${selectedTeam.id}.`)}
+                className="flex items-center gap-2 px-4 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-semibold rounded-xl transition shadow-sm"
+              >
+                <Radio className="w-4 h-4 text-sky-600" />
+                Radio Comms
+              </button>
+              <button 
+                onClick={() => setSosActive(true)}
+                className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition shadow-md animate-pulse"
+              >
+                <ShieldAlert className="w-4 h-4" />
+                SOS EMERGENCY
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Grid: Interactive Map HUD & Incident Controls */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Tactical Waypoint HUD (8 cols) */}
+        {/* Left Column: Interactive Telemetry HUD Map (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
           <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg relative">
             {/* Top HUD Bar */}
-            <div className="p-3 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between text-xs text-white">
+            <div className="p-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs text-white">
               <div className="flex items-center gap-2">
-                <Navigation className="w-4 h-4 text-sky-400" />
+                <Compass className="w-4 h-4 text-sky-400" />
                 <span className="font-semibold text-slate-200">
-                  Tactical Waypoint Navigation (Route A Vector)
-                </span>
-                <span className="px-2 py-0.5 bg-sky-900/60 border border-sky-700/80 text-[10px] font-mono text-sky-300 rounded">
-                  1:5,000 VECTOR HUD
+                  Active Fleet GIS Radar & GPS Positions ({teams.length} Units)
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <button 
-                  onClick={() => showToast("Synthetic Aperture Radar overlay refreshed.")}
-                  className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] rounded transition-colors"
+                  onClick={() => showToast(`Map centered on ${selectedTeam?.name}.`)}
+                  className="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white text-[11px] font-semibold rounded transition"
                 >
-                  SAR Synthetic Overlay
-                </button>
-                <button 
-                  onClick={() => showToast("Map view centered on RT-02 coordinates.")}
-                  className="px-2 py-1 bg-sky-600 hover:bg-sky-500 text-white text-[11px] font-semibold rounded transition-colors"
-                >
-                  Center RT-02
+                  Center {selectedTeam?.id}
                 </button>
               </div>
             </div>
 
             {/* Map Canvas */}
-            <div className="h-[420px] relative">
+            <div className="h-[440px] relative">
               <MapContainer
-                center={[21.848, 89.545]}
+                center={currentCenter}
                 zoom={13}
                 style={{ height: '100%', width: '100%' }}
               >
@@ -230,372 +345,137 @@ export const RescueTeamsPage = () => {
                   url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
                 />
 
-                {/* Tactical Vector Path */}
-                <Polyline
-                  positions={[
-                    [21.87, 89.60],
-                    [21.855, 89.57],
-                    [21.848, 89.545],
-                    [21.84, 89.54],
-                  ]}
-                  pathOptions={{ color: '#0284c7', weight: 6, opacity: 0.95 }}
-                />
+                <MapRecenter center={currentCenter} />
 
-                {/* Submerged culvert hazard line */}
-                <Polyline
-                  positions={[
-                    [21.848, 89.545],
-                    [21.842, 89.535],
-                  ]}
-                  pathOptions={{ color: '#dc2626', weight: 4, dashArray: '6,6', opacity: 0.8 }}
-                />
-
-                {/* RT-02 Pin */}
-                <Marker position={[21.848, 89.545]} icon={createConsolePin('RT-02 (Amphibious B-14)', '#0284c7')}>
-                  <Popup>Unit RT-02 • Speed: 18.4 kt • Heading: 034°</Popup>
-                </Marker>
-
-                {/* LZ-1 Secondary Evac */}
-                <Marker position={[21.86, 89.56]} icon={createConsolePin('LZ-1 (Secondary Evac)', '#7c3aed')}>
-                  <Popup>LZ-1 Helipad / Boat Transfer</Popup>
-                </Marker>
-
-                {/* Field Aid Station */}
-                <Marker position={[21.865, 89.585]} icon={createConsolePin('Field Aid Station Delta', '#059669')}>
-                  <Popup>Field Aid Station Delta</Popup>
-                </Marker>
-
-                {/* Hazard Marker */}
-                <Marker position={[21.842, 89.535]} icon={createConsolePin('HAZARD: km 4.8 Submerged Culvert', '#b91c1c')}>
-                  <Popup>Debris warning: underwater logs</Popup>
-                </Marker>
+                {/* Plot ALL real teams on the map */}
+                {teams.map(t => {
+                  if (!t.gpsPosition || t.gpsPosition.length < 2) return null;
+                  const isSel = t.id === selectedTeam?.id;
+                  const pinColor = getStatusPinColor(t.status);
+                  return (
+                    <Marker
+                      key={t.id}
+                      position={t.gpsPosition}
+                      icon={createTeamPin(`${t.id} (${t.status})`, pinColor, isSel)}
+                      eventHandlers={{
+                        click: () => setSelectedTeamId(t.id)
+                      }}
+                    >
+                      <Popup>
+                        <div className="p-1">
+                          <div className="font-bold text-sm text-slate-900">{t.name}</div>
+                          <div className="text-xs text-slate-600 mt-0.5">{t.type} &bull; Crew: {t.members}</div>
+                          <div className="text-xs text-slate-700 font-semibold mt-1">Status: {t.status}</div>
+                          <div className="text-xs text-slate-500 mt-0.5">Location: {t.currentLocation}</div>
+                          <div className="text-xs font-mono text-slate-600 mt-1 flex gap-2">
+                            <span>Speed: {t.speed || 0} kt</span>
+                            <span>Fuel: {t.fuel || 80}%</span>
+                          </div>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  );
+                })}
               </MapContainer>
             </div>
 
             {/* Bottom Telemetry HUD Ribbon */}
-            <div className="p-3 bg-slate-950 border-t border-slate-800 grid grid-cols-3 gap-2 text-xs font-mono text-slate-300">
-              <div>
-                <span className="text-slate-500 block text-[10px]">GPS FIX</span>
-                <span className="font-bold text-white">22°14'08.2"N 89°32'44.1"E</span>
+            {selectedTeam && (
+              <div className="p-3 bg-slate-950 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono text-slate-300">
+                <div>
+                  <span className="text-slate-500 block text-[10px]">ACTIVE UNIT</span>
+                  <span className="font-bold text-white">{selectedTeam.name}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[10px]">GPS FIX</span>
+                  <span className="font-bold text-sky-400">
+                    {selectedTeam.gpsPosition ? `${selectedTeam.gpsPosition[0].toFixed(4)}°N, ${selectedTeam.gpsPosition[1].toFixed(4)}°E` : 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[10px]">CURRENT SPEED</span>
+                  <span className="font-bold text-emerald-400">{selectedTeam.speed || 0} knots</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[10px]">FUEL LEVEL</span>
+                  <span className="font-bold text-amber-400">{selectedTeam.fuel || 80}%</span>
+                </div>
               </div>
-              <div className="text-center">
-                <span className="text-slate-500 block text-[10px]">CURRENT SPEED</span>
-                <span className="font-bold text-sky-400">18.4 knots</span>
-              </div>
-              <div className="text-right">
-                <span className="text-slate-500 block text-[10px]">TARGET DIST</span>
-                <span className="font-bold text-emerald-400">4.2 km remaining</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Waypoint Progression Bar */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
-                A1
-              </div>
-              <div className="text-xs">
-                <div className="font-bold text-slate-800">Boat Slip Base Alpha</div>
-                <div className="text-emerald-600 font-medium">Cleared at 14:10</div>
-              </div>
-            </div>
-
-            <div className="bg-sky-50 border border-sky-300 rounded-xl p-3 shadow-sm flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold text-xs">
-                A2
-              </div>
-              <div className="text-xs">
-                <div className="font-bold text-sky-950">West Levee Waterway</div>
-                <div className="text-sky-700 font-medium">Navigating • 1.2m depth</div>
-              </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-red-100 text-red-800 flex items-center justify-center font-bold text-xs">
-                A3
-              </div>
-              <div className="text-xs">
-                <div className="font-bold text-slate-800">Trishuli River Corridor Clinic & School</div>
-                <div className="text-red-600 font-medium">ETA 14:48 (Critical Extraction)</div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Right Column: Field Incident Actions & Telemetry (4 cols) */}
+        {/* Right Column: Tactical Controls & Status Dispatch (4 cols) */}
         <div className="lg:col-span-4 space-y-5">
-          {/* Action List */}
+          {/* Status Update Control */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">Field Unit Status Dispatch</h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Update live status in database for {selectedTeam?.name || 'unit'}:
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              {(['DEPLOYED', 'ON_SITE', 'DISPATCHED', 'STANDBY'] as TeamStatus[]).map(st => (
+                <button
+                  key={st}
+                  disabled={updatingStatus || selectedTeam?.status === st}
+                  onClick={() => handleStatusChange(st)}
+                  className={`px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                    selectedTeam?.status === st
+                      ? 'bg-slate-900 text-white shadow-sm ring-2 ring-slate-700'
+                      : 'border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+                  }`}
+                >
+                  {selectedTeam?.status === st && <Check size={14} />}
+                  {st}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Mission Actions */}
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-bold text-slate-900">Field Incident Actions</h2>
-              <span className="px-2 py-0.5 bg-red-100 text-red-800 text-[10px] font-bold rounded">
-                HIGH PRIORITY
-              </span>
-            </div>
+            <h2 className="text-sm font-bold text-slate-900">Tactical Quick Actions</h2>
 
             <button 
-              onClick={() => showToast("Water hazard logged at current GPS marker.")}
-              className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-between group"
+              onClick={() => showToast(`Hazard report logged for coordinates of ${selectedTeam?.name}.`)}
+              className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition flex items-center justify-between group"
             >
               <div>
-                <div className="text-xs font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
-                  Report Road / Water Hazard
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">
-                  Submerged powerline, logjam, breach...
-                </div>
+                <div className="text-xs font-bold text-slate-800">Log Hazard at Unit GPS</div>
+                <div className="text-[11px] text-slate-500">Tag submerged debris or road blockage</div>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-700" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition" />
             </button>
 
             <button 
-              onClick={() => {
-                setHeadcount(prev => prev + 5);
-                showToast("Updated headcount: +5 souls secured.");
-              }}
-              className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-between group"
+              onClick={() => showToast(`Air medevac backup requested for ${selectedTeam?.name}.`)}
+              className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition flex items-center justify-between group"
             >
               <div>
-                <div className="text-xs font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
-                  Update Civilian Headcount
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">
-                  Logged on-board / rescued triage: <strong>{headcount}</strong>
-                </div>
+                <div className="text-xs font-bold text-slate-800">Request Air Medevac Support</div>
+                <div className="text-[11px] text-slate-500">Alert helicopter evacuation flight wing</div>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-700" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition" />
             </button>
 
             <button 
-              onClick={() => showToast("Medevac helicopter requested for LZ-1!")}
-              className="w-full text-left p-3 rounded-xl bg-red-50 border border-red-200 hover:bg-red-100 transition-all flex items-center justify-between group"
+              onClick={() => showToast(`Direct supply drop request sent to logistics hub.`)}
+              className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition flex items-center justify-between group"
             >
               <div>
-                <div className="text-xs font-bold text-red-900">
-                  Request Air Evac (Medevac)
-                </div>
-                <div className="text-[11px] text-red-700 mt-0.5">
-                  Immediate helicopter airlift for LZ-1
-                </div>
+                <div className="text-xs font-bold text-slate-800">Request Field Supply Drop</div>
+                <div className="text-[11px] text-slate-500">Fuel drums, inflatable rafts, trauma kits</div>
               </div>
-              <ChevronRight className="w-4 h-4 text-red-400 group-hover:text-red-700" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition" />
             </button>
-
-            <button 
-              onClick={() => showToast("Disengagement signal sent. Returning to base.")}
-              className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-between group"
-            >
-              <div>
-                <div className="text-xs font-bold text-slate-900">
-                  Complete & Return to Base
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">
-                  Disengage from sector, fuel low alert
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-700" />
-            </button>
-          </div>
-
-          {/* Unit Telemetry & Fuel */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-slate-900">Unit Telemetry & Fuel</h2>
-              <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded">
-                STABLE
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3.5 text-xs">
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                <div className="flex items-center justify-between text-slate-500 text-[10px] mb-1">
-                  <span>Fuel (Dual Tank)</span>
-                  <Anchor className="w-3 h-3" />
-                </div>
-                <div className="text-lg font-bold text-slate-900 font-mono">78%</div>
-                <div className="text-[10px] text-slate-500">~4.8 hrs runtime</div>
-              </div>
-
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                <div className="flex items-center justify-between text-slate-500 text-[10px] mb-1">
-                  <span>Wind Gusts</span>
-                  <Wind className="w-3 h-3" />
-                </div>
-                <div className="text-lg font-bold text-slate-900 font-mono">48 kt</div>
-                <div className="text-[10px] text-red-600 font-medium">Sustained Gale</div>
-              </div>
-
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                <div className="flex items-center justify-between text-slate-500 text-[10px] mb-1">
-                  <span>Water Temp</span>
-                  <Droplets className="w-3 h-3" />
-                </div>
-                <div className="text-lg font-bold text-slate-900 font-mono">24.2°C</div>
-                <div className="text-[10px] text-slate-500">Hypothermia Risk Mid</div>
-              </div>
-
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                <div className="flex items-center justify-between text-slate-500 text-[10px] mb-1">
-                  <span>Battery / Comms</span>
-                  <Battery className="w-3 h-3" />
-                </div>
-                <div className="text-lg font-bold text-emerald-600 font-mono">92%</div>
-                <div className="text-[10px] text-emerald-700 font-medium">Mesh Relay Active</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Checklist & Incident Priority Queue */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h2 className="text-base font-bold text-slate-900">
-              Field Operations Checklist & Incident Priority Queue
-            </h2>
-            <p className="text-xs text-slate-500">
-              Ordered by Life-Safety Severity Matrix
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Task 1 */}
-          <div className="border border-slate-200 rounded-xl p-4.5 bg-slate-50/50 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="px-2 py-0.5 bg-sky-100 text-sky-800 text-[10px] font-bold rounded">
-                  TASK 1 • IN PROGRESS
-                </span>
-                <span className="text-xs font-mono font-semibold text-slate-500">INC-402-A</span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 mb-2">
-                Extract 45 stranded residents from Community Clinic 2F
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                First floor completely flooded under 1.8m surge. 12 elderly patients, 3 on ventilator backup generators. Amphibious docking recommended at north balcony.
-              </p>
-
-              <div className="bg-white p-2.5 rounded-lg border border-slate-200 mb-3 flex items-center justify-between text-xs">
-                <span className="text-slate-500">STATUS</span>
-                <span className="font-bold text-sky-700 font-mono">IN NAVIGATION (ETA 8m)</span>
-              </div>
-
-              {/* Recon Thumbnail Preview */}
-              <div className="bg-slate-900 text-white rounded-lg p-2 text-xs flex items-center gap-2 mb-3">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
-                <span>Aerial Recon Confirmed: Clear Balcony Approach</span>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-200 flex items-center gap-2">
-              <button 
-                onClick={() => {
-                  setTask1Completed(!task1Completed);
-                  showToast(task1Completed ? "Task set to in progress" : "Unit RT-02 marked On-Site!");
-                }}
-                className={`flex-1 py-2 rounded-lg font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${
-                  task1Completed ? 'bg-emerald-600 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white shadow-sm'
-                }`}
-              >
-                {task1Completed ? (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    On-Site Verified
-                  </>
-                ) : (
-                  <>
-                    <Navigation className="w-3.5 h-3.5" />
-                    Mark RT-02 On-Site
-                  </>
-                )}
-              </button>
-              <button 
-                onClick={() => showToast("Direct audio link dialed to Clinic Shelter Lead.")}
-                className="p-2 border border-slate-300 hover:bg-slate-100 rounded-lg text-slate-700 transition-colors"
-              >
-                <Phone className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Task 2 */}
-          <div className="border border-slate-200 rounded-xl p-4.5 bg-slate-50/50 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="px-2 py-0.5 bg-slate-200 text-slate-700 text-[10px] font-bold rounded">
-                  TASK 2 • STAGED NEXT
-                </span>
-                <span className="text-xs font-mono font-semibold text-slate-500">INC-402-B</span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 mb-2">
-                Deliver emergency insulin & water purification to Sector 4 High School
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                Shelter cutoff with 275 civilians. Fresh water contaminated by sewage backflow. Cold-chain storage container onboard Craft B-14 must be transferred.
-              </p>
-
-              <div className="bg-white p-2.5 rounded-lg border border-slate-200 mb-3 flex items-center justify-between text-xs">
-                <span className="text-slate-500">STATUS</span>
-                <span className="font-bold text-slate-700 font-mono">STAGED / CARGO SECURED</span>
-              </div>
-
-              <div className="p-2 bg-slate-100 rounded-lg text-xs text-slate-700 font-medium mb-3">
-                Payload: 200kg Medical • 500L Aquatabs
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-200 flex items-center gap-2">
-              <button 
-                onClick={() => showToast("Task 2 promoted to current primary objective!")}
-                className="flex-1 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-bold text-xs transition-colors shadow-sm"
-              >
-                Promote to Current Mission
-              </button>
-            </div>
-          </div>
-
-          {/* Task 3 */}
-          <div className="border border-red-200 bg-red-50/30 rounded-xl p-4.5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="px-2 py-0.5 bg-red-100 text-red-800 text-[10px] font-bold rounded">
-                  TASK 3 • STANDBY CORDON
-                </span>
-                <span className="text-xs font-mono font-semibold text-red-600">INC-409-HAZ</span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 mb-2">
-                Secure perimeter cordons around ruptured gas line on South Dock
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                Submerged natural gas conduit leaking bubbles. Severe explosion hazard within 200m buffer. Civilian boats must be diverted to northern bypass canal.
-              </p>
-
-              <div className="bg-white p-2.5 rounded-lg border border-red-200 mb-3 flex items-center justify-between text-xs">
-                <span className="text-slate-500">STATUS</span>
-                <span className="font-bold text-red-700 font-mono">HAZMAT DANGER ZONE</span>
-              </div>
-
-              <div className="p-2 bg-red-100/60 border border-red-200 rounded-lg text-xs text-red-800 font-medium mb-3 flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 text-red-600 flex-shrink-0" />
-                <span>Air Sniffer: LEL 14% at 50m water surface</span>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-red-200 flex items-center gap-2">
-              <button 
-                onClick={() => showToast("Hazard Order acknowledged. Warning buoys active.")}
-                className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs transition-colors shadow-sm flex items-center justify-center gap-1.5"
-              >
-                <ShieldAlert className="w-3.5 h-3.5" />
-                Acknowledge Hazard Order
-              </button>
-            </div>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default RescueTeamsPage;

@@ -49,7 +49,7 @@ SIMULATED_TEAMS = [
         "speed": 12.4,
         "fuel": 84,
         "battery": 92,
-        "currentMission": "Zone 4B Evacuation",
+        "currentMission": "Sector 4 Evacuation",
         "targetLat": 21.7439,
         "targetLng": 89.3068,
         "color": "#3b82f6"

@@ -194,7 +194,7 @@ export const dashboardService = {
       const res = await api.get('/dashboard/alerts');
       return res.data.data;
     } catch {
-      return mockAlerts;
+      return [];
     }
   }
 };
@@ -675,7 +675,7 @@ export const damageService = {
       const res = await api.get(`/damage/${disasterId}`, { params });
       return res.data.data;
     } catch {
-      return mockDamageAssets;
+      return [];
     }
   },
 
@@ -697,6 +697,24 @@ export const damageService = {
   async verifyAsset(id: string, verified: boolean = true) {
     const res = await api.patch(`/damage/${id}/verify`, null, { params: { verified } });
     return res.data.data;
+  },
+
+  async getFootprints(disasterId: string): Promise<{ count: number; footprints: any[] }> {
+    try {
+      const res = await api.get(`/damage/${disasterId}/footprints`);
+      return res.data.data || { count: 0, footprints: [] };
+    } catch {
+      return { count: 0, footprints: [] };
+    }
+  },
+
+  async getAiStatus(): Promise<{ model_name?: string; is_heuristic?: boolean; status?: string } | null> {
+    try {
+      const res = await api.get('/ai/status');
+      return res.data.data || null;
+    } catch {
+      return null;
+    }
   }
 };
 
@@ -706,7 +724,7 @@ export const rescueService = {
       const res = await api.get('/rescue/teams', { params: { status } });
       return res.data.data;
     } catch {
-      return mockRescueTeams;
+      return [];
     }
   },
 
@@ -720,7 +738,7 @@ export const rescueService = {
       const res = await api.get(`/rescue/priorities/${disasterId}`);
       return res.data.data;
     } catch {
-      return mockRescueZones;
+      return [];
     }
   },
 
@@ -735,7 +753,7 @@ export const rescueService = {
       const res = await api.post('/rescue/priorities/calculate', data);
       return res.data.data;
     } catch {
-      return mockRescueZones;
+      return [];
     }
   },
 
@@ -1022,7 +1040,7 @@ export const alertService = {
       const res = await api.get('/alerts', { params });
       return res.data.data || res.data.alerts || [];
     } catch {
-      return mockAlerts;
+      return [];
     }
   },
 
@@ -1093,7 +1111,7 @@ export const userService = {
       const res = await api.get('/users');
       return res.data.data;
     } catch {
-      return mockUsers;
+      return [];
     }
   },
 
