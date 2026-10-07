@@ -1,4 +1,4 @@
-nitin loves someone
+
 # SentinelAid AI — Disaster Response & Satellite Intelligence
 
 SentinelAid AI is an end-to-end disaster intelligence system integrating Microsoft Planetary Computer Sentinel-2 Level-2A satellite imagery, real raster processing (NDWI / MNDWI), georeferenced flood-extent polygon extraction, and tactical incident command capabilities.
