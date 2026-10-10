@@ -49,7 +49,7 @@ SIMULATED_TEAMS = [
         "speed": 12.4,
         "fuel": 84,
         "battery": 92,
-        "currentMission": "Sector 4 Evacuation",
+        "currentMission": "Evacuation Mission",
         "targetLat": 21.7439,
         "targetLng": 89.3068,
         "color": "#3b82f6"
@@ -81,7 +81,7 @@ SIMULATED_TEAMS = [
         "speed": 18.0,
         "fuel": 76,
         "battery": 89,
-        "currentMission": "Sector 4 Shelter Triage",
+        "currentMission": "Shelter Triage",
         "targetLat": 21.7512,
         "targetLng": 89.3120,
         "color": "#ef4444"

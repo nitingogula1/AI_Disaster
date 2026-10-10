@@ -29,7 +29,7 @@ export default function CommandHeader() {
     // 1. Fetch active operation
     operationService.getActiveOperation().then((op) => {
       if (op) {
-        setActiveOperation(op.id, op.name, op.region);
+        setActiveOperation(op.id, op.name, op.region, op.target_bbox, op);
       }
     });
 
@@ -78,7 +78,7 @@ export default function CommandHeader() {
     } catch {
       // Offline fallback
     }
-    setActiveOperation(op.id, op.name, op.region);
+    setActiveOperation(op.id, op.name, op.region, op.target_bbox, op);
     triggerRefresh();
   };
 

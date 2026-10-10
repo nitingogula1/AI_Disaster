@@ -34,10 +34,174 @@ class RescueService:
         rt05_unit, rt05_status = get_team_display("RT-05", "RT-05 Pending")
         rt04_unit, rt04_status = get_team_display("RT-04", "RT-04 En Route (18m)")
 
-        # 7 distinct verified sector zones for the disaster theater
-        raw_zones = [
-            {
-                "zone": "Sector 4 - Riverview",
+        # Check if disaster_id or theater indicates Rajam or Nepal / Bagmati drone recon sector
+        is_rajam = bool(disaster_id and "rajam" in str(disaster_id).lower())
+        is_nepal = bool(disaster_id and ("nepal" in str(disaster_id).lower() or "bagmati" in str(disaster_id).lower()))
+
+        if is_rajam:
+            raw_zones = [
+                {
+                    "zone": "Rajam Boddam Road Rooftop",
+                    "grid_coords": "18°27'N 83°39'E",
+                    "structural_damage": "Level 5 Severe Inundation - Rooftop Terrace Staging",
+                    "population_at_risk": 32,
+                    "population_detail": "32 stranded residents (elderly & children)",
+                    "cutoff_level": "100% Road Cutoff",
+                    "cutoff_detail": "Water depth 1.6m • Boddam culvert submerged",
+                    "recommended_response": "Amphibious Inflatable Craft + Aerial Winch Extraction",
+                    "assigned_unit": rt02_unit,
+                    "unit_status": rt02_status,
+                    "raw_population": 32,
+                    "raw_damage": 5.0,
+                    "raw_surge": 1.6,
+                    "raw_cutoff": 1.0,
+                    "pop_scale": 50.0
+                },
+                {
+                    "zone": "Rajam Commercial Market Terrace",
+                    "grid_coords": "18°26'N 83°40'E",
+                    "structural_damage": "Level 4 Flash Surge - Ground Floors Submerged",
+                    "population_at_risk": 16,
+                    "population_detail": "16 trapped shopkeepers signaling with yellow tarp",
+                    "cutoff_level": "90% Road Cutoff",
+                    "cutoff_detail": "Water depth 1.45m • Market approach road flooded",
+                    "recommended_response": "High-Clearance Amphibious Craft & Shallow-Draft Raft",
+                    "assigned_unit": rt05_unit,
+                    "unit_status": rt05_status,
+                    "raw_population": 16,
+                    "raw_damage": 4.8,
+                    "raw_surge": 1.60,
+                    "raw_cutoff": 0.95,
+                    "pop_scale": 50.0
+                },
+                {
+                    "zone": "Boddam Culvert & Highway 16 Washout",
+                    "grid_coords": "18°27'N 83°41'E",
+                    "structural_damage": "Level 5 Highway Breach - Impassable 4m Road Breach",
+                    "population_at_risk": 0,
+                    "population_detail": "Hazard Zone Isolated • Zero casualties trapped",
+                    "cutoff_level": "100% Closed",
+                    "cutoff_detail": "Water depth 1.85m • Severe current erosion",
+                    "recommended_response": "Route Closure Warning & Combat Engineer Bridge Assessment",
+                    "assigned_unit": "RT-01 (Engineers Active)",
+                    "unit_status": "DEPLOYED",
+                    "raw_population": 0,
+                    "raw_damage": 5.0,
+                    "raw_surge": 1.85,
+                    "raw_cutoff": 1.0,
+                    "pop_scale": 50.0
+                },
+                {
+                    "zone": "Rajam RTC Bus Stand Lowland Dip",
+                    "grid_coords": "18°27'N 83°38'E",
+                    "structural_damage": "Level 3 Margin Waterlogging - 0.65m Surge",
+                    "population_at_risk": 24,
+                    "population_detail": "24 commuters awaiting 4x4 transport escort",
+                    "cutoff_level": "60% Blocked",
+                    "cutoff_detail": "Water depth 0.65m • High-clearance vehicles passable",
+                    "recommended_response": "Tactical 4x4 Truck Convoy Escort to Mandal Revenue HQ",
+                    "assigned_unit": rt04_unit,
+                    "unit_status": rt04_status,
+                    "raw_population": 24,
+                    "raw_damage": 3.0,
+                    "raw_surge": 0.65,
+                    "raw_cutoff": 0.60,
+                    "pop_scale": 50.0
+                },
+                {
+                    "zone": "GMRIT Campus Ridge Evacuation Haven",
+                    "grid_coords": "18°28'N 83°40'E",
+                    "structural_damage": "Level 0 Safe Elevated Haven (65m ASL)",
+                    "population_at_risk": 0,
+                    "population_detail": "Designated Civilian Assembly Shelter (Capacity 450)",
+                    "cutoff_level": "0% Open",
+                    "cutoff_detail": "Corridor 100% dry and open • Primary evacuation highway active",
+                    "recommended_response": "Field Hospital Triage & CH-47 Heavy Lift LZ",
+                    "assigned_unit": "Field Command HQ",
+                    "unit_status": "OPERATIONAL",
+                    "raw_population": 0,
+                    "raw_damage": 0.0,
+                    "raw_surge": 0.0,
+                    "raw_cutoff": 0.0,
+                    "pop_scale": 50.0
+                }
+            ]
+        elif is_nepal:
+            raw_zones = [
+                {
+                    "zone": "Balkhu Vegetable Market Rooftop",
+                    "grid_coords": "27°41'N 85°17'E",
+                    "structural_damage": "Level 5 Bagmati Flash Surge - Ground Floors Flooded",
+                    "population_at_risk": 42,
+                    "population_detail": "42 stranded market vendors on rooftop",
+                    "cutoff_level": "100% Cutoff",
+                    "cutoff_detail": "Water depth 1.9m • Violent river surge",
+                    "recommended_response": "Immediate APF Swiftwater Raft Extraction",
+                    "assigned_unit": rt02_unit,
+                    "unit_status": rt02_status,
+                    "raw_population": 42,
+                    "raw_damage": 5.0,
+                    "raw_surge": 1.9,
+                    "raw_cutoff": 1.0,
+                    "pop_scale": 50.0
+                },
+                {
+                    "zone": "Dhading Riverside Secondary School",
+                    "grid_coords": "27°42'N 85°18'E",
+                    "structural_damage": "Level 4 Torrential Inundation",
+                    "population_at_risk": 20,
+                    "population_detail": "20 trapped students & faculty staff",
+                    "cutoff_level": "95% Cutoff",
+                    "cutoff_detail": "Water depth 2.1m • Approach bridge compromised",
+                    "recommended_response": "Aerial Winch Basket Extraction",
+                    "assigned_unit": rt05_unit,
+                    "unit_status": rt05_status,
+                    "raw_population": 20,
+                    "raw_damage": 4.0,
+                    "raw_surge": 2.1,
+                    "raw_cutoff": 0.95,
+                    "pop_scale": 50.0
+                },
+                {
+                    "zone": "Balkhu Ring Road Underpass",
+                    "grid_coords": "27°41'N 85°17'E",
+                    "structural_damage": "Level 5 Complete Vehicle Closure - Culvert Washout",
+                    "population_at_risk": 0,
+                    "population_detail": "Hazard Zone Isolated",
+                    "cutoff_level": "100% Closed",
+                    "cutoff_detail": "Water depth 2.2m • Impassable",
+                    "recommended_response": "Traffic Diverted to Elevated Ridge Bypass",
+                    "assigned_unit": "RT-01 (Engineers Active)",
+                    "unit_status": "DEPLOYED",
+                    "raw_population": 0,
+                    "raw_damage": 5.0,
+                    "raw_surge": 2.2,
+                    "raw_cutoff": 1.0,
+                    "pop_scale": 50.0
+                },
+                {
+                    "zone": "Tribhuvan University High Ridge Haven",
+                    "grid_coords": "27°41'N 85°16'E",
+                    "structural_damage": "Level 0 Safe Dry Ground (1,301m ASL)",
+                    "population_at_risk": 0,
+                    "population_detail": "Designated Civilian Haven & Helipad",
+                    "cutoff_level": "0% Cutoff",
+                    "cutoff_detail": "Ridge roads 100% dry and open",
+                    "recommended_response": "Field Hospital Post & Triage Reception",
+                    "assigned_unit": "Field Base TU",
+                    "unit_status": "OPERATIONAL",
+                    "raw_population": 0,
+                    "raw_damage": 0.0,
+                    "raw_surge": 0.0,
+                    "raw_cutoff": 0.0,
+                    "pop_scale": 50.0
+                }
+            ]
+        else:
+            # 7 distinct verified sector zones for default disaster theater (e.g. Sindh / Pakistan / Remal)
+            raw_zones = [
+                {
+                    "zone": "Riverview Zone",
                 "grid_coords": "21°48'N 89°12'E",
                 "structural_damage": "Level 5 Catastrophic - Multi-story collapse",
                 "population_at_risk": 1240,
@@ -159,7 +323,8 @@ class RescueService:
 
         scored_zones = []
         for z in raw_zones:
-            pop_norm = min(z["raw_population"] / 1500.0, 1.0)
+            pop_scale = z.get("pop_scale", 1500.0)
+            pop_norm = min(z["raw_population"] / pop_scale, 1.0)
             dam_norm = z["raw_damage"] / 5.0
             sur_norm = min(z["raw_surge"] / 2.0, 1.0)
             cut_norm = z["raw_cutoff"]

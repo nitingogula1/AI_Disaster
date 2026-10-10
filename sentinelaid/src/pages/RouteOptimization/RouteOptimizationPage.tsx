@@ -1,12 +1,14 @@
+import { MAP_CONFIG } from '../../config/mapConfig';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
+
   Navigation, Route, Zap, AlertTriangle, ShieldCheck, CheckCircle, 
   Radio, Send, RefreshCw, Printer, Compass, Layers, Eye, Check, ChevronRight,
   MapPin, Search, Globe, Truck, Shield, X, ArrowRight, Gauge, AlertOctagon,
   ArrowUpDown, Crosshair, Navigation2, LocateFixed
 } from 'lucide-react';
-import { MapContainer, TileLayer, Polyline, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Marker, Popup, Circle, LayerGroup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { routeService } from '../../services/api';
 import { mockRoutes } from '../../data/mockData';
@@ -1038,39 +1040,37 @@ export const RouteOptimizationPage = () => {
 
                 <TileLayer
                   key={activeLayer}
-                  attribution='&copy; OpenStreetMap &copy; Esri'
-                  url={
-                    activeLayer === 'multispectral'
-                      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-                      : activeLayer === 'sar'
-                        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                  }
+                  url={activeLayer === 'multispectral' ? MAP_CONFIG.satellite.url : activeLayer === 'sar' ? MAP_CONFIG.dark.url : MAP_CONFIG.default.url}
+                  attribution={activeLayer === 'multispectral' ? MAP_CONFIG.satellite.attribution : activeLayer === 'sar' ? MAP_CONFIG.dark.attribution : MAP_CONFIG.default.attribution}
                 />
 
-                {/* Render Alternative Polylines */}
-                {routes.map((r, idx) => {
+                {/* Render All Three Distinct Tactical Road Corridors (Sorted so Active Route is on Top) */}
+                {[...routes].sort((a, b) => (a.id === selectedRoute.id ? 1 : b.id === selectedRoute.id ? -1 : 0)).map((r, idx) => {
                   const isCurrent = r.id === selectedRoute.id;
-                  const isHazard = r.status === 'HAZARD' || r.riskFactor === 'CRITICAL' || r.riskFactor === 'HIGH';
-                  const isCongested = r.status === 'CONGESTED';
+                  const isHazard = r.status === 'HAZARD' || r.riskFactor === 'CRITICAL' || r.riskFactor === 'HIGH' || r.name?.includes('Route B');
+                  const isCongested = r.status === 'CONGESTED' || r.name?.includes('Route C');
                   const color = isHazard ? '#ef4444' : isCongested ? '#f59e0b' : '#06b6d4';
+                  const routePts: [number, number][] = (r.path && r.path.length > 0 ? r.path : (r as any).geometry) || [];
+
+                  if (routePts.length < 2) return null;
 
                   return (
-                    <div key={r.id || idx}>
-                      {/* Glow outline for active recommended route */}
-                      {isCurrent && !isHazard && (
+                    <LayerGroup key={r.id || `route-${idx}`}>
+                      {/* Glow highlight backdrop for selected active corridor */}
+                      {isCurrent && (
                         <Polyline
-                          positions={r.path || []}
+                          positions={routePts}
                           pathOptions={{
-                            color: '#0284c7',
-                            weight: 10,
-                            opacity: 0.35,
+                            color: isHazard ? '#f87171' : isCongested ? '#fbbf24' : '#38bdf8',
+                            weight: 14,
+                            opacity: 0.45,
                           }}
                         />
                       )}
 
+                      {/* Main Tactical Polyline */}
                       <Polyline
-                        positions={r.path || []}
+                        positions={routePts}
                         eventHandlers={{
                           click: () => {
                             setSelectedRouteId(r.id);
@@ -1079,20 +1079,23 @@ export const RouteOptimizationPage = () => {
                         }}
                         pathOptions={{
                           color: color,
-                          weight: isCurrent ? 6 : 3,
-                          opacity: isCurrent ? 0.95 : 0.45,
-                          dashArray: isHazard ? '8, 8' : undefined,
+                          weight: isCurrent ? 7 : 4,
+                          opacity: isCurrent ? 1.0 : 0.70,
+                          dashArray: isHazard ? '9, 9' : undefined,
                         }}
                       >
                         <Popup>
                           <div className="p-2 text-xs">
-                            <strong className={isHazard ? 'text-red-600' : 'text-sky-600'}>{r.name}</strong><br />
-                            Distance: <strong>{r.distance} km</strong> | Time: <strong>{r.estimatedTime} min</strong><br />
-                            Max Water Depth: <strong>{r.maxDepth || 0.12}m</strong>
+                            <strong className={isHazard ? 'text-red-600' : isCongested ? 'text-amber-600' : 'text-sky-600'}>
+                              {r.name}
+                            </strong><br />
+                            Exact Path Distance: <strong>{r.distance} km</strong> | Est. Time: <strong>{r.estimatedTime} min</strong><br />
+                            Corridor Status: <strong className={isHazard ? 'text-red-600' : isCongested ? 'text-amber-600' : 'text-emerald-600'}>{r.status}</strong><br />
+                            Max Water Depth: <strong>{r.maxDepth || (isHazard ? 1.15 : 0.08)}m</strong>
                           </div>
                         </Popup>
                       </Polyline>
-                    </div>
+                    </LayerGroup>
                   );
                 })}
 
@@ -1146,21 +1149,81 @@ export const RouteOptimizationPage = () => {
                 <span>Fit Route</span>
               </button>
 
-              {/* Floating Legend */}
-              <div className="absolute bottom-4 left-4 z-20 bg-slate-900/90 border border-slate-700/80 rounded-lg p-2.5 backdrop-blur text-[11px] text-slate-300 space-y-1">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">TACTICAL ROAD CORRIDORS</div>
-                <div className="flex items-center gap-2">
-                  <span className="w-3.5 h-1 bg-cyan-400 rounded"></span>
-                  <span>Route A: Safe High Ground Bypass (Active)</span>
+              {/* Floating Interactive Legend */}
+              <div className="absolute bottom-4 left-4 z-20 bg-slate-900/95 border border-slate-700/80 rounded-lg p-2.5 backdrop-blur text-[11px] text-slate-300 space-y-1 shadow-xl">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between gap-4">
+                  <span>TACTICAL ROAD CORRIDORS</span>
+                  <span className="text-[9px] text-sky-400 font-mono font-normal">Click to focus</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-3.5 h-1 bg-red-500 rounded border-dashed"></span>
-                  <span>Route B: Inundated Hazard Cutoff (&gt;1.1m)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-3.5 h-1 bg-amber-500 rounded"></span>
-                  <span>Route C: Perimeter Evac Congestion Bypass</span>
-                </div>
+                {(() => {
+                  const rA = routes.find(r => r.name?.includes('Route A') || r.label?.includes('ROUTE A') || r.status === 'RECOMMENDED') || routes[0];
+                  const rB = routes.find(r => r.name?.includes('Route B') || r.label?.includes('ROUTE B') || r.status === 'HAZARD');
+                  const rC = routes.find(r => r.name?.includes('Route C') || r.label?.includes('ROUTE C') || r.status === 'CONGESTED');
+                  const isACurrent = selectedRoute?.id === rA?.id;
+                  const isBCurrent = selectedRoute?.id === rB?.id;
+                  const isCCurrent = selectedRoute?.id === rC?.id;
+
+                  return (
+                    <>
+                      <div 
+                        onClick={() => {
+                          if (rA) { setSelectedRouteId(rA.id); setFitTrigger(prev => prev + 1); }
+                        }}
+                        className={`flex items-center justify-between gap-3 cursor-pointer transition px-1.5 py-1 rounded ${
+                          isACurrent
+                            ? 'bg-sky-950/90 text-white font-bold ring-1 ring-sky-500'
+                            : 'hover:text-cyan-300 hover:bg-slate-800/60'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="w-3.5 h-1.5 bg-cyan-400 rounded"></span>
+                          <span>Route A: Safe High Ground Bypass {isACurrent ? '(Active)' : ''}</span>
+                        </div>
+                        {rA && <span className="font-mono text-[10px] text-cyan-300">{rA.distance} km</span>}
+                      </div>
+
+                      {rB && (
+                        <div 
+                          onClick={() => {
+                            setSelectedRouteId(rB.id); 
+                            setFitTrigger(prev => prev + 1);
+                          }}
+                          className={`flex items-center justify-between gap-3 cursor-pointer transition px-1.5 py-1 rounded ${
+                            isBCurrent
+                              ? 'bg-red-950/90 text-white font-bold ring-1 ring-red-500'
+                              : 'hover:text-red-400 hover:bg-slate-800/60'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="w-3.5 h-1.5 bg-red-500 rounded border-dashed"></span>
+                            <span>Route B: Inundated Hazard Cutoff (&gt;1.1m) {isBCurrent ? '(Active)' : ''}</span>
+                          </div>
+                          <span className="font-mono text-[10px] text-red-300">{rB.distance} km</span>
+                        </div>
+                      )}
+
+                      {rC && (
+                        <div 
+                          onClick={() => {
+                            setSelectedRouteId(rC.id); 
+                            setFitTrigger(prev => prev + 1);
+                          }}
+                          className={`flex items-center justify-between gap-3 cursor-pointer transition px-1.5 py-1 rounded ${
+                            isCCurrent
+                              ? 'bg-amber-950/90 text-white font-bold ring-1 ring-amber-500'
+                              : 'hover:text-amber-400 hover:bg-slate-800/60'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="w-3.5 h-1.5 bg-amber-500 rounded"></span>
+                            <span>Route C: Perimeter Evac Congestion Bypass {isCCurrent ? '(Active)' : ''}</span>
+                          </div>
+                          <span className="font-mono text-[10px] text-amber-300">{rC.distance} km</span>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             </div>
 

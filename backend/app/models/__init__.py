@@ -44,3 +44,5 @@ __all__ = [
     "DroneMission",
     "DroneDetection",
 ]
+
+from .drone_recon import DroneReconSession, DroneReconEvent

@@ -1,5 +1,7 @@
+import { MAP_CONFIG } from '../../config/mapConfig';
 import { useState, useEffect } from 'react';
 import { 
+
   Users, AlertTriangle, Radio, ShieldAlert, CheckCircle, 
   Clock, Navigation, Droplets, Battery, ChevronRight, 
   Flame, Check, RefreshCw, MapPin, Compass, Shield
@@ -27,13 +29,21 @@ const createTeamPin = (text: string, color: string, isSelected: boolean = false)
   });
 };
 
-function MapRecenter({ center }: { center: [number, number] }) {
+
+function MapFitBounds({ teams, selectedId }: { teams: RescueTeam[], selectedId: string }) {
   const map = useMap();
   useEffect(() => {
-    map.flyTo(center, 13, { duration: 1 });
-  }, [center, map]);
+    const coords = teams
+      .filter(t => t.gpsPosition && t.gpsPosition.length >= 2)
+      .map(t => [t.gpsPosition[0], t.gpsPosition[1]] as [number, number]);
+    if (coords.length > 0) {
+      const bounds = L.latLngBounds(coords);
+      map.fitBounds(bounds, { padding: [80, 80], maxZoom: 15 });
+    }
+  }, [teams, map]);
   return null;
 }
+
 
 export const RescueTeamsPage = () => {
   const [teams, setTeams] = useState<RescueTeam[]>([]);
@@ -340,12 +350,9 @@ export const RescueTeamsPage = () => {
                 zoom={13}
                 style={{ height: '100%', width: '100%' }}
               >
-                <TileLayer
-                  attribution='&copy; CARTO'
-                  url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-                />
+                <TileLayer url={MAP_CONFIG.default.url} attribution={MAP_CONFIG.default.attribution} />
 
-                <MapRecenter center={currentCenter} />
+                <MapFitBounds teams={teams} selectedId={selectedTeam?.id} />
 
                 {/* Plot ALL real teams on the map */}
                 {teams.map(t => {

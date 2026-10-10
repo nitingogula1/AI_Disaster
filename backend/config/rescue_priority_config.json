@@ -1,0 +1,91 @@
+{
+    "_metadata": {
+        "version": "1.0.0",
+        "description": "Authoritative configuration for Drone Recon Triage Clustering, Rescue Prioritization Index, Escalation Rules, and Routing Cutoffs",
+        "last_updated": "2026-10-08T23:10:00Z"
+    },
+    "weights": {
+        "_comment": "Base weights for 4 RPI factors (must sum to 1.0). If any factor is missing, remaining weights re-normalize dynamically.",
+        "structure_damage": 0.4,
+        "flood_severity": 0.2,
+        "population_vulnerability": 0.3,
+        "isolation": 0.1
+    },
+    "thresholds": {
+        "_comment": "Tier thresholds applied to 0-100 RPI score. Tier is PROVISIONAL if data completeness is below provisional_completeness_threshold.",
+        "p1_minimum_score": 75.0,
+        "p2_minimum_score": 50.0,
+        "provisional_completeness_threshold": 0.5
+    },
+    "clustering": {
+        "_comment": "Spatial clustering of survivor locks into triage zones using UTM meter projection",
+        "radius_meters": 250.0,
+        "algorithm": "single_linkage_distance_threshold",
+        "road_cutoff_attachment_radius_meters": 500.0,
+        "landing_zone_attachment_radius_meters": 1000.0
+    },
+    "factor_mappings": {
+        "population_and_vulnerability": {
+            "_comment": "Population count is capped at people_cap. Blended 60% headcount ratio + 40% vulnerable proportion.",
+            "people_cap": 100.0,
+            "headcount_weight": 0.6,
+            "vulnerability_share_weight": 0.4
+        },
+        "structure_damage": {
+            "_comment": "Discrete normalized scores per structure condition",
+            "COLLAPSING": 1.0,
+            "DAMAGED": 0.6,
+            "STABLE": 0.1,
+            "UNKNOWN": null
+        },
+        "flood_severity": {
+            "_comment": "Water depth against max depth cap in meters, blended with water trend factor",
+            "depth_cap_meters": 3.0,
+            "trend_multipliers": {
+                "RISING": 1.2,
+                "STABLE": 1.0,
+                "FALLING": 0.7,
+                "UNKNOWN": 1.0
+            }
+        },
+        "isolation": {
+            "_comment": "Composite of road access cutoffs and inability to self-evacuate",
+            "access_status_scores": {
+                "CUT": 1.0,
+                "PARTIAL": 0.6,
+                "OPEN": 0.0,
+                "UNKNOWN": 0.5
+            },
+            "cannot_self_evacuate_score": 1.0,
+            "can_self_evacuate_score": 0.0,
+            "self_evacuate_unknown_score": 0.5
+        }
+    },
+    "escalation_rules": [
+        {
+            "id": "ESC-COLLAPSING-OCCUPIED",
+            "name": "Collapsing Structure with People Present",
+            "condition": "worst_structure_state == 'COLLAPSING' and total_people > 0",
+            "forced_minimum_tier": "P1",
+            "reason": "Structure is actively collapsing with confirmed trapped occupants."
+        },
+        {
+            "id": "ESC-RISING-WATER-TRAPPED",
+            "name": "Rising Water with Non-Evacuable People",
+            "condition": "worst_water_trend == 'RISING' and any_cannot_self_evacuate",
+            "forced_minimum_tier": "P1",
+            "reason": "Flood waters are rising rapidly while survivors are unable to self-evacuate."
+        }
+    ],
+    "routing_hazard": {
+        "_comment": "Buffer radius in meters around road cutoff marks, penalty multipliers, and expiry",
+        "buffer_radius_meters": 50.0,
+        "blocked_avoid": true,
+        "passable_with_limits_penalty_multiplier": 3.5,
+        "cutoff_expiry_hours": 24.0
+    },
+    "staleness": {
+        "_comment": "Observations older than stale_hours are marked STALE with a re-observe recommendation",
+        "stale_hours": 4.0
+    }
+}

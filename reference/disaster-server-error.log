@@ -1,0 +1,4 @@
+127.0.0.1 - - [09/Oct/2026 09:54:26] "GET /Comparative_study.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/Oct/2026 09:54:51] "GET /Comparative_study.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/Oct/2026 09:54:57] code 404, message File not found
+127.0.0.1 - - [09/Oct/2026 09:54:57] "GET /favicon.ico HTTP/1.1" 404 -

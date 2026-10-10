@@ -1,7 +1,10 @@
+
+import { MAP_CONFIG } from '../../config/mapConfig';
 import { useState, useEffect, useRef, useMemo, Fragment } from 'react';
 import { getRegionalDisasterCorridor, type RegionalDisasterCorridor } from '../../data/regionalDisasterCorridors';
 import { useSearchParams } from 'react-router-dom';
 import { useAppStore } from '../../store/appStore';
+import { getDistrictVillages } from '../../data/districtVillages';
 import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Search, Layers, Navigation, Maximize, Download, Radio, Loader2, MapPin, Building2, Crosshair, CheckCircle2, AlertTriangle, ShieldCheck, Truck, Shield, Send, X, RefreshCw, ChevronRight, Compass, Route, AlertOctagon } from 'lucide-react';
@@ -9,6 +12,7 @@ import { getRegionalStagingBases, calculateOptimalRescuePath, type StagingBase, 
 import { gisService } from '../../services/api';
 import { mockMapLayers } from '../../data/mockData';
 import 'leaflet/dist/leaflet.css';
+
 
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -22,11 +26,13 @@ function MapRecenter({ center, zoom }: { center: [number, number]; zoom: number 
   const prevCenterRef = useRef<[number, number]>(center);
 
   useEffect(() => {
-    if (prevCenterRef.current[0] !== center[0] || prevCenterRef.current[1] !== center[1]) {
-      map.flyTo(center, zoom, { duration: 1.5 });
-      prevCenterRef.current = center;
-    } else {
-      map.setView(center, zoom);
+    try {
+      if (prevCenterRef.current[0] !== center[0] || prevCenterRef.current[1] !== center[1]) {
+        map.flyTo(center, zoom, { duration: 1.5 });
+        prevCenterRef.current = center;
+      }
+    } catch (e) {
+      console.warn('MapRecenter error:', e);
     }
   }, [center, zoom, map]);
 
@@ -144,223 +150,7 @@ const createVillageIcon = (tier: 'HIGH' | 'MEDIUM' | 'SAFE', name: string) => {
   });
 };
 
-const getDistrictVillages = (districtName: string, baseLat: number, baseLng: number): DistrictVillage[] => {
-  const dLower = districtName.toLowerCase();
-  const isRajam = dLower.includes('rajam') || dLower.includes('srikakulam') || dLower.includes('vizianagaram') || dLower.includes('andhra');
-  const isNepal = dLower.includes('nepal') || dLower.includes('kathmandu') || dLower.includes('trishuli') || dLower.includes('nuwakot') || dLower.includes('bagmati');
 
-    if (isRajam) {
-    return [
-      {
-        id: 'vil-r-1',
-        name: 'Boddam',
-        tier: 'HIGH',
-        hazard_reason: 'Lowland agricultural basin & irrigation canal breach. Water depth 1.65m. Road traffic completely submerged.',
-        depth_m: 1.65,
-        population: 1420,
-        stranded: 58,
-        status: 'Evacuation Critical (Boat/Air)',
-        lat: +(baseLat - 0.0200).toFixed(5),
-        lng: +(baseLng - 0.0220).toFixed(5),
-        bearing: '2.1 km SW'
-      },
-      {
-        id: 'vil-r-2',
-        name: 'Prasanthi Nagar',
-        tier: 'HIGH',
-        hazard_reason: 'Palakonda road underpass submerged 1.85m. Lowland residential ground floors flooded by storm runoff.',
-        depth_m: 1.85,
-        population: 2800,
-        stranded: 42,
-        status: 'Road Cutoff / Rooftop Rescue',
-        lat: +(baseLat - 0.0220).toFixed(5),
-        lng: +(baseLng + 0.0180).toFixed(5),
-        bearing: '1.9 km SE'
-      },
-      {
-        id: 'vil-r-3',
-        name: 'Pogiri',
-        tier: 'HIGH',
-        hazard_reason: 'Low riverbank settlement near arterial bridge on Suvarnamukhi/Vegavathi drainage. Water depth 1.55m. Access pathways washed out.',
-        depth_m: 1.55,
-        population: 2150,
-        stranded: 34,
-        status: 'Riverbank Breach / Cutoff',
-        lat: +(baseLat + 0.0240).toFixed(5),
-        lng: +(baseLng - 0.0220).toFixed(5),
-        bearing: '2.4 km NW'
-      },
-      {
-        id: 'vil-r-4',
-        name: 'Saradhi',
-        tier: 'MEDIUM',
-        hazard_reason: 'Residential & agricultural border on eastern fringe of Rajam town. Road shoulder overflow (0.55m depth). Accessible by high-clearance 4x4 trucks & tractors.',
-        depth_m: 0.55,
-        population: 1850,
-        stranded: 0,
-        status: 'Flood Alert / Convoys Only',
-        lat: +(baseLat - 0.0020).toFixed(5),
-        lng: +(baseLng + 0.0320).toFixed(5),
-        bearing: '1.8 km East'
-      },
-      {
-        id: 'vil-r-5',
-        name: 'Maredubaka',
-        tier: 'MEDIUM',
-        hazard_reason: 'Canal overflow encroaching village approach road (0.45m depth). Low-lying lanes waterlogged. Receding slowly.',
-        depth_m: 0.45,
-        population: 1320,
-        stranded: 0,
-        status: 'Accessible via Bypass',
-        lat: +(baseLat + 0.0240).toFixed(5),
-        lng: +(baseLng + 0.0220).toFixed(5),
-        bearing: '2.3 km NE'
-      },
-      {
-        id: 'vil-r-6',
-        name: 'Gadimudidam',
-        tier: 'MEDIUM',
-        hazard_reason: 'Agricultural field runoff approaching village perimeter (0.38m depth). Road passable with caution.',
-        depth_m: 0.38,
-        population: 1480,
-        stranded: 0,
-        status: 'Caution Passable',
-        lat: +(baseLat - 0.0380).toFixed(5),
-        lng: +(baseLng - 0.0040).toFixed(5),
-        bearing: '3.6 km South'
-      },
-      {
-        id: 'vil-r-7',
-        name: 'Kondampeta (GMRIT Campus)',
-        tier: 'SAFE',
-        hazard_reason: 'Elevated bedrock plateau (68m MSL). Designated District Civilian Relief Shelter, Triage Hospital & Helicopter LZ.',
-        depth_m: 0.0,
-        population: 0,
-        stranded: 0,
-        status: 'Primary Evacuation LZ',
-        lat: +(baseLat + 0.0340).toFixed(5),
-        lng: +(baseLng - 0.0020).toFixed(5),
-        bearing: '2.4 km North'
-      }
-    ];
-  }
-
-  if (isNepal) {
-    return [
-      {
-        id: 'vil-n-1',
-        name: 'Balkhu Riverside',
-        tier: 'HIGH',
-        hazard_reason: 'Bagmati river violent torrent & bridgehead breach. Water depth 2.1m. Homes inundated.',
-        depth_m: 2.10,
-        population: 2100,
-        stranded: 68,
-        status: 'Critical Inundation',
-        lat: +(baseLat - 0.0020).toFixed(5),
-        lng: +(baseLng - 0.0015).toFixed(5),
-        bearing: '1.0 km SW'
-      },
-      {
-        id: 'vil-n-2',
-        name: 'Sundarighat Settlement',
-        tier: 'HIGH',
-        hazard_reason: 'Low riverbank floodplain overflow. Access bridge washed out (1.85m depth). Inflatable craft needed.',
-        depth_m: 1.85,
-        population: 1450,
-        stranded: 44,
-        status: 'Submerged Access',
-        lat: +(baseLat - 0.0030).toFixed(5),
-        lng: +(baseLng + 0.0012).toFixed(5),
-        bearing: '1.4 km SE'
-      },
-      {
-        id: 'vil-n-3',
-        name: 'Sanepa Lowlands',
-        tier: 'MEDIUM',
-        hazard_reason: 'Stormwater drainage backflow and street waterlogging (0.65m depth). 4x4 trucks operating.',
-        depth_m: 0.65,
-        population: 1920,
-        stranded: 0,
-        status: '4x4 Vehicles Only',
-        lat: +(baseLat + 0.0015).toFixed(5),
-        lng: +(baseLng - 0.0022).toFixed(5),
-        bearing: '1.3 km NW'
-      },
-      {
-        id: 'vil-n-4',
-        name: 'Tribhuvan University Ridge Haven',
-        tier: 'SAFE',
-        hazard_reason: 'High elevation ridge crest (1,310m MSL). Designated multi-ward civilian shelter and helicopter LZ.',
-        depth_m: 0.0,
-        population: 0,
-        stranded: 0,
-        status: 'Primary Safe Haven & LZ',
-        lat: +(baseLat + 0.0058).toFixed(5),
-        lng: +(baseLng - 0.0035).toFixed(5),
-        bearing: '2.5 km NW'
-      }
-    ];
-  }
-
-  const rawTitle = districtName.split(',')[0].trim();
-  const title = (rawTitle.toLowerCase().includes('sector 4b') || rawTitle.toLowerCase().includes('south delta'))
-    ? 'Trishuli Valley'
-    : rawTitle;
-  return [
-    {
-      id: 'vil-g-1',
-      name: `${title} Riverbed Lowlands`,
-      tier: 'HIGH',
-      hazard_reason: 'Direct riverbank surge & basinal depression. Water depth 1.70m. Submerged residential structures.',
-      depth_m: 1.70,
-      population: 1350,
-      stranded: 46,
-      status: 'Critical Inundation',
-      lat: +(baseLat - 0.0020).toFixed(5),
-      lng: +(baseLng - 0.0018).toFixed(5),
-      bearing: '1.1 km SW'
-    },
-    {
-      id: 'vil-g-2',
-      name: `${title} South Basinal Ward`,
-      tier: 'HIGH',
-      hazard_reason: 'Main arterial culvert breach. Road access submerged 1.55m. Ground vehicles cannot traverse.',
-      depth_m: 1.55,
-      population: 1820,
-      stranded: 32,
-      status: 'Road Cutoff Hazard',
-      lat: +(baseLat - 0.0015).toFixed(5),
-      lng: +(baseLng + 0.0012).toFixed(5),
-      bearing: '0.9 km SE'
-    },
-    {
-      id: 'vil-g-3',
-      name: `${title} Market Approach`,
-      tier: 'MEDIUM',
-      hazard_reason: 'Water logging across access avenues (0.50m depth). Passable for tactical 4x4 trucks.',
-      depth_m: 0.50,
-      population: 1550,
-      stranded: 0,
-      status: 'Tactical Vehicles Only',
-      lat: +(baseLat + 0.0012).toFixed(5),
-      lng: +(baseLng + 0.0025).toFixed(5),
-      bearing: '1.3 km NE'
-    },
-    {
-      id: 'vil-g-4',
-      name: `${title} North High Ground Haven`,
-      tier: 'SAFE',
-      hazard_reason: 'Elevated bedrock ridge (+25m above valley floor). Designated Civilian Relief Haven & Shelter.',
-      depth_m: 0.0,
-      population: 0,
-      stranded: 0,
-      status: 'Designated Relief Haven',
-      lat: +(baseLat + 0.0055).toFixed(5),
-      lng: +(baseLng - 0.0032).toFixed(5),
-      bearing: '2.2 km NW'
-    }
-  ];
-};
 
 const buildGeocodeQueries = (rawQuery: string): string[] => {
   const trimmed = rawQuery.trim();
@@ -375,28 +165,35 @@ const buildGeocodeQueries = (rawQuery: string): string[] => {
 };
 
 export default function GISMapPage() {
+  const [dismissGisBanner, setDismissGisBanner] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const { activeOperationId } = useAppStore();
+  const { activeOperationId, activeDisasterContext, activeOperationCoords, activeOperationData } = useAppStore();
 
   const queryLat = parseFloat(searchParams.get('lat') || '');
   const queryLng = parseFloat(searchParams.get('lng') || '');
   const queryZoom = parseInt(searchParams.get('zoom') || '13', 10);
 
-  const isNepal = 
-    (!isNaN(queryLat) && queryLat > 25 && !isNaN(queryLng) && queryLng < 88) ||
-    (activeOperationId || '').toUpperCase().includes('NEPAL') ||
-    (activeOperationId || '').toUpperCase().includes('NPL');
-
-  const initialLat = !isNaN(queryLat) ? queryLat : (isNepal ? 27.9250 : 27.9250);
-  const initialLng = !isNaN(queryLng) ? queryLng : (isNepal ? 85.1550 : 85.1550);
-  const initialZoom = !isNaN(queryZoom) ? queryZoom : 13;
+  const initialLat = !isNaN(queryLat) ? queryLat : (activeOperationCoords?.lat || 27.7250);
+  const initialLng = !isNaN(queryLng) ? queryLng : (activeOperationCoords?.lng || 85.3000);
+  const initialZoom = !isNaN(queryZoom) ? queryZoom : (activeOperationCoords?.zoom || 13);
 
   // Active Map Location State
   const [currentCenter, setCurrentCenter] = useState<[number, number]>([initialLat, initialLng]);
   const [currentZoom, setCurrentZoom] = useState<number>(initialZoom);
   const [locationName, setLocationName] = useState<string>(
-    isNepal ? 'Bagmati River Basin, Kathmandu' : 'Trishuli Valley, Nuwakot (Nepal)'
+    activeOperationData?.name || activeDisasterContext || 'Active Operation Sector'
   );
+
+  // Synchronize GIS Map camera and title whenever user selects another operation in top header
+  useEffect(() => {
+    if (activeOperationCoords && !searchParams.get('lat')) {
+      setCurrentCenter([activeOperationCoords.lat, activeOperationCoords.lng]);
+      setCurrentZoom(activeOperationCoords.zoom || 13);
+      const opName = activeOperationData?.name || activeDisasterContext || 'Active Operation Sector';
+      setLocationName(opName);
+      setSearchQuery(opName);
+    }
+  }, [activeOperationId, activeOperationCoords]);
 
   // Search and Autocomplete State
   const [searchQuery, setSearchQuery] = useState(locationName);
@@ -704,22 +501,34 @@ export default function GISMapPage() {
 
   return (
     <div className="flex h-screen bg-canvas overflow-hidden pt-12">
-      {/* PRIORITY 1: UNMISSABLE FLOATING SIMULATION BANNER */}
-      <div className="absolute top-14 left-84 right-4 z-[1000] pointer-events-none">
-        <div className="bg-amber-500/95 border-2 border-amber-700 text-slate-950 px-3.5 py-1.5 rounded-lg shadow-lg flex items-center justify-between gap-2 pointer-events-auto backdrop-blur-sm">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 bg-black text-amber-300 font-mono font-black text-[10px] rounded uppercase">
-              SIMULATED SCENARIO DATA — NOT LIVE
-            </span>
-            <span className="text-[11px] font-extrabold text-slate-950">
-              Village casualty census, stranded headcounts, and water depths are synthetic drill data.
-            </span>
+      {/* FLOATING SIMULATION BANNER (DISMISSIBLE) */}
+      {!dismissGisBanner && (
+        <div className="absolute top-14 left-84 right-4 z-[1000] pointer-events-none">
+          <div className="bg-amber-500/95 border-2 border-amber-700 text-slate-950 px-3.5 py-1.5 rounded-lg shadow-lg flex items-center justify-between gap-2 pointer-events-auto backdrop-blur-sm">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 bg-black text-amber-300 font-mono font-black text-[10px] rounded uppercase">
+                SIMULATED SCENARIO DATA – NOT LIVE
+              </span>
+              <span className="text-[11px] font-extrabold text-slate-950">
+                Village casualty census, stranded headcounts, and water depths are synthetic drill data.
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold bg-amber-600 text-white px-2 py-0.5 rounded uppercase hidden md:inline">
+                DRILL SCENARIO
+              </span>
+              <button
+                type="button"
+                onClick={() => setDismissGisBanner(true)}
+                className="p-0.5 hover:bg-amber-600 rounded text-slate-950 transition"
+                title="Dismiss"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
-          <span className="text-[10px] font-mono font-bold bg-amber-600 text-white px-2 py-0.5 rounded uppercase hidden md:inline">
-            DRILL SCENARIO
-          </span>
         </div>
-      </div>
+      )}
 
       {/* Left Control Panel */}
       <div className="w-80 bg-surface border-r border-border flex flex-col shrink-0 z-10 overflow-y-auto">
@@ -1022,20 +831,8 @@ export default function GISMapPage() {
         >
           <MapRecenter center={currentCenter} zoom={currentZoom} />
           <TileLayer
-            url={
-              basemap === 'satellite'
-                ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-                : basemap === 'thermal'
-                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-                : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            }
-            attribution={
-              basemap === 'satellite'
-                ? 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics'
-                : basemap === 'thermal'
-                ? '&copy; CARTO'
-                : '&copy; OpenStreetMap contributors'
-            }
+            url={basemap === 'satellite' ? MAP_CONFIG.satellite.url : basemap === 'thermal' ? MAP_CONFIG.dark.url : MAP_CONFIG.default.url}
+            attribution={basemap === 'satellite' ? MAP_CONFIG.satellite.attribution : basemap === 'thermal' ? MAP_CONFIG.dark.attribution : MAP_CONFIG.default.attribution}
           />
 
           {/* Regional District Choropleth Polygons (Matching User Reference Image) */}

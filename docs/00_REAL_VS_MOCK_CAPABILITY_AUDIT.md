@@ -40,7 +40,7 @@ This document replaces all previous self-graded audit reports with a factual, so
 ---
 
 ### 2.2 Route Optimization & Hazard Bypass
-* **Code Reference**: [`backend/app/services/routing_service.py:L66-85, L117-138`](file:///d:/AI-Disaster/backend/app/services/routing_service.py)
+* **Code Reference**: [`backend/app/services/routing_service.py:L66-85, L117-138`](file:///d:/AI-Disaster/backend/app/services/routing_service.py )
 * **Status**: **PARTIAL (Real OSRM Call + Mock Hazard Avoidance)**
 * **Technical Reality**:
   * **Real Component**: Lines 73–82 build an HTTP request to `https://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}`. If reachable, real asphalt road geometry is parsed and returned for Route A.

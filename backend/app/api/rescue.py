@@ -54,7 +54,6 @@ def update_team_status(id: str, status_val: str = Query(..., alias="status"), db
     db.refresh(team)
     return success_response(data={"id": team.id, "status": team.status}, message="Team status updated")
 
-@router.get("/priorities/{disaster_id}")
 def _format_priority_zone(p: dict) -> dict:
     return {
         "rank": p["rank"],

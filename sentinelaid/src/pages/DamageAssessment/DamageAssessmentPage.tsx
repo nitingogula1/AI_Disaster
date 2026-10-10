@@ -178,8 +178,8 @@ export default function DamageAssessmentPage() {
     if (assets.length > 0 && assets[0].coordinates?.lat) {
       return [assets[0].coordinates.lat, assets[0].coordinates.lng];
     }
-    if (activeDisasterContext?.coordinates) {
-      return [activeDisasterContext.coordinates.lat, activeDisasterContext.coordinates.lng];
+    if (activeDisasterContext && typeof activeDisasterContext === 'string' && activeDisasterContext.toLowerCase().includes('nepal')) {
+      return [27.7, 85.3];
     }
     return [22.3, 89.5]; // Default coastal AOI coordinates
   }, [assets, activeDisasterContext]);
@@ -365,7 +365,7 @@ export default function DamageAssessmentPage() {
                   Object.entries(categoryCounts).map(([cat, count]) => (
                     <div key={cat} className="flex items-center justify-between py-2 border-t border-border first:border-0 text-xs">
                       <span className="text-text-secondary">{cat}</span>
-                      <span className="font-bold font-mono text-text-primary">{count}</span>
+                      <span className="font-bold font-mono text-text-primary">{String(count)}</span>
                     </div>
                   ))
                 )}

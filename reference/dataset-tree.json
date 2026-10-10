@@ -1,0 +1,2040 @@
+{
+  "sha": "bb933064ec98a38a6155f142728477f27b279f1e",
+  "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/bb933064ec98a38a6155f142728477f27b279f1e",
+  "tree": [
+    {
+      "path": ".gitattributes",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aa2f1fac22826955c61968f462720318c62b116a",
+      "size": 205,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/aa2f1fac22826955c61968f462720318c62b116a"
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e1a46e80ecb45fc2505f9067b88100eeaedb7a8",
+      "size": 1142,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/0e1a46e80ecb45fc2505f9067b88100eeaedb7a8"
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d123d04d124510f973d546af4f8c249ef2803573",
+      "size": 1079,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/d123d04d124510f973d546af4f8c249ef2803573"
+    },
+    {
+      "path": "Python",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a9d6108aa45b6c83c6c13e9c3cc133893b63bc0c",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/a9d6108aa45b6c83c6c13e9c3cc133893b63bc0c"
+    },
+    {
+      "path": "Python/Bayesian_test_run.ipynb",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9f33d3cd1965ed2a32ba8e30689035659dafe71b",
+      "size": 386056,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/9f33d3cd1965ed2a32ba8e30689035659dafe71b"
+    },
+    {
+      "path": "R",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "acba5a80f66fb967825eabea32460f06504b7028",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/acba5a80f66fb967825eabea32460f06504b7028"
+    },
+    {
+      "path": "R/.gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d6e7cbc7d338f226ca93f6e27ca271065d5175a",
+      "size": 57,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3d6e7cbc7d338f226ca93f6e27ca271065d5175a"
+    },
+    {
+      "path": "R/Q4.R",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "99de2abee2b07b99663849c676d1e8fd79012d3a",
+      "size": 2795,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/99de2abee2b07b99663849c676d1e8fd79012d3a"
+    },
+    {
+      "path": "R/analysis.R",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6983b7f7e7cad635d467c6a4f8fa5114df5bdc83",
+      "size": 6141,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/6983b7f7e7cad635d467c6a4f8fa5114df5bdc83"
+    },
+    {
+      "path": "R/create_demo.sh",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9271825b426d4adfa9d215598f860a512af55c21",
+      "size": 507,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/9271825b426d4adfa9d215598f860a512af55c21"
+    },
+    {
+      "path": "R/data_preparation.R",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "afa659c1833ab4ef44ff4a6e2340d0d5ca3141a8",
+      "size": 1020,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/afa659c1833ab4ef44ff4a6e2340d0d5ca3141a8"
+    },
+    {
+      "path": "R/data_preparation_sonification.R",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c33843a89a31c63f6217b558a7d77175a4232edc",
+      "size": 1218,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/c33843a89a31c63f6217b558a7d77175a4232edc"
+    },
+    {
+      "path": "R/out",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d3fb32eebc3083b9f65206586e2df4799fe9d3c5",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/d3fb32eebc3083b9f65206586e2df4799fe9d3c5"
+    },
+    {
+      "path": "R/out/3",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d6d7cdf79ca04aa320ddb8f699da1e5ced1987ef",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/d6d7cdf79ca04aa320ddb8f699da1e5ced1987ef"
+    },
+    {
+      "path": "R/out/3/shake_intensity",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fb54bf5e993da309e361ba19d7ab253781f057c7",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/fb54bf5e993da309e361ba19d7ab253781f057c7"
+    },
+    {
+      "path": "R/out/3/shake_intensity/summary",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fadedcae1758e87faa01338367f66b28d4da45e8",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/fadedcae1758e87faa01338367f66b28d4da45e8"
+    },
+    {
+      "path": "R/out/3/shake_intensity/summary/summary-2020-04-08_09-15-00.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "95d2258c86593867cf8fd78b7368f82c2aa6d2c1",
+      "size": 405827,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/95d2258c86593867cf8fd78b7368f82c2aa6d2c1"
+    },
+    {
+      "path": "R/out/3/shake_intensity/summary/summary-2020-04-10_23-50-00.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0216a09a77aa73dc1503d265fe8a69f93dda2d96",
+      "size": 984746,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/0216a09a77aa73dc1503d265fe8a69f93dda2d96"
+    },
+    {
+      "path": "R/out/all_summary_aggregated.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a3f1b158a354eec771aaff749c0e0f346e7e4f8",
+      "size": 485937,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3a3f1b158a354eec771aaff749c0e0f346e7e4f8"
+    },
+    {
+      "path": "R/out/all_summary_processed.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8b5687d9f3435423600475268c7d9ed197554977",
+      "size": 17481275,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/8b5687d9f3435423600475268c7d9ed197554977"
+    },
+    {
+      "path": "R/out/buildings_summary.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "598847c799dd4fc9abb280aa9c268e2331d128bd",
+      "size": 1424270,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/598847c799dd4fc9abb280aa9c268e2331d128bd"
+    },
+    {
+      "path": "R/out/fig4-1.svg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "86bd06cdcd437baea92b22b7d8ec450c81da327e",
+      "size": 4075781,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/86bd06cdcd437baea92b22b7d8ec450c81da327e"
+    },
+    {
+      "path": "R/out/mc1-reports-data-aggregated.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e091a4acac888d0aebee0e7249d5d837ab7b0298",
+      "size": 3600131,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e091a4acac888d0aebee0e7249d5d837ab7b0298"
+    },
+    {
+      "path": "R/out/medical_summary.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a581109d452af1e785278b5286b4b70911f90298",
+      "size": 652424,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/a581109d452af1e785278b5286b4b70911f90298"
+    },
+    {
+      "path": "R/out/power_summary.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a6eb0c07412c809b31cd66d20abd4323b35cee80",
+      "size": 1404741,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/a6eb0c07412c809b31cd66d20abd4323b35cee80"
+    },
+    {
+      "path": "R/out/roads_and_bridges_summary.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ec8fcab61e323d55c014b15825d18b7874a4e47",
+      "size": 1595267,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1ec8fcab61e323d55c014b15825d18b7874a4e47"
+    },
+    {
+      "path": "R/out/shake_intensity_summary.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6bf2bc3fe0291551fd34802fd926b6a78d18a830",
+      "size": 704119,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/6bf2bc3fe0291551fd34802fd926b6a78d18a830"
+    },
+    {
+      "path": "R/out/shake_intensity_summary_aggregated.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "95d2a664fe21031464e0e8189c789566e994930f",
+      "size": 2992540,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/95d2a664fe21031464e0e8189c789566e994930f"
+    },
+    {
+      "path": "R/out/shake_intensity_summary_processed.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "95d2a664fe21031464e0e8189c789566e994930f",
+      "size": 2992540,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/95d2a664fe21031464e0e8189c789566e994930f"
+    },
+    {
+      "path": "R/out/sonification_4.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "99d71207a4430dc0849c3f6a2e65d3c1890f4670",
+      "size": 48165,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/99d71207a4430dc0849c3f6a2e65d3c1890f4670"
+    },
+    {
+      "path": "R/out/sonification_4_buildings.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5600ecd5648103a03ff9819b7d759ef427af0dbc",
+      "size": 44085,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/5600ecd5648103a03ff9819b7d759ef427af0dbc"
+    },
+    {
+      "path": "R/out/sonification_4_shake_intensity.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "655a0f2f831d9ae497146569820ca3c50f104069",
+      "size": 44176,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/655a0f2f831d9ae497146569820ca3c50f104069"
+    },
+    {
+      "path": "R/process.R",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1f912f38526fa483adf63d0dd18e6cbb33dd6b3a",
+      "size": 2748,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1f912f38526fa483adf63d0dd18e6cbb33dd6b3a"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a2a4346b4118ba29d6f105c274d5b74f36fcf9b",
+      "size": 13892,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3a2a4346b4118ba29d6f105c274d5b74f36fcf9b"
+    },
+    {
+      "path": "Tableau",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "524b3be8cd04b1838d05143d7761be36b4fd363d",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/524b3be8cd04b1838d05143d7761be36b4fd363d"
+    },
+    {
+      "path": "Tableau/.~VAST-MC1-R-3__2417.twbr",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1605efcc8db55d7a42fdb3b593a8fd6bea97c72",
+      "size": 287103,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/d1605efcc8db55d7a42fdb3b593a8fd6bea97c72"
+    },
+    {
+      "path": "Tableau/VAST-MC1-Report.twbx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a1e7e6840453c5ee474f00608e3d5fd3a7eb845",
+      "size": 2481573,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/5a1e7e6840453c5ee474f00608e3d5fd3a7eb845"
+    },
+    {
+      "path": "assets",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "bc8a23d64d354623276e6878056d57f061abad15",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/bc8a23d64d354623276e6878056d57f061abad15"
+    },
+    {
+      "path": "assets/dashboard.gif",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "20f7ee250d35e660f6a05eb71f5a472bdcecca9b",
+      "size": 483225,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/20f7ee250d35e660f6a05eb71f5a472bdcecca9b"
+    },
+    {
+      "path": "assets/data-abstraction.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d072d358faadff4c9216598d82cde581366c6a0",
+      "size": 155448,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/2d072d358faadff4c9216598d82cde581366c6a0"
+    },
+    {
+      "path": "assets/domain-situation.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "23a6ae6dcccb2041652e8c992a66ee00f1f68266",
+      "size": 141739,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/23a6ae6dcccb2041652e8c992a66ee00f1f68266"
+    },
+    {
+      "path": "assets/facilities.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6c447d15258d8d02642c437be8d632d13ca26259",
+      "size": 36426,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/6c447d15258d8d02642c437be8d632d13ca26259"
+    },
+    {
+      "path": "assets/mc1-majorquake-shakemap.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "806f5e32e5aae7c50d1695b025aa16a2b14cb8e4",
+      "size": 416603,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/806f5e32e5aae7c50d1695b025aa16a2b14cb8e4"
+    },
+    {
+      "path": "assets/mc1-prequake-shakemap.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "2e521a0f002a35e698060d330e293a8c02c26731",
+      "size": 152176,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/2e521a0f002a35e698060d330e293a8c02c26731"
+    },
+    {
+      "path": "assets/ruler.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a5e2685cf056fd221539bbb36e147bdc28810d4c",
+      "size": 14412,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/a5e2685cf056fd221539bbb36e147bdc28810d4c"
+    },
+    {
+      "path": "assets/sonification",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "19c75ae70f2c9e7d4952ad03e982ade81228e45f",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/19c75ae70f2c9e7d4952ad03e982ade81228e45f"
+    },
+    {
+      "path": "assets/sonification/sonification_4_buildings.mp3",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1412c238d1f2e689ed8a376d1ebcf9dedc280694",
+      "size": 20477632,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1412c238d1f2e689ed8a376d1ebcf9dedc280694"
+    },
+    {
+      "path": "assets/sonification/sonification_4_buildings_all.mp3",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6062dd704890ecb4c434220c17084b27d87dfc7",
+      "size": 20305979,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f6062dd704890ecb4c434220c17084b27d87dfc7"
+    },
+    {
+      "path": "assets/sonification/sonification_4_shake_intensity.mp3",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "88443004d33569ddf3900ca1e57f98b93dc670de",
+      "size": 20483495,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/88443004d33569ddf3900ca1e57f98b93dc670de"
+    },
+    {
+      "path": "assets/visual-encoding.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "772fb5d1345c8e5822e3d2d4c2182d845af0d526",
+      "size": 93582,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/772fb5d1345c8e5822e3d2d4c2182d845af0d526"
+    },
+    {
+      "path": "data",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9499ae66c7093885d53b816f9dc114727343f769",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/9499ae66c7093885d53b816f9dc114727343f769"
+    },
+    {
+      "path": "data/mc1-reports-data.csv",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "94bde4b5ad70f9f4d9e84233033dcf850dd8321c",
+      "size": 3705088,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/94bde4b5ad70f9f4d9e84233033dcf850dd8321c"
+    },
+    {
+      "path": "misc",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "5ee6d5409420a3b42fa75db64162b9a69f0e74d2",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/5ee6d5409420a3b42fa75db64162b9a69f0e74d2"
+    },
+    {
+      "path": "misc/Neighbourhoods_info.numbers",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "cc98b1b404089d3c11d143b20cd573e4557912b2",
+      "size": 161048,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cc98b1b404089d3c11d143b20cd573e4557912b2"
+    },
+    {
+      "path": "misc/VAST 2019 - St. Himark - About Our City.docx",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "fdc63201d58abf2259a2974db6ddd4f16e0cdca4",
+      "size": 411244,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/fdc63201d58abf2259a2974db6ddd4f16e0cdca4"
+    },
+    {
+      "path": "netlify.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "035b9659381babaf0eaae4b852f203c911138697",
+      "size": 796,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/035b9659381babaf0eaae4b852f203c911138697"
+    },
+    {
+      "path": "nuxt",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e21d426af1b9536786dbd0eb649bc3e69b8f68c3",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/e21d426af1b9536786dbd0eb649bc3e69b8f68c3"
+    },
+    {
+      "path": "nuxt/.babelrc",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "84c2e570ec8a935623e24628c8aeb3c0a8390f07",
+      "size": 212,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/84c2e570ec8a935623e24628c8aeb3c0a8390f07"
+    },
+    {
+      "path": "nuxt/.editorconfig",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d126348471c348decba17143ce128130c9f4104",
+      "size": 207,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/5d126348471c348decba17143ce128130c9f4104"
+    },
+    {
+      "path": "nuxt/.eslintrc.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cc5861654bc906d93ea7408d38b99b80c8aed1c2",
+      "size": 351,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cc5861654bc906d93ea7408d38b99b80c8aed1c2"
+    },
+    {
+      "path": "nuxt/.gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f935a370cd45854d108ed1675c86e730e66bd7c9",
+      "size": 1200,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f935a370cd45854d108ed1675c86e730e66bd7c9"
+    },
+    {
+      "path": "nuxt/.prettierrc",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2095be81e4e40b736dfc9b3559d0250e4becd02",
+      "size": 43,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/b2095be81e4e40b736dfc9b3559d0250e4becd02"
+    },
+    {
+      "path": "nuxt/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4693947ae50d087941ff2dd856ec29f4db796d87",
+      "size": 389,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/4693947ae50d087941ff2dd856ec29f4db796d87"
+    },
+    {
+      "path": "nuxt/assets",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a37d2a00bc4bb77cacade9ee9fe46687a62d2163",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/a37d2a00bc4bb77cacade9ee9fe46687a62d2163"
+    },
+    {
+      "path": "nuxt/assets/img",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "86c406fd806eb92a2e522d65149b7ad2e833d4d5",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/86c406fd806eb92a2e522d65149b7ad2e833d4d5"
+    },
+    {
+      "path": "nuxt/assets/img/dashboard-thumbnail-s.gif",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee7721512b04d33593e5b5abb371ea9883eb42ef",
+      "size": 17843,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/ee7721512b04d33593e5b5abb371ea9883eb42ef"
+    },
+    {
+      "path": "nuxt/assets/img/dashboard-thumbnail.gif",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "87901dbe52884b758d5bc253773a6f385d34d3f4",
+      "size": 442490,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/87901dbe52884b758d5bc253773a6f385d34d3f4"
+    },
+    {
+      "path": "nuxt/assets/img/dashboard-thumbnail.mp4",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc289d8ee34846169c96201d7c3eec522bbd9261",
+      "size": 196504,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/bc289d8ee34846169c96201d7c3eec522bbd9261"
+    },
+    {
+      "path": "nuxt/assets/img/screenshot-full-dashboard-bottom.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "409f75621d2acb35e6de316cf2014a5b45479be2",
+      "size": 228499,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/409f75621d2acb35e6de316cf2014a5b45479be2"
+    },
+    {
+      "path": "nuxt/assets/img/screenshot-full-dashboard-top.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74fd09fb989cb720f98c5a39e1a035c635cfc287",
+      "size": 210571,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/74fd09fb989cb720f98c5a39e1a035c635cfc287"
+    },
+    {
+      "path": "nuxt/assets/img/screenshot-full-dashboard.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "385fb8910713b407af8b31c1cd5f75f28fe79f0c",
+      "size": 344057,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/385fb8910713b407af8b31c1cd5f75f28fe79f0c"
+    },
+    {
+      "path": "nuxt/assets/main.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0bd8f85527c311b172496d0ed97df98a2f53de64",
+      "size": 116,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/0bd8f85527c311b172496d0ed97df98a2f53de64"
+    },
+    {
+      "path": "nuxt/assets/spec",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1e99cc466d02942c2910b0c3d4a3eab3cb312570",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/1e99cc466d02942c2910b0c3d4a3eab3cb312570"
+    },
+    {
+      "path": "nuxt/assets/spec/MC1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c3796c32eca5fe2afea2e3263fe6407a16896c6",
+      "size": 73670,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3c3796c32eca5fe2afea2e3263fe6407a16896c6"
+    },
+    {
+      "path": "nuxt/assets/spec/MC1demo.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17ba8ad175e45475230e2a88de51b784981a0d78",
+      "size": 73685,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/17ba8ad175e45475230e2a88de51b784981a0d78"
+    },
+    {
+      "path": "nuxt/assets/spec/heatmap-multi-demo.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "875273806527ae53613e07b67796f11625553057",
+      "size": 14453,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/875273806527ae53613e07b67796f11625553057"
+    },
+    {
+      "path": "nuxt/assets/spec/heatmap-multi.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ebe7cf727e74df369fd01c9f3f806c426773ea62",
+      "size": 15856,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/ebe7cf727e74df369fd01c9f3f806c426773ea62"
+    },
+    {
+      "path": "nuxt/components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9b0700147ae015930dca049e3811ce7a5efb0690",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/9b0700147ae015930dca049e3811ce7a5efb0690"
+    },
+    {
+      "path": "nuxt/components/GroupRadio.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "21e947777e5ab7d77d623894fac572b640e80bb2",
+      "size": 1041,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/21e947777e5ab7d77d623894fac572b640e80bb2"
+    },
+    {
+      "path": "nuxt/components/InfoButton.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "97f5e1e4558a45c16f16806a6939500e0d3b9041",
+      "size": 2230,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/97f5e1e4558a45c16f16806a6939500e0d3b9041"
+    },
+    {
+      "path": "nuxt/components/Nav.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ceebc6deffa3430866e682fa986a47d2a75abfcf",
+      "size": 1561,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/ceebc6deffa3430866e682fa986a47d2a75abfcf"
+    },
+    {
+      "path": "nuxt/components/SelectCategory.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e79de94c310840776ebdc48da415899f0edc35ac",
+      "size": 1416,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e79de94c310840776ebdc48da415899f0edc35ac"
+    },
+    {
+      "path": "nuxt/components/SelectList.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f4b4e830b5127b649a6e4920e1f9455db89f5cdc",
+      "size": 2007,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f4b4e830b5127b649a6e4920e1f9455db89f5cdc"
+    },
+    {
+      "path": "nuxt/components/SwitchSlider.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3467cb86c2821448a9ad8cd160d3e957cd27856",
+      "size": 1594,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f3467cb86c2821448a9ad8cd160d3e957cd27856"
+    },
+    {
+      "path": "nuxt/components/VegaChart.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35e5f9184b22db4994ea946deefbceafcf53417a",
+      "size": 2385,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/35e5f9184b22db4994ea946deefbceafcf53417a"
+    },
+    {
+      "path": "nuxt/components/WarningCard.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "45b39bf44fb6fb3f3056a4d0698626c3cfce611d",
+      "size": 1453,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/45b39bf44fb6fb3f3056a4d0698626c3cfce611d"
+    },
+    {
+      "path": "nuxt/jest.config.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ac587076fb0d502f7e5cbea5f576c8fe94c2e034",
+      "size": 400,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/ac587076fb0d502f7e5cbea5f576c8fe94c2e034"
+    },
+    {
+      "path": "nuxt/layouts",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a169e52e418a26a9ca9946758e72ecf2a1038e66",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/a169e52e418a26a9ca9946758e72ecf2a1038e66"
+    },
+    {
+      "path": "nuxt/layouts/default.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f19758705133e0cc4817de511216a0d501be4e75",
+      "size": 1133,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f19758705133e0cc4817de511216a0d501be4e75"
+    },
+    {
+      "path": "nuxt/nuxt.config.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2ba5905019c19c6552536eaa317e07d1476525b",
+      "size": 2150,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e2ba5905019c19c6552536eaa317e07d1476525b"
+    },
+    {
+      "path": "nuxt/package.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e9c090bd35483bba16adcadd53ac6f14a818ce0",
+      "size": 1407,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1e9c090bd35483bba16adcadd53ac6f14a818ce0"
+    },
+    {
+      "path": "nuxt/pages",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f31b922b03813531e4d72d0f90290b9e33ece31e",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/f31b922b03813531e4d72d0f90290b9e33ece31e"
+    },
+    {
+      "path": "nuxt/pages/about.vue",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "449bad4ea58e779e75df86262b4299a00168060a",
+      "size": 5314,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/449bad4ea58e779e75df86262b4299a00168060a"
+    },
+    {
+      "path": "nuxt/pages/canvas",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "5655bfbed1465d51cbe9f2bfbd20c751fa7c9c64",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/5655bfbed1465d51cbe9f2bfbd20c751fa7c9c64"
+    },
+    {
+      "path": "nuxt/pages/canvas/heatmap-multi-demo.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "720d51b7ab5a56280ee352677f2995f8b24eb7cf",
+      "size": 2008,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/720d51b7ab5a56280ee352677f2995f8b24eb7cf"
+    },
+    {
+      "path": "nuxt/pages/canvas/heatmap-multi.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9593583f4682b122e8000448aa062ad4c5380774",
+      "size": 2023,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/9593583f4682b122e8000448aa062ad4c5380774"
+    },
+    {
+      "path": "nuxt/pages/canvas/mc1-demo.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de14c732cac8a3d9399840b60cb69189acaae09c",
+      "size": 5198,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/de14c732cac8a3d9399840b60cb69189acaae09c"
+    },
+    {
+      "path": "nuxt/pages/canvas/mc1.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ff2c6c5666c7753654252593e36fbefcdc117a37",
+      "size": 4959,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/ff2c6c5666c7753654252593e36fbefcdc117a37"
+    },
+    {
+      "path": "nuxt/pages/index.vue",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "870ba1d1888bd48d422cf8aefae15b5dcd8680f9",
+      "size": 3567,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/870ba1d1888bd48d422cf8aefae15b5dcd8680f9"
+    },
+    {
+      "path": "nuxt/pages/svg",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6fda77265d745bd875b3ecd4a6169baf8269996e",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/6fda77265d745bd875b3ecd4a6169baf8269996e"
+    },
+    {
+      "path": "nuxt/pages/svg/heatmap-multi-demo.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be2e063d7e52298fe5988d42623ef4425c2a6c13",
+      "size": 2005,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/be2e063d7e52298fe5988d42623ef4425c2a6c13"
+    },
+    {
+      "path": "nuxt/pages/svg/heatmap-multi.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5906c044f9db88142eda161a58480bae6641c801",
+      "size": 2020,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/5906c044f9db88142eda161a58480bae6641c801"
+    },
+    {
+      "path": "nuxt/pages/svg/mc1-demo.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c523f82d474e28306c4379c46677147bc4e36853",
+      "size": 5195,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/c523f82d474e28306c4379c46677147bc4e36853"
+    },
+    {
+      "path": "nuxt/pages/svg/mc1.vue",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "819e3847af96ec1804fc126e604ee956b9fafd8c",
+      "size": 4956,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/819e3847af96ec1804fc126e604ee956b9fafd8c"
+    },
+    {
+      "path": "nuxt/plugins",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7ae3d321aa25f0cc4cc15f58864ca46d82a9fdd2",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/7ae3d321aa25f0cc4cc15f58864ca46d82a9fdd2"
+    },
+    {
+      "path": "nuxt/plugins/element-ui.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "346f98d67b7ab9fdc1c35f654dcf5a959a9c5995",
+      "size": 163,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/346f98d67b7ab9fdc1c35f654dcf5a959a9c5995"
+    },
+    {
+      "path": "nuxt/static",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "131c12bc550b35e34104cb31384f0265aa788489",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/131c12bc550b35e34104cb31384f0265aa788489"
+    },
+    {
+      "path": "nuxt/static/answer",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "06b6f2316fbdab7dd436eeb67775cf0725cb2b39",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/06b6f2316fbdab7dd436eeb67775cf0725cb2b39"
+    },
+    {
+      "path": "nuxt/static/answer/DPST-Natthawut-MC1.html",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "152b75a814504bad85fe76b183e89fa37ad3d784",
+      "size": 111428,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/152b75a814504bad85fe76b183e89fa37ad3d784"
+    },
+    {
+      "path": "nuxt/static/answer/images-original",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4933d216f41144a878e9aa2491ce504e11b4bf57",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/4933d216f41144a878e9aa2491ce504e11b4bf57"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image1.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "3fc13af3a3ad8fa4805935b593bc4fc5063559d3",
+      "size": 1075,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3fc13af3a3ad8fa4805935b593bc4fc5063559d3"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image10.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "aea375c10e95235862980034f9c936a173ab5313",
+      "size": 358287,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/aea375c10e95235862980034f9c936a173ab5313"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image11.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "fc351ad08e532d198a6d5935317367a929ca293a",
+      "size": 371959,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/fc351ad08e532d198a6d5935317367a929ca293a"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image12.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "a4dc862a5310a5d64a8e7cfc210ed8881fda508a",
+      "size": 278029,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/a4dc862a5310a5d64a8e7cfc210ed8881fda508a"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image13.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "0e5f6940db42742b54a211dc63a738762a033f18",
+      "size": 3812,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/0e5f6940db42742b54a211dc63a738762a033f18"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image14.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "c249369ba16a465ac7305412e8d7b678ed616aa3",
+      "size": 3333,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/c249369ba16a465ac7305412e8d7b678ed616aa3"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image15.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "065becbf08c62369dd481cb8a911d86cbb83eef9",
+      "size": 6145,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/065becbf08c62369dd481cb8a911d86cbb83eef9"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image16.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "36ac9d3967711adf0ea695949bb024582c33da51",
+      "size": 4761,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/36ac9d3967711adf0ea695949bb024582c33da51"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image17.gif",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "cf03229da74d3db6657015f74fc2606d3a56e18d",
+      "size": 2077376,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cf03229da74d3db6657015f74fc2606d3a56e18d"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image18.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "82be0f4be34261da377f6f7c103c0a988e0c1114",
+      "size": 31875,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/82be0f4be34261da377f6f7c103c0a988e0c1114"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image19.gif",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "d530318ce2c09ecf3fb0692532a33e363a6c65ad",
+      "size": 5950386,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/d530318ce2c09ecf3fb0692532a33e363a6c65ad"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image2.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "40bf71879842824b7062608ff8682c35efa674ba",
+      "size": 1308,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/40bf71879842824b7062608ff8682c35efa674ba"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image20.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "efdfa6787e5eb7fdfe6729835f56e6bada5fb246",
+      "size": 398595,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/efdfa6787e5eb7fdfe6729835f56e6bada5fb246"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image21.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "afa44422577e55ae3220e1841e09073552ffdf9b",
+      "size": 334878,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/afa44422577e55ae3220e1841e09073552ffdf9b"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image22.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "94b76b1a4275630b5a2178c3b95307476034646b",
+      "size": 72057,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/94b76b1a4275630b5a2178c3b95307476034646b"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image23.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "fedeb4384329081f2d780ecc8c77e3233870000d",
+      "size": 192546,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/fedeb4384329081f2d780ecc8c77e3233870000d"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image24.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "c24eecc1359b7df43c4763639a1f0ef5f4dad2f8",
+      "size": 161708,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/c24eecc1359b7df43c4763639a1f0ef5f4dad2f8"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image25.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "22c939275d548ba460e63a155832efea82543aea",
+      "size": 241432,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/22c939275d548ba460e63a155832efea82543aea"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image26.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "2986c7def2d8f5abb276b6dd5921b4ab229e850a",
+      "size": 173723,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/2986c7def2d8f5abb276b6dd5921b4ab229e850a"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image27.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "bc52df837dec12064769b9c5d2bbb1a559bd8ce2",
+      "size": 81074,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/bc52df837dec12064769b9c5d2bbb1a559bd8ce2"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image28.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "38179c83420ca4e44a13968f5c5781e7e3988a22",
+      "size": 2383052,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/38179c83420ca4e44a13968f5c5781e7e3988a22"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image29.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "021fd647e8ac9bf6ed044ad30664459019988e5d",
+      "size": 657268,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/021fd647e8ac9bf6ed044ad30664459019988e5d"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image3.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "6727bf002243ef8c9fa1a712fa2e17c5ed2a4553",
+      "size": 384,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/6727bf002243ef8c9fa1a712fa2e17c5ed2a4553"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image30.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "770b1c522953b5a8bb861f03e0571282dcba0109",
+      "size": 46739,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/770b1c522953b5a8bb861f03e0571282dcba0109"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image31.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "f9b4cb8490dccac0f1492af240197ba176a28b00",
+      "size": 121184,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f9b4cb8490dccac0f1492af240197ba176a28b00"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image32.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "9f90720e308d369421b89c59b66be6d1258aeb52",
+      "size": 114691,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/9f90720e308d369421b89c59b66be6d1258aeb52"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image33.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "1976d4b8c11a4758938388b68399bcbfdc80c7b9",
+      "size": 162405,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1976d4b8c11a4758938388b68399bcbfdc80c7b9"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image34.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "7001f36f6a9161878cb098823f8fd5add8e0a7f6",
+      "size": 145202,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/7001f36f6a9161878cb098823f8fd5add8e0a7f6"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image35.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "62e8f969d8f834879adcbee7b76d95ba5c85b4d7",
+      "size": 753807,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/62e8f969d8f834879adcbee7b76d95ba5c85b4d7"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image36.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "553eb5eb8fb49cf4cd7b2d3577485406ab50868a",
+      "size": 406354,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/553eb5eb8fb49cf4cd7b2d3577485406ab50868a"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image4.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "afd049c7d94dff8b307f6a2d2fd553908ea0d585",
+      "size": 900,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/afd049c7d94dff8b307f6a2d2fd553908ea0d585"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image5.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "24774c025197524e555578fef4b963d50e446094",
+      "size": 2423,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/24774c025197524e555578fef4b963d50e446094"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image6.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "f0ccf826c94a5088fa64b642139fa45227cd3e03",
+      "size": 866,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f0ccf826c94a5088fa64b642139fa45227cd3e03"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image7.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e993ca9faf06a327d4ff57b469d9fef6aad7976b",
+      "size": 4679,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e993ca9faf06a327d4ff57b469d9fef6aad7976b"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image8.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "da7dd2b6d9c246e45347f941f8ce124aefae2580",
+      "size": 383887,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/da7dd2b6d9c246e45347f941f8ce124aefae2580"
+    },
+    {
+      "path": "nuxt/static/answer/images-original/image9.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "fefce7eca2d8ec359eaf539adf27b42fb6722841",
+      "size": 225884,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/fefce7eca2d8ec359eaf539adf27b42fb6722841"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "920b046275ebcca64b148e228a1696f4ee95d705",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/920b046275ebcca64b148e228a1696f4ee95d705"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image1.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "3fc13af3a3ad8fa4805935b593bc4fc5063559d3",
+      "size": 1075,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3fc13af3a3ad8fa4805935b593bc4fc5063559d3"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image10.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "37b63352cbe4e1f94338f3b7760bc6f2d9ecb754",
+      "size": 1894406,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/37b63352cbe4e1f94338f3b7760bc6f2d9ecb754"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image11.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "fc351ad08e532d198a6d5935317367a929ca293a",
+      "size": 371959,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/fc351ad08e532d198a6d5935317367a929ca293a"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image12.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "a4dc862a5310a5d64a8e7cfc210ed8881fda508a",
+      "size": 278029,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/a4dc862a5310a5d64a8e7cfc210ed8881fda508a"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image13.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "0e5f6940db42742b54a211dc63a738762a033f18",
+      "size": 3812,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/0e5f6940db42742b54a211dc63a738762a033f18"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image14.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "c249369ba16a465ac7305412e8d7b678ed616aa3",
+      "size": 3333,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/c249369ba16a465ac7305412e8d7b678ed616aa3"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image15.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "065becbf08c62369dd481cb8a911d86cbb83eef9",
+      "size": 6145,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/065becbf08c62369dd481cb8a911d86cbb83eef9"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image16.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "36ac9d3967711adf0ea695949bb024582c33da51",
+      "size": 4761,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/36ac9d3967711adf0ea695949bb024582c33da51"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image17.gif",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "cf03229da74d3db6657015f74fc2606d3a56e18d",
+      "size": 2077376,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cf03229da74d3db6657015f74fc2606d3a56e18d"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image18.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "82be0f4be34261da377f6f7c103c0a988e0c1114",
+      "size": 31875,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/82be0f4be34261da377f6f7c103c0a988e0c1114"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image19.gif",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "20f7ee250d35e660f6a05eb71f5a472bdcecca9b",
+      "size": 483225,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/20f7ee250d35e660f6a05eb71f5a472bdcecca9b"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image2.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "40bf71879842824b7062608ff8682c35efa674ba",
+      "size": 1308,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/40bf71879842824b7062608ff8682c35efa674ba"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image20.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "efdfa6787e5eb7fdfe6729835f56e6bada5fb246",
+      "size": 398595,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/efdfa6787e5eb7fdfe6729835f56e6bada5fb246"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image21.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "6eb1e674ea5ab90ad02e1fcb2acc5cc3c51d2e9e",
+      "size": 1787648,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/6eb1e674ea5ab90ad02e1fcb2acc5cc3c51d2e9e"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image22.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "94b76b1a4275630b5a2178c3b95307476034646b",
+      "size": 72057,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/94b76b1a4275630b5a2178c3b95307476034646b"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image23.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "dcd403ef8949fb74a1cd33be1dfa38f3e4fe2289",
+      "size": 1150838,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/dcd403ef8949fb74a1cd33be1dfa38f3e4fe2289"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image24.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "f45603202c91c5712bd2b983864b071cd1b93779",
+      "size": 1077546,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f45603202c91c5712bd2b983864b071cd1b93779"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image25.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "22c939275d548ba460e63a155832efea82543aea",
+      "size": 241432,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/22c939275d548ba460e63a155832efea82543aea"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image26.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "cd47ed77daf26b4d5b423bf4f5722d520ea784df",
+      "size": 1055846,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cd47ed77daf26b4d5b423bf4f5722d520ea784df"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image27.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "ddd20b7aa97b97cbb1e3e2e414ddb64af976bf86",
+      "size": 559562,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/ddd20b7aa97b97cbb1e3e2e414ddb64af976bf86"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image28.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "d9572816529f4edc75cff1714f2b08609f0620bd",
+      "size": 10528468,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/d9572816529f4edc75cff1714f2b08609f0620bd"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image29.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "021fd647e8ac9bf6ed044ad30664459019988e5d",
+      "size": 657268,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/021fd647e8ac9bf6ed044ad30664459019988e5d"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image3.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "6727bf002243ef8c9fa1a712fa2e17c5ed2a4553",
+      "size": 384,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/6727bf002243ef8c9fa1a712fa2e17c5ed2a4553"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image30.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "770b1c522953b5a8bb861f03e0571282dcba0109",
+      "size": 46739,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/770b1c522953b5a8bb861f03e0571282dcba0109"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image31.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e28295efddc141d3c00270ec45ad30ea93287f4c",
+      "size": 775017,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e28295efddc141d3c00270ec45ad30ea93287f4c"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image32.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e88a80e8365ac5165e0688a7cc5ea48332b85cd4",
+      "size": 745480,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e88a80e8365ac5165e0688a7cc5ea48332b85cd4"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image33.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "1b05ad21d30e9ce46a260416f8cb859301258a09",
+      "size": 944492,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1b05ad21d30e9ce46a260416f8cb859301258a09"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image34.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "7001f36f6a9161878cb098823f8fd5add8e0a7f6",
+      "size": 145202,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/7001f36f6a9161878cb098823f8fd5add8e0a7f6"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image35.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "62e8f969d8f834879adcbee7b76d95ba5c85b4d7",
+      "size": 753807,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/62e8f969d8f834879adcbee7b76d95ba5c85b4d7"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image36.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "553eb5eb8fb49cf4cd7b2d3577485406ab50868a",
+      "size": 406354,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/553eb5eb8fb49cf4cd7b2d3577485406ab50868a"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image4.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "afd049c7d94dff8b307f6a2d2fd553908ea0d585",
+      "size": 900,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/afd049c7d94dff8b307f6a2d2fd553908ea0d585"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image5.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "24774c025197524e555578fef4b963d50e446094",
+      "size": 2423,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/24774c025197524e555578fef4b963d50e446094"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image6.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "f0ccf826c94a5088fa64b642139fa45227cd3e03",
+      "size": 866,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f0ccf826c94a5088fa64b642139fa45227cd3e03"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image7.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e993ca9faf06a327d4ff57b469d9fef6aad7976b",
+      "size": 4679,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e993ca9faf06a327d4ff57b469d9fef6aad7976b"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image8.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "da7dd2b6d9c246e45347f941f8ce124aefae2580",
+      "size": 383887,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/da7dd2b6d9c246e45347f941f8ce124aefae2580"
+    },
+    {
+      "path": "nuxt/static/answer/images-preoptimized/image9.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "cbb7fe90c4bbeee4f4ac27a419c762decc4257e4",
+      "size": 1127850,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cbb7fe90c4bbeee4f4ac27a419c762decc4257e4"
+    },
+    {
+      "path": "nuxt/static/answer/images",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "788419c83b3c8a7d6ce0922d6ecad5a6026ef051",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/788419c83b3c8a7d6ce0922d6ecad5a6026ef051"
+    },
+    {
+      "path": "nuxt/static/answer/images/image1.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "872375c5a195c436cb14cc8d1dca0e90dd72120b",
+      "size": 769,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/872375c5a195c436cb14cc8d1dca0e90dd72120b"
+    },
+    {
+      "path": "nuxt/static/answer/images/image10.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "580d10887ff80668187ad7200786e3f922f653e8",
+      "size": 493610,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/580d10887ff80668187ad7200786e3f922f653e8"
+    },
+    {
+      "path": "nuxt/static/answer/images/image11.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "37376b2f1a96c9270444c5b728affb4eccfebe53",
+      "size": 134672,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/37376b2f1a96c9270444c5b728affb4eccfebe53"
+    },
+    {
+      "path": "nuxt/static/answer/images/image12.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "312c153aef3dbe69fda593e40cc6768fbf1b4a44",
+      "size": 106704,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/312c153aef3dbe69fda593e40cc6768fbf1b4a44"
+    },
+    {
+      "path": "nuxt/static/answer/images/image13.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e04eb59a39c4ee6ad78a63d33b1ab9e9854d320c",
+      "size": 3378,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e04eb59a39c4ee6ad78a63d33b1ab9e9854d320c"
+    },
+    {
+      "path": "nuxt/static/answer/images/image14.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "cf139fc106f6832a478af55250c972b177d830a6",
+      "size": 2981,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cf139fc106f6832a478af55250c972b177d830a6"
+    },
+    {
+      "path": "nuxt/static/answer/images/image15.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "64f72aa35429e4ed321d01be2c25ffa274c997ec",
+      "size": 5403,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/64f72aa35429e4ed321d01be2c25ffa274c997ec"
+    },
+    {
+      "path": "nuxt/static/answer/images/image16.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "5fbd191348ac723986a3f0a637fbd1aaf329387b",
+      "size": 4169,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/5fbd191348ac723986a3f0a637fbd1aaf329387b"
+    },
+    {
+      "path": "nuxt/static/answer/images/image17.gif",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "70defd8c5385421f29ed03c060acbdc9b3934fed",
+      "size": 161135,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/70defd8c5385421f29ed03c060acbdc9b3934fed"
+    },
+    {
+      "path": "nuxt/static/answer/images/image18.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "7716437ff6820f487a216b974de7dd13cdcd2a36",
+      "size": 13089,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/7716437ff6820f487a216b974de7dd13cdcd2a36"
+    },
+    {
+      "path": "nuxt/static/answer/images/image19.gif",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "20f7ee250d35e660f6a05eb71f5a472bdcecca9b",
+      "size": 483225,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/20f7ee250d35e660f6a05eb71f5a472bdcecca9b"
+    },
+    {
+      "path": "nuxt/static/answer/images/image2.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "04b5380315f2405c08955cd1b066f967ab353b32",
+      "size": 931,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/04b5380315f2405c08955cd1b066f967ab353b32"
+    },
+    {
+      "path": "nuxt/static/answer/images/image20.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "599c875e00d1a33b14800585a7c2af3784ae894a",
+      "size": 119218,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/599c875e00d1a33b14800585a7c2af3784ae894a"
+    },
+    {
+      "path": "nuxt/static/answer/images/image21.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "f50738ab27e1ec38d6c90f615da2480f5117d520",
+      "size": 467158,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f50738ab27e1ec38d6c90f615da2480f5117d520"
+    },
+    {
+      "path": "nuxt/static/answer/images/image22.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e6456b17014556100d0829fadb8f7de3aff3b1b2",
+      "size": 28399,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e6456b17014556100d0829fadb8f7de3aff3b1b2"
+    },
+    {
+      "path": "nuxt/static/answer/images/image23.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "16ef84d57a00c870f89800ffda2a68fc6c425b5a",
+      "size": 322769,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/16ef84d57a00c870f89800ffda2a68fc6c425b5a"
+    },
+    {
+      "path": "nuxt/static/answer/images/image24.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "dffbed8aae4d1b942f2d67958cc45b46cb5ca12d",
+      "size": 263952,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/dffbed8aae4d1b942f2d67958cc45b46cb5ca12d"
+    },
+    {
+      "path": "nuxt/static/answer/images/image25.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "fc7870a6fc8d7384afd4b63d955f17c16368f737",
+      "size": 93406,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/fc7870a6fc8d7384afd4b63d955f17c16368f737"
+    },
+    {
+      "path": "nuxt/static/answer/images/image26.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "39d7c6684c934d23d605434e456791823ee23f53",
+      "size": 482598,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/39d7c6684c934d23d605434e456791823ee23f53"
+    },
+    {
+      "path": "nuxt/static/answer/images/image27.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "d0b4251a00053a683792b99aac32e9cb7064c30f",
+      "size": 266572,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/d0b4251a00053a683792b99aac32e9cb7064c30f"
+    },
+    {
+      "path": "nuxt/static/answer/images/image28.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "487af7d2a6fc6734f97d08fcb2f2adab06aab421",
+      "size": 1716284,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/487af7d2a6fc6734f97d08fcb2f2adab06aab421"
+    },
+    {
+      "path": "nuxt/static/answer/images/image29.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "6e347d3d21629850222d6af9cc732118f4aa05ee",
+      "size": 573088,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/6e347d3d21629850222d6af9cc732118f4aa05ee"
+    },
+    {
+      "path": "nuxt/static/answer/images/image3.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "d18f43043a25af7635c14f8b086a642a04496307",
+      "size": 281,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/d18f43043a25af7635c14f8b086a642a04496307"
+    },
+    {
+      "path": "nuxt/static/answer/images/image30.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "cbc0478c0c06bceb42cb688b7dab374bf48b25ca",
+      "size": 20079,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cbc0478c0c06bceb42cb688b7dab374bf48b25ca"
+    },
+    {
+      "path": "nuxt/static/answer/images/image31.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "617aac29067bde8da7d48c478749953ecf738c10",
+      "size": 361387,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/617aac29067bde8da7d48c478749953ecf738c10"
+    },
+    {
+      "path": "nuxt/static/answer/images/image32.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "0f3edb96e08e494d915e5c5a18d96e7caa94d2b3",
+      "size": 330158,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/0f3edb96e08e494d915e5c5a18d96e7caa94d2b3"
+    },
+    {
+      "path": "nuxt/static/answer/images/image33.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "944c292eb4386c3b98f6192660ebbd8900dbbebb",
+      "size": 434725,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/944c292eb4386c3b98f6192660ebbd8900dbbebb"
+    },
+    {
+      "path": "nuxt/static/answer/images/image34.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "1d806196df73129566feb7b00bbf42f327c7f1b9",
+      "size": 53800,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1d806196df73129566feb7b00bbf42f327c7f1b9"
+    },
+    {
+      "path": "nuxt/static/answer/images/image35.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "4b140c2b278fd5b1fc9a9f69eaffad8f4376d8c7",
+      "size": 261475,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/4b140c2b278fd5b1fc9a9f69eaffad8f4376d8c7"
+    },
+    {
+      "path": "nuxt/static/answer/images/image36.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "001616c545df5b84a3d9f54673b44a8b64822f24",
+      "size": 123507,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/001616c545df5b84a3d9f54673b44a8b64822f24"
+    },
+    {
+      "path": "nuxt/static/answer/images/image4.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "0ec93c539d170aaf3fef75e960f6267ecb808096",
+      "size": 637,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/0ec93c539d170aaf3fef75e960f6267ecb808096"
+    },
+    {
+      "path": "nuxt/static/answer/images/image5.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "1c9888cafec17daf025a29b7db5144cdea5ddbb7",
+      "size": 602,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1c9888cafec17daf025a29b7db5144cdea5ddbb7"
+    },
+    {
+      "path": "nuxt/static/answer/images/image6.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "1c9863472f938f11afb504aec11e21596ef2ab63",
+      "size": 618,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/1c9863472f938f11afb504aec11e21596ef2ab63"
+    },
+    {
+      "path": "nuxt/static/answer/images/image7.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "f928c6a17234bc08c9c0ff4ee167482ecbbf22a1",
+      "size": 1963,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f928c6a17234bc08c9c0ff4ee167482ecbbf22a1"
+    },
+    {
+      "path": "nuxt/static/answer/images/image8.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e40eee9562b882d4ba22aec6eff3d1498d861fb3",
+      "size": 121771,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e40eee9562b882d4ba22aec6eff3d1498d861fb3"
+    },
+    {
+      "path": "nuxt/static/answer/images/image9.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e286b709d5655fae7b97e25076ccec0c42e5e3bf",
+      "size": 301170,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e286b709d5655fae7b97e25076ccec0c42e5e3bf"
+    },
+    {
+      "path": "nuxt/static/answer/vendor",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d2628fd3f5ad2ae1cc186df9f0287833595534d7",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/d2628fd3f5ad2ae1cc186df9f0287833595534d7"
+    },
+    {
+      "path": "nuxt/static/answer/vendor/zoom-vanilla.min.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3984c22fc13114baf39c06369b5a0b270a4b1820",
+      "size": 3858,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3984c22fc13114baf39c06369b5a0b270a4b1820"
+    },
+    {
+      "path": "nuxt/static/answer/vendor/zoom-vanilla.min.js.map",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4471f6d21e81fb1a8fae320d0dd7f7730136d316",
+      "size": 5339,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/4471f6d21e81fb1a8fae320d0dd7f7730136d316"
+    },
+    {
+      "path": "nuxt/static/answer/vendor/zoom.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "51cb85d3e18a78c824b45631f3082fa9b5d9d921",
+      "size": 1708,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/51cb85d3e18a78c824b45631f3082fa9b5d9d921"
+    },
+    {
+      "path": "nuxt/static/data",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3088ff307540ca601226f7181181a3103fcd04e3",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/3088ff307540ca601226f7181181a3103fcd04e3"
+    },
+    {
+      "path": "nuxt/static/data/StHimark.geo.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "af329b74446872c135f0430556cef802e43b40b8",
+      "size": 21206,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/af329b74446872c135f0430556cef802e43b40b8"
+    },
+    {
+      "path": "nuxt/static/data/all_summary_aggregated.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a3f1b158a354eec771aaff749c0e0f346e7e4f8",
+      "size": 485937,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3a3f1b158a354eec771aaff749c0e0f346e7e4f8"
+    },
+    {
+      "path": "nuxt/static/data/all_summary_processed.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8b5687d9f3435423600475268c7d9ed197554977",
+      "size": 17481275,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/8b5687d9f3435423600475268c7d9ed197554977"
+    },
+    {
+      "path": "nuxt/static/data/demo",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "98c2305c1fc87edd75be3987b71b1f0c6474f696",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/98c2305c1fc87edd75be3987b71b1f0c6474f696"
+    },
+    {
+      "path": "nuxt/static/data/demo/all_summary_aggregated.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3880be4bb250c2d3f12d9cc618b3ace088ce5187",
+      "size": 43513,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/3880be4bb250c2d3f12d9cc618b3ace088ce5187"
+    },
+    {
+      "path": "nuxt/static/data/demo/all_summary_processed.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35ee9b102d2c9f90322c1ee430210eb8e025c832",
+      "size": 1650332,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/35ee9b102d2c9f90322c1ee430210eb8e025c832"
+    },
+    {
+      "path": "nuxt/static/data/demo/mc1-reports-data-aggregated.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "90935258fac6fe9314f198c18f87ffd2f3802faf",
+      "size": 448368,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/90935258fac6fe9314f198c18f87ffd2f3802faf"
+    },
+    {
+      "path": "nuxt/static/data/demo/neighbourhoods_info.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7b474544adfb714b1e9e28bb5dd038bf60c8f5e3",
+      "size": 1346,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/7b474544adfb714b1e9e28bb5dd038bf60c8f5e3"
+    },
+    {
+      "path": "nuxt/static/data/mc1-reports-data-aggregated.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e091a4acac888d0aebee0e7249d5d837ab7b0298",
+      "size": 3600131,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e091a4acac888d0aebee0e7249d5d837ab7b0298"
+    },
+    {
+      "path": "nuxt/static/data/mc1-reports-data.csv",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "94bde4b5ad70f9f4d9e84233033dcf850dd8321c",
+      "size": 3705088,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/94bde4b5ad70f9f4d9e84233033dcf850dd8321c"
+    },
+    {
+      "path": "nuxt/static/data/neighbourhoods_info.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e47403e59696518937333bc6cad8ef47d7ae9ea2",
+      "size": 2426,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e47403e59696518937333bc6cad8ef47d7ae9ea2"
+    },
+    {
+      "path": "nuxt/static/data/neighbourhoods_info.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d4da04b0d6ed24560e2f1b2b77860aa67bbfa17f",
+      "size": 5519,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/d4da04b0d6ed24560e2f1b2b77860aa67bbfa17f"
+    },
+    {
+      "path": "nuxt/static/favicon.ico",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "382fecbbf96d6e1e614e0e2cc8b73e355bd946cc",
+      "size": 1150,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/382fecbbf96d6e1e614e0e2cc8b73e355bd946cc"
+    },
+    {
+      "path": "nuxt/static/icon.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be83e6580514447a7d995f625b1af176930cc1c1",
+      "size": 28393,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/be83e6580514447a7d995f625b1af176930cc1c1"
+    },
+    {
+      "path": "nuxt/static/img",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "25e60f2aa5c89339a63881276d895b75f908bb33",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/25e60f2aa5c89339a63881276d895b75f908bb33"
+    },
+    {
+      "path": "nuxt/static/img/VSUP.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e492bd6671027f140660159e7bbb4e1d548a89f4",
+      "size": 23047,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/e492bd6671027f140660159e7bbb4e1d548a89f4"
+    },
+    {
+      "path": "nuxt/static/img/VSUP_.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9fe5420f392636c83fde01fee2453bb678cfc107",
+      "size": 28720,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/9fe5420f392636c83fde01fee2453bb678cfc107"
+    },
+    {
+      "path": "nuxt/static/img/categories.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d35d92c458d62cb659ea7f74b83d36fa01a17c1d",
+      "size": 5602,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/d35d92c458d62cb659ea7f74b83d36fa01a17c1d"
+    },
+    {
+      "path": "nuxt/static/img/dashboard-thumbnail-s.gif",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee7721512b04d33593e5b5abb371ea9883eb42ef",
+      "size": 17843,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/ee7721512b04d33593e5b5abb371ea9883eb42ef"
+    },
+    {
+      "path": "nuxt/static/img/facilities.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55b4b64f619989325db3a23469ce502ed576a938",
+      "size": 18005,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/55b4b64f619989325db3a23469ce502ed576a938"
+    },
+    {
+      "path": "nuxt/static/img/mc1-majorquake-shakemap-transparent.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "970e286f97b555eedbac78185d7948d6ad9160e8",
+      "size": 280458,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/970e286f97b555eedbac78185d7948d6ad9160e8"
+    },
+    {
+      "path": "nuxt/static/img/mc1-neighborhoods-border.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f23288410da73e1c8bec5494bcc15ae17d43af8e",
+      "size": 21598,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/f23288410da73e1c8bec5494bcc15ae17d43af8e"
+    },
+    {
+      "path": "nuxt/static/img/mc1-prequake-shakemap-transparent.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4490522102cb4db3832ff35ac2e34a56ce15d652",
+      "size": 53511,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/4490522102cb4db3832ff35ac2e34a56ce15d652"
+    },
+    {
+      "path": "nuxt/static/img/normal.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ab63ca48e72522d5cc900f21de02d557a2b79ccc",
+      "size": 5293,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/ab63ca48e72522d5cc900f21de02d557a2b79ccc"
+    },
+    {
+      "path": "nuxt/static/img/ruler-legend.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bbbbd0a60b2f48aad28cb55e1f6c2ac3f508b47d",
+      "size": 6575,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/bbbbd0a60b2f48aad28cb55e1f6c2ac3f508b47d"
+    },
+    {
+      "path": "nuxt/static/img/ruler.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cc1831f021d8bea2affe2b56f00c79839bf92962",
+      "size": 1972,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/cc1831f021d8bea2affe2b56f00c79839bf92962"
+    },
+    {
+      "path": "nuxt/static/img/screenshot-full-dashboard-top.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74fd09fb989cb720f98c5a39e1a035c635cfc287",
+      "size": 210571,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/74fd09fb989cb720f98c5a39e1a035c635cfc287"
+    },
+    {
+      "path": "nuxt/static/poster.pdf",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65a0724f24b259c305cd5cea6f55b90035cb9464",
+      "size": 1794136,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/65a0724f24b259c305cd5cea6f55b90035cb9464"
+    },
+    {
+      "path": "nuxt/store",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "504480593ca5dbcf28357350b1638c4f133463ab",
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/trees/504480593ca5dbcf28357350b1638c4f133463ab"
+    },
+    {
+      "path": "nuxt/store/index.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9500f8c6f510e600c7467506e01c562c8fabd218",
+      "size": 59,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/9500f8c6f510e600c7467506e01c562c8fabd218"
+    },
+    {
+      "path": "nuxt/store/sessionStorage.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "102f9771c108394188fd7298dba1ccbf0665abb3",
+      "size": 151,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/102f9771c108394188fd7298dba1ccbf0665abb3"
+    },
+    {
+      "path": "nuxt/store/signals.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55b1d0277059f108255e5d1cbbd0e7dea9f83d19",
+      "size": 412,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/55b1d0277059f108255e5d1cbbd0e7dea9f83d19"
+    },
+    {
+      "path": "nuxt/yarn.lock",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8fb85b69d412392c54c519b3de73da8cba79816",
+      "size": 460669,
+      "url": "https://api.github.com/repos/na399/VAST-Challenge-2019-MC1/git/blobs/a8fb85b69d412392c54c519b3de73da8cba79816"
+    }
+  ],
+  "truncated": false
+}

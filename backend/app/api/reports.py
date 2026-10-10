@@ -1,63 +1,60 @@
 import os
+import io
+import zipfile
+from typing import List, Optional
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.report import Report
 from app.models.disaster import DisasterEvent
+from app.models.user import User
+from app.api.auth import get_current_user
 from app.services.report_service import report_service
 from app.schemas.alert import ReportGenerateRequest
 from app.schemas.common import success_response
 
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
+
+@router.get("/stats")
+def get_report_stats(db: Session = Depends(get_db)):
+    from app.models.damage import DamageDetection
+    # BuildingFootprint is in damage
+    from app.models.damage import BuildingFootprint
+    from app.models.drone_recon import DroneReconSession, DroneReconEvent
+    from app.models.report import Report
+    from datetime import datetime, timedelta, timezone
+    
+    total_reports = 0
+    recent_reports = 0
+    total_sessions = 0
+    places_searched = 0
+    total_findings = 0
+    
+    try:
+        total_reports = db.query(Report).count()
+        last_24h = datetime.now(timezone.utc) - timedelta(hours=24)
+        recent_reports = db.query(Report).filter(Report.created_at >= last_24h).count()
+        total_sessions = db.query(DroneReconSession).count()
+        places_searched = db.query(DroneReconEvent).filter(DroneReconEvent.event_type == 'AREA_SEARCHED').count()
+        total_findings = db.query(DroneReconEvent).filter(DroneReconEvent.event_type.in_(['SURVIVOR_LOCK', 'LZ_LOCK', 'ROAD_CUTOFF'])).count()
+    except Exception as e:
+        print("Stats error:", e)
+        pass
+        
+    return success_response(data={
+        "total_reports": total_reports,
+        "recent_reports": recent_reports,
+        "drone_sessions": total_sessions,
+        "places_searched": places_searched,
+        "total_findings": total_findings
+    })
+
 @router.get("")
 def list_reports(db: Session = Depends(get_db)):
     reports = db.query(Report).all()
-    if not reports:
-        # Pre-seed items matching frontend reference
-        return success_response(data=[
-            {
-                "id": "REP-2024-0526-01",
-                "title": "Cyclone Remal Situational Assessment Bulletin #04",
-                "date": "May 26, 2024 • 14:00 UTC",
-                "type": "Executive Brief",
-                "size": "4.8 MB",
-                "status": "VERIFIED",
-                "author": "Cmdr. Sarah Jenkins",
-                "downloads": 42
-            },
-            {
-                "id": "REP-2024-0526-02",
-                "title": "Structural Damage Vector Analysis (MNDWI & SAR Coherence)",
-                "date": "May 26, 2024 • 11:30 UTC",
-                "type": "AI Damage Audit",
-                "size": "18.4 MB",
-                "status": "FINAL",
-                "author": "AI Operations Center",
-                "downloads": 87
-            },
-            {
-                "id": "REP-2024-0525-01",
-                "title": "UN-SPIDER Copernicus EMS Activation Package",
-                "date": "May 25, 2024 • 22:15 UTC",
-                "type": "International Aid Protocol",
-                "size": "34.2 MB",
-                "status": "TRANSMITTED",
-                "author": "Disaster Command Desk",
-                "downloads": 120
-            },
-            {
-                "id": "REP-2024-0525-02",
-                "title": "Road Network Inaccessibility & Obstacle Log (42 Cuts)",
-                "date": "May 25, 2024 • 18:00 UTC",
-                "type": "Logistics & GIS",
-                "size": "6.1 MB",
-                "status": "UPDATED",
-                "author": "Lt. Marcus Vance",
-                "downloads": 39
-            }
-        ])
 
     return success_response(data=[
         {
@@ -120,14 +117,14 @@ def broadcast_sitrep(db: Session = Depends(get_db)):
     from datetime import datetime, timezone
 
     op = db.query(Operation).filter(Operation.status == "ACTIVE").first()
-    op_name = op.name if op else "Cyclone Remal"
-    op_region = op.region if op else "Bay Area / Delta Sector 4"
-    op_id = op.id if op else "CY-2025-05B"
+    op_name = op.name if op else "Unknown Operation"
+    op_region = op.region if op else "Unknown Region"
+    op_id = op.id if op else "OP-UNKNOWN"
 
     active_alerts = db.query(Alert).filter(Alert.is_read == False).count()
-    damages_count = db.query(DamageDetection).count() or 1126
+    damages_count = db.query(DamageDetection).count()
     teams = db.query(RescueTeam).all()
-    teams_deployed = sum(1 for t in teams if t.status in ["DEPLOYED", "ON_MISSION", "EN_ROUTE"]) or 3
+    teams_deployed = sum(1 for t in teams if t.status in ["DEPLOYED", "ON_MISSION", "EN_ROUTE"])
 
     pdf_meta = report_service.generate_pdf_report(
         disaster_name=f"{op_name} ({op_region})",
@@ -191,3 +188,57 @@ def download_report(id: str, db: Session = Depends(get_db)):
     # Generate on the fly if test code
     pdf_meta = report_service.generate_pdf_report("Cyclone Remal", "Executive Brief")
     return FileResponse(pdf_meta["filepath"], filename=f"{pdf_meta['filename']}", media_type="application/pdf")
+
+
+from pydantic import BaseModel
+from typing import List
+
+class DroneReconReportRequest(BaseModel):
+    session_ids: List[str]
+    format: str = "pdf"
+
+@router.post("/drone-recon")
+def generate_drone_recon_report(req: DroneReconReportRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not req.session_ids:
+        raise HTTPException(status_code=400, detail="No session IDs provided")
+    
+    from app.services.report_service import generate_drone_recon_report_service
+    try:
+        report = generate_drone_recon_report_service(db, current_user, req.session_ids, req.format)
+        return success_response(data={"report_id": report.id, "file_path": report.file_path, "format": req.format})
+    except ValueError as ve:
+        raise HTTPException(status_code=422, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+import zipfile
+import io
+from fastapi.responses import StreamingResponse
+
+class DownloadAllRequest(BaseModel):
+    report_ids: List[str]
+    format: str = "pdf"
+
+@router.post("/download-all")
+def download_all_reports(req: DownloadAllRequest, db: Session = Depends(get_db)):
+    reports = db.query(Report).filter(Report.id.in_(req.report_ids)).all()
+    if not reports:
+        raise HTTPException(status_code=404, detail="No reports found")
+        
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+        manifest_lines = ["INTELLIGENCE MANIFEST", "===================="]
+        for r in reports:
+            # Add to zip if file exists
+            if os.path.exists(r.file_path):
+                ext = r.file_path.split('.')[-1]
+                zip_file.write(r.file_path, f"{r.title}_{r.id}.{ext}")
+                manifest_lines.append(f"Title: {r.title} | Hash: {r.content_hash} | Path: {r.file_path}")
+            else:
+                manifest_lines.append(f"Title: {r.title} | FILE MISSING")
+                
+        zip_file.writestr("manifest.txt", "\n".join(manifest_lines))
+        
+    zip_buffer.seek(0)
+    return StreamingResponse(zip_buffer, media_type="application/zip", headers={"Content-Disposition": "attachment; filename=intelligence_export.zip"})

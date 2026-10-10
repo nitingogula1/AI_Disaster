@@ -63,30 +63,32 @@ export default function DisasterEventsPage() {
   const handleActivateAndOpen = async (evt: any, targetRoute: string = '/command') => {
     try {
       const opId = evt.operation_id || evt.operationId || evt.id;
+      const lat = evt.latitude || evt.coordinates?.lat || 21.8412;
+      const lng = evt.longitude || evt.coordinates?.lng || 89.5422;
+      const rawBbox = evt.target_bbox || {
+        min_lat: lat - 0.25,
+        max_lat: lat + 0.25,
+        min_lon: lng - 0.25,
+        max_lon: lng + 0.25
+      };
+
       try {
         await operationService.activateOperation(opId);
       } catch (err) {
         console.warn('Backend activation fallback:', err);
       }
-      setActiveOperation(opId, evt.name, evt.location_name || evt.location);
+      setActiveOperation(opId, evt.name, evt.location_name || evt.location, rawBbox, evt);
       setToastMessage(`Switched active operation to: ${evt.name}`);
-
-      const isNepal = 
-        (evt.name || '').toLowerCase().includes('nepal') || 
-        (evt.location_name || '').toLowerCase().includes('nepal') || 
-        (evt.location || '').toLowerCase().includes('nepal') ||
-        (opId || '').toUpperCase().includes('NEPAL') ||
-        (opId || '').toUpperCase().includes('NPL');
 
       let destination = targetRoute;
       if (targetRoute === '/command/drone-recon') {
-        destination = isNepal 
-          ? '/command/drone-recon?mission=drn-msn-nepal' 
-          : '/command/drone-recon?mission=drn-msn-001';
-      } else if (targetRoute === '/command/gis') {
-        const lat = evt.latitude || evt.coordinates?.lat || (isNepal ? 27.7172 : 21.8412);
-        const lng = evt.longitude || evt.coordinates?.lng || (isNepal ? 85.3240 : 89.5422);
-        destination = `/command/gis?lat=${lat}&lng=${lng}&zoom=14`;
+        const isNepal = (evt.name || '').toLowerCase().includes('nepal') || (opId || '').toUpperCase().includes('NPL');
+        const msnId = isNepal ? 'drn-msn-nepal' : (evt.name.toLowerCase().includes('assam') ? 'drn-msn-assam' : 'drn-msn-001');
+        destination = `/command/drone-recon?mission=${msnId}&lat=${lat}&lng=${lng}&name=${encodeURIComponent(evt.name)}`;
+      } else if (targetRoute === '/command/gis' || targetRoute === '/command/gis-map') {
+        destination = `/command/gis?lat=${lat}&lng=${lng}&zoom=13&name=${encodeURIComponent(evt.name)}`;
+      } else if (targetRoute === '/command') {
+        destination = `/command?op=${encodeURIComponent(opId)}&lat=${lat}&lng=${lng}`;
       }
 
       setTimeout(() => {
@@ -396,7 +398,7 @@ export default function DisasterEventsPage() {
                     <div className="bg-panel/50 p-2.5 rounded-lg border border-border/60">
                       <div className="label-uppercase text-text-muted text-[10px]">SURGE / CREST</div>
                       <div className="text-[18px] font-bold text-critical tabular-nums font-mono">
-                        {evt.floodCrest || '+3.8m peak'}
+                        {evt.floodCrest || (evt.surge_crest_m ? `+${evt.surge_crest_m}m` : '+1.8m')}
                       </div>
                       <div className="text-[10px] text-text-muted mt-0.5">Hydro-metric Datum</div>
                     </div>
@@ -427,7 +429,7 @@ export default function DisasterEventsPage() {
                         Drone Recon
                       </button>
                       <button 
-                        onClick={() => handleActivateAndOpen(evt, '/command/gis-map')}
+                        onClick={() => handleActivateAndOpen(evt, '/command/gis')}
                         className="flex-1 flex items-center justify-center gap-1 bg-panel border border-border text-[11px] font-semibold text-text-secondary hover:text-white hover:border-sky-500 py-1.5 px-2 rounded-lg transition"
                       >
                         <Map size={12} className="text-emerald-400" />

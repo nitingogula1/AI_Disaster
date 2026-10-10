@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import {
-  AlertTriangle, Users, Building, GitBranch, Droplets, Siren,
+  X, AlertTriangle, Users, Building, GitBranch, Droplets, Siren,
   Radio, FileDown, ArrowRight, Send, Filter, RefreshCw, CheckCircle2,
   Plane, Camera, Crosshair, Activity, BatteryCharging, Eye, Compass,
   Maximize2, Sliders, Shield, Zap, Navigation2, Check, Video, MapPin,
@@ -839,17 +839,42 @@ const DISASTER_SCENARIOS: TacticalDisasterScenario[] = [
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { refreshTrigger, triggerRefresh } = useAppStore();
+  const [searchParams] = useSearchParams();
+  const { refreshTrigger, triggerRefresh, activeOperationId, activeDisasterContext } = useAppStore();
 
   // Active Disaster Selection
-  const [selectedDisasterId, setSelectedDisasterId] = useState<string>('DR-2026-NP01');
+  const [selectedDisasterId, setSelectedDisasterId] = useState<string>(() => {
+    const s = `${activeOperationId || ''} ${activeDisasterContext || ''}`.toUpperCase();
+    if (s.includes('ASSAM') || s.includes('BRAHMAPUTRA') || s.includes('8819')) return 'FL-2025-08A';
+    if (s.includes('RAJAM') || s.includes('ANDHRA') || s.includes('VIZIANAGARAM')) return 'DR-2026-AP01';
+    if (s.includes('BAGMATI') || s.includes('KATHMANDU') || s.includes('BALKHU')) return 'DR-2026-NP02';
+    return 'DR-2026-NP01';
+  });
+
+  // Automatically synchronize dashboard scenario when user switches active operations anywhere
+  useEffect(() => {
+    const urlOp = searchParams.get('op');
+    const target = urlOp || activeOperationId || activeDisasterContext;
+    if (!target) return;
+    const s = target.toUpperCase();
+    if (s.includes('ASSAM') || s.includes('BRAHMAPUTRA') || s.includes('8819')) {
+      setSelectedDisasterId('FL-2025-08A');
+    } else if (s.includes('RAJAM') || s.includes('ANDHRA') || s.includes('VIZIANAGARAM')) {
+      setSelectedDisasterId('DR-2026-AP01');
+    } else if (s.includes('BAGMATI') || s.includes('KATHMANDU') || s.includes('BALKHU')) {
+      setSelectedDisasterId('DR-2026-NP02');
+    } else if (s.includes('NEPAL') || s.includes('TRISHULI') || s.includes('NUWAKOT') || s.includes('RASUWA')) {
+      setSelectedDisasterId('DR-2026-NP01');
+    }
+  }, [activeOperationId, activeDisasterContext, searchParams]);
   const activeScenario = useMemo(() => {
     return DISASTER_SCENARIOS.find(d => d.id === selectedDisasterId) || DISASTER_SCENARIOS[0];
   }, [selectedDisasterId]);
 
   // Selected Place for FlyTo inspection
   const [focusedPlace, setFocusedPlace] = useState<AffectedPlace | null>(null);
-  const [scenarioMode, setScenarioMode] = useState<'DRILL' | 'CLEAR'>('DRILL');
+  const [scenarioMode, setScenarioMode] = useState<'DRILL' | 'CLEAR'>('CLEAR');
+  const [dismissDrillBanner, setDismissDrillBanner] = useState(false);
 
   // Active Drone Selection for Live Video HUD Stream
   const [selectedDroneId, setSelectedDroneId] = useState<string>(activeScenario.drones[0]?.id || 'drone-01');
@@ -1053,21 +1078,38 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4 animate-fade-in p-2 text-slate-800">
-      {/* PRIORITY 1: UNMISSABLE SIMULATED SCENARIO WARNING BANNER (TOP OF DASHBOARD) */}
-      <div className="bg-amber-500 border-2 border-amber-700 text-slate-950 px-4 py-3 rounded-xl shadow-md flex items-center justify-between gap-3 font-sans">
-        <div className="flex items-center gap-3">
-          <span className="px-2.5 py-1 bg-black text-amber-300 font-mono font-black text-xs rounded tracking-widest uppercase flex items-center gap-1.5 shadow-sm shrink-0">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-            SIMULATED SCENARIO DATA — NOT LIVE
-          </span>
-          <span className="text-xs font-extrabold text-slate-950 tracking-tight">
-            TRAINING DRILL ENVIRONMENT: All casualty headcounts, flood depths, and village risk classifications are synthetic scenario parameters. Not connected to live sensor telemetry.
-          </span>
+            {/* SIMULATED SCENARIO WARNING BANNER (SHOWN ONLY DURING DRILL MODE, DISMISSIBLE) */}
+      {scenarioMode === 'DRILL' && !dismissDrillBanner && (
+        <div className="bg-amber-500 border-2 border-amber-700 text-slate-950 px-4 py-2.5 rounded-xl shadow-md flex items-center justify-between gap-3 font-sans transition-all">
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 bg-black text-amber-300 font-mono font-black text-xs rounded tracking-widest uppercase flex items-center gap-1.5 shadow-sm shrink-0">
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+              SIMULATED SCENARIO DATA – NOT LIVE
+            </span>
+            <span className="text-xs font-extrabold text-slate-950 tracking-tight">
+              TRAINING DRILL ENVIRONMENT: All casualty headcounts, flood depths, and village risk classifications are synthetic scenario parameters.
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setScenarioMode('CLEAR')}
+              className="text-[11px] font-mono font-bold px-2.5 py-1 bg-black hover:bg-slate-900 text-white rounded uppercase transition shadow-sm"
+              title="Switch to Normal Live Telemetry"
+            >
+              Switch to Live Mode
+            </button>
+            <button
+              type="button"
+              onClick={() => setDismissDrillBanner(true)}
+              className="p-1 hover:bg-amber-600 rounded text-slate-950 transition"
+              title="Dismiss warning"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-        <span className="hidden lg:inline text-[11px] font-mono font-bold px-2 py-0.5 bg-amber-600 text-white rounded uppercase">
-          EXERCISE DRILL
-        </span>
-      </div>
+      )}
       {/* Toast Alert */}
       {sitrepNotification && (
         <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-sky-500 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">

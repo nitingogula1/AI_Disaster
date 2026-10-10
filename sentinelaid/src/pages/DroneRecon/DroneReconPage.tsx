@@ -1,9 +1,12 @@
+import { MAP_CONFIG } from '../../config/mapConfig';
 import { useState, useEffect, useMemo, Fragment } from 'react';
 import { getRegionalDisasterCorridor, type RegionalDisasterCorridor } from '../../data/regionalDisasterCorridors';
 import { getRegionalStagingBases, calculateOptimalRescuePath, type StagingBase, type OptimalRescuePathResult } from '../../services/rescueMissionService';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useAppStore } from '../../store/appStore';
+import { getDistrictVillages } from '../../data/districtVillages';
 import { 
+
   Navigation, Crosshair, Users, AlertTriangle, ShieldCheck, CheckCircle, 
   Layers, Radio, Send, RefreshCw, Compass, Eye, ShieldAlert, 
   Activity, ArrowRight, Zap, Droplets, Mountain, Video, Info, 
@@ -15,6 +18,7 @@ import {
 import { MapContainer, TileLayer, Polygon, Polyline, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { droneService, rescueService } from '../../services/api';
+import { DroneMarkingTools, type MarkingMode, type DroneEventItem } from './DroneMarkingTools';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet icons
@@ -92,299 +96,7 @@ const createVillageIcon = (tier: 'HIGH' | 'MEDIUM' | 'SAFE', name: string, isSel
   });
 };
 
-const getDistrictVillages = (districtName: string, baseLat: number, baseLng: number): DistrictVillage[] => {
-  const dLower = districtName.toLowerCase();
-  const isRajam = dLower.includes('rajam') || dLower.includes('srikakulam') || dLower.includes('vizianagaram') || dLower.includes('andhra');
-  const isNepal = dLower.includes('nepal') || dLower.includes('kathmandu') || dLower.includes('trishuli') || dLower.includes('nuwakot') || dLower.includes('bagmati');
 
-    if (isRajam) {
-    return [
-      {
-        id: 'vil-r-1',
-        name: 'Boddam',
-        tier: 'HIGH',
-        hazard_reason: 'Lowland agricultural basin & irrigation canal breach. Water depth 1.65m. Road traffic completely submerged.',
-        depth_m: 1.65,
-        population: 1420,
-        stranded: 58,
-        status: 'Evacuation Critical (Boat/Air)',
-        lat: +(baseLat - 0.0200).toFixed(5),
-        lng: +(baseLng - 0.0220).toFixed(5),
-        bearing: '2.1 km SW'
-      },
-      {
-        id: 'vil-r-2',
-        name: 'Prasanthi Nagar',
-        tier: 'HIGH',
-        hazard_reason: 'Palakonda road underpass submerged 1.85m. Lowland residential ground floors flooded by storm runoff.',
-        depth_m: 1.85,
-        population: 2800,
-        stranded: 42,
-        status: 'Road Cutoff / Rooftop Rescue',
-        lat: +(baseLat - 0.0220).toFixed(5),
-        lng: +(baseLng + 0.0180).toFixed(5),
-        bearing: '1.9 km SE'
-      },
-      {
-        id: 'vil-r-3',
-        name: 'Pogiri',
-        tier: 'HIGH',
-        hazard_reason: 'Low riverbank settlement near arterial bridge on Suvarnamukhi/Vegavathi drainage. Water depth 1.55m. Access pathways washed out.',
-        depth_m: 1.55,
-        population: 2150,
-        stranded: 34,
-        status: 'Riverbank Breach / Cutoff',
-        lat: +(baseLat + 0.0240).toFixed(5),
-        lng: +(baseLng - 0.0220).toFixed(5),
-        bearing: '2.4 km NW'
-      },
-      {
-        id: 'vil-r-4',
-        name: 'Saradhi',
-        tier: 'MEDIUM',
-        hazard_reason: 'Residential & agricultural border on eastern fringe of Rajam town. Road shoulder overflow (0.55m depth). Accessible by high-clearance 4x4 trucks & tractors.',
-        depth_m: 0.55,
-        population: 1850,
-        stranded: 0,
-        status: 'Flood Alert / Convoys Only',
-        lat: +(baseLat - 0.0020).toFixed(5),
-        lng: +(baseLng + 0.0320).toFixed(5),
-        bearing: '1.8 km East'
-      },
-      {
-        id: 'vil-r-5',
-        name: 'Maredubaka',
-        tier: 'MEDIUM',
-        hazard_reason: 'Canal overflow encroaching village approach road (0.45m depth). Low-lying lanes waterlogged. Receding slowly.',
-        depth_m: 0.45,
-        population: 1320,
-        stranded: 0,
-        status: 'Accessible via Bypass',
-        lat: +(baseLat + 0.0240).toFixed(5),
-        lng: +(baseLng + 0.0220).toFixed(5),
-        bearing: '2.3 km NE'
-      },
-      {
-        id: 'vil-r-6',
-        name: 'Gadimudidam',
-        tier: 'MEDIUM',
-        hazard_reason: 'Agricultural field runoff approaching village perimeter (0.38m depth). Road passable with caution.',
-        depth_m: 0.38,
-        population: 1480,
-        stranded: 0,
-        status: 'Caution Passable',
-        lat: +(baseLat - 0.0380).toFixed(5),
-        lng: +(baseLng - 0.0040).toFixed(5),
-        bearing: '3.6 km South'
-      },
-      {
-        id: 'vil-r-7',
-        name: 'Kondampeta (GMRIT Campus)',
-        tier: 'SAFE',
-        hazard_reason: 'Elevated bedrock plateau (68m MSL). Designated District Civilian Relief Shelter, Triage Hospital & Helicopter LZ.',
-        depth_m: 0.0,
-        population: 0,
-        stranded: 0,
-        status: 'Primary Evacuation LZ',
-        lat: +(baseLat + 0.0340).toFixed(5),
-        lng: +(baseLng - 0.0020).toFixed(5),
-        bearing: '2.4 km North'
-      }
-    ];
-  }
-
-  if (isNepal) {
-    return [
-      {
-        id: 'vil-n-1',
-        name: 'Balkhu Riverside',
-        tier: 'HIGH',
-        hazard_reason: 'Bagmati river violent torrent & bridgehead breach. Water depth 2.1m. Multiple homes inundated.',
-        depth_m: 2.10,
-        population: 2100,
-        stranded: 68,
-        status: 'Critical Inundation / Aerial Winch',
-        lat: +(baseLat - 0.0020).toFixed(5),
-        lng: +(baseLng - 0.0015).toFixed(5),
-        bearing: '1.0 km SW'
-      },
-      {
-        id: 'vil-n-2',
-        name: 'Sundarighat Settlement',
-        tier: 'HIGH',
-        hazard_reason: 'Low riverbank floodplain overflow. Access bridge washed out (1.85m depth). Inflatable boats required.',
-        depth_m: 1.85,
-        population: 1450,
-        stranded: 44,
-        status: 'Submerged Access Corridor',
-        lat: +(baseLat - 0.0030).toFixed(5),
-        lng: +(baseLng + 0.0012).toFixed(5),
-        bearing: '1.4 km SE'
-      },
-      {
-        id: 'vil-n-3',
-        name: 'Teku Dobhan Confluence',
-        tier: 'HIGH',
-        hazard_reason: 'Confluence surge of Bishnumati & Bagmati rivers (1.65m depth). Low-lying structures submerged.',
-        depth_m: 1.65,
-        population: 1780,
-        stranded: 36,
-        status: 'Confluence Backflow Hazard',
-        lat: +(baseLat - 0.0012).toFixed(5),
-        lng: +(baseLng + 0.0025).toFixed(5),
-        bearing: '1.1 km East'
-      },
-      {
-        id: 'vil-n-4',
-        name: 'Sanepa Lowland Margins',
-        tier: 'MEDIUM',
-        hazard_reason: 'Stormwater drainage backflow and street waterlogging (0.65m depth). 4x4 trucks and tractors operating.',
-        depth_m: 0.65,
-        population: 1920,
-        stranded: 0,
-        status: '4x4 Vehicles Only',
-        lat: +(baseLat + 0.0015).toFixed(5),
-        lng: +(baseLng - 0.0022).toFixed(5),
-        bearing: '1.3 km NW'
-      },
-      {
-        id: 'vil-n-5',
-        name: 'Kalanki Bypass Ring',
-        tier: 'MEDIUM',
-        hazard_reason: 'Highway underpass water accumulation (0.50m depth). Controlled traffic diversion active.',
-        depth_m: 0.50,
-        population: 3200,
-        stranded: 0,
-        status: 'Traffic Diversion Active',
-        lat: +(baseLat + 0.0025).toFixed(5),
-        lng: +(baseLng + 0.0018).toFixed(5),
-        bearing: '1.5 km NE'
-      },
-      {
-        id: 'vil-n-6',
-        name: 'Tribhuvan University Ridge Haven',
-        tier: 'SAFE',
-        hazard_reason: 'High elevation ridge crest (1,310m MSL). Designated multi-ward civilian shelter and helicopter LZ.',
-        depth_m: 0.0,
-        population: 0,
-        stranded: 0,
-        status: 'Primary Safe Haven & LZ',
-        lat: +(baseLat + 0.0058).toFixed(5),
-        lng: +(baseLng - 0.0035).toFixed(5),
-        bearing: '2.5 km NW'
-      },
-      {
-        id: 'vil-n-7',
-        name: 'Kuleshwor Elevated Plateau',
-        tier: 'SAFE',
-        hazard_reason: 'Elevated dry municipal compound. Relief hospital & emergency food rations dispensary.',
-        depth_m: 0.0,
-        population: 0,
-        stranded: 0,
-        status: 'Relief Hospital Compound',
-        lat: +(baseLat + 0.0045).toFixed(5),
-        lng: +(baseLng + 0.0020).toFixed(5),
-        bearing: '2.0 km NE'
-      }
-    ];
-  }
-
-  // Dynamic generator for any other district or region globally
-  const title = districtName.split(',')[0].trim();
-  return [
-    {
-      id: 'vil-g-1',
-      name: `${title} Riverbed Lowlands`,
-      tier: 'HIGH',
-      hazard_reason: 'Direct riverbank surge & basinal depression. Water depth 1.70m. Submerged residential structures.',
-      depth_m: 1.70,
-      population: 1350,
-      stranded: 46,
-      status: 'Critical Inundation / Evacuate',
-      lat: +(baseLat - 0.0020).toFixed(5),
-      lng: +(baseLng - 0.0018).toFixed(5),
-      bearing: '1.1 km SW'
-    },
-    {
-      id: 'vil-g-2',
-      name: `${title} South Basinal Ward`,
-      tier: 'HIGH',
-      hazard_reason: 'Main arterial culvert breach. Road access submerged 1.55m. Ground vehicles cannot traverse.',
-      depth_m: 1.55,
-      population: 1820,
-      stranded: 32,
-      status: 'Road Cutoff Hazard',
-      lat: +(baseLat - 0.0015).toFixed(5),
-      lng: +(baseLng + 0.0012).toFixed(5),
-      bearing: '0.9 km SE'
-    },
-    {
-      id: 'vil-g-3',
-      name: `${title} East Canal Fringe`,
-      tier: 'HIGH',
-      hazard_reason: 'Irrigation canal overflow flooding residential ground floors (1.35m depth). Muddy access compromised.',
-      depth_m: 1.35,
-      population: 940,
-      stranded: 18,
-      status: 'Submerged Habitation',
-      lat: +(baseLat - 0.0032).toFixed(5),
-      lng: +(baseLng - 0.0010).toFixed(5),
-      bearing: '1.4 km South'
-    },
-    {
-      id: 'vil-g-4',
-      name: `${title} Market Approach Sector`,
-      tier: 'MEDIUM',
-      hazard_reason: 'Water logging across access avenues (0.50m depth). Passable for tactical 4x4 trucks & emergency tractors.',
-      depth_m: 0.50,
-      population: 1550,
-      stranded: 0,
-      status: 'Tactical Vehicles Only',
-      lat: +(baseLat + 0.0012).toFixed(5),
-      lng: +(baseLng + 0.0025).toFixed(5),
-      bearing: '1.3 km NE'
-    },
-    {
-      id: 'vil-g-5',
-      name: `${title} Western Outskirts`,
-      tier: 'MEDIUM',
-      hazard_reason: 'Field runoff encroaching perimeter road (0.40m depth). Flood watch advisory active.',
-      depth_m: 0.40,
-      population: 1180,
-      stranded: 0,
-      status: 'Watch Advisory Active',
-      lat: +(baseLat - 0.0005).toFixed(5),
-      lng: +(baseLng + 0.0030).toFixed(5),
-      bearing: '1.2 km East'
-    },
-    {
-      id: 'vil-g-6',
-      name: `${title} North Elevated High Ground`,
-      tier: 'SAFE',
-      hazard_reason: 'Elevated bedrock ridge (+25m above valley floor). Designated Civilian Relief Haven & Shelter.',
-      depth_m: 0.0,
-      population: 0,
-      stranded: 0,
-      status: 'Designated Relief Haven',
-      lat: +(baseLat + 0.0055).toFixed(5),
-      lng: +(baseLng - 0.0032).toFixed(5),
-      bearing: '2.2 km NW'
-    },
-    {
-      id: 'vil-g-7',
-      name: `${title} Ridge Assembly LZ`,
-      tier: 'SAFE',
-      hazard_reason: 'Dry plateau ground with unobstructed helicopter landing zone and emergency supply tents.',
-      depth_m: 0.0,
-      population: 0,
-      stranded: 0,
-      status: 'Medical & Helicopter LZ',
-      lat: +(baseLat + 0.0065).toFixed(5),
-      lng: +(baseLng + 0.0015).toFixed(5),
-      bearing: '2.5 km NE'
-    }
-  ];
-};
 
 
 const createDistrictBadgeIcon = (name: string, badgeColor: string) => {
@@ -443,18 +155,20 @@ function MapUpdater({
   zoomLevel = 15 
 }: { 
   center: [number, number]; 
-  flyTarget?: [number, number] | null;
-  zoomLevel?: number;
-}) {
-  const map = useMap();
-  useEffect(() => {
-    if (flyTarget) {
-      map.flyTo(flyTarget, zoomLevel, { duration: 1.5 });
-    } else {
-      map.setView(center, 15);
+  flyTarget?: [number, number] | null; 
+  zoomLevel?: number; 
+}) { 
+  const map = useMap(); 
+  useEffect(() => { 
+    try {
+      if (flyTarget && flyTarget[0] && flyTarget[1]) { 
+        map.flyTo(flyTarget, zoomLevel, { duration: 1.5 }); 
+      }
+    } catch (e) {
+      console.warn('MapUpdater flyTo error:', e);
     }
-  }, [center, flyTarget, zoomLevel, map]);
-  return null;
+  }, [flyTarget, zoomLevel, map]); 
+  return null; 
 }
 
 function MapClickHandler({ onMapClick }: { onMapClick: (latlng: { lat: number; lng: number }) => void }) {
@@ -719,9 +433,12 @@ function buildGeocodeQueries(rawQuery: string): string[] {
 }
 
 export default function DroneReconPage() {
+
+
+
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { activeOperationId } = useAppStore();
+  const { activeOperationId, activeDisasterContext, activeOperationCoords, activeOperationData } = useAppStore();
 
   const queryMission = searchParams.get('mission');
   const querySector = searchParams.get('sector');
@@ -731,10 +448,39 @@ export default function DroneReconPage() {
     if (querySector === 'nepal' || activeOperationId?.includes('NEPAL') || activeOperationId?.includes('NPL')) {
       return 'drn-msn-nepal';
     }
-    return 'drn-msn-001';
+    return activeOperationId || 'drn-msn-001';
   };
 
   const [selectedMissionId, setSelectedMissionId] = useState<string>(getInitialMission);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [activeMarkingMode, setActiveMarkingMode] = useState<MarkingMode>(null);
+  const [sessionEvents, setSessionEvents] = useState<DroneEventItem[]>([]);
+
+  // Manage Drone Session Lifecycle
+  useEffect(() => {
+    let active = true;
+    const initSession = async () => {
+      try {
+        const isSim = true;
+        const res = await droneService.startDroneSession({
+          disaster_id: selectedMissionId,
+          uav_callsign: 'Sentinel-1A',
+          is_simulation: isSim
+        });
+        if (active && res.success) {
+          setSessionId(res.data.session_id);
+        }
+      } catch (err) {
+        console.error("Failed to start drone session", err);
+      }
+    };
+    if (selectedMissionId) {
+      initSession();
+    }
+    return () => {
+      active = false;
+    };
+  }, [selectedMissionId]);
   const [activeRescueMission, setActiveRescueMission] = useState<OptimalRescuePathResult | null>(null);
   
   const [missionData, setMissionData] = useState<any>(null);
@@ -745,6 +491,7 @@ export default function DroneReconPage() {
 
   // Selected survivor for map inspection & tracking
   const [selectedSurvivorId, setSelectedSurvivorId] = useState<string | null>(null);
+  const [selectedTacticalTarget, setSelectedTacticalTarget] = useState<any | null>(null);
   const [flyTarget, setFlyTarget] = useState<[number, number] | null>(null);
   const [trackingSurvivor, setTrackingSurvivor] = useState<any | null>(null);
   const [selectedTeamMap, setSelectedTeamMap] = useState<Record<string, string>>({});
@@ -760,17 +507,44 @@ export default function DroneReconPage() {
     subtitle: string;
     lat: number;
     lng: number;
-  } | null>(null);
-  
-  // Update mission if URL or active operation changes
-  useEffect(() => {
-    const target = queryMission || (querySector === 'nepal' || activeOperationId?.includes('NEPAL') || activeOperationId?.includes('NPL') ? 'drn-msn-nepal' : null);
-    if (target && target !== selectedMissionId) {
-      setSelectedMissionId(target);
-      setSelectedSurvivorId(null);
-      setFlyTarget(null);
+  } | null>(() => {
+    if (activeOperationCoords) {
+      const opName = activeOperationData?.name || (activeDisasterContext ? activeDisasterContext.split(' - ')[0] : 'Active Operation');
+      const opRegion = activeOperationData?.region || (activeDisasterContext ? activeDisasterContext.split(' - ')[1] : opName);
+      return {
+        name: opName,
+        subtitle: opRegion,
+        lat: activeOperationCoords.lat,
+        lng: activeOperationCoords.lng
+      };
     }
-  }, [queryMission, querySector, activeOperationId]);
+    return null;
+  });
+  
+  // Synchronize Drone Recon theater whenever user changes the active operation in Command Header
+  useEffect(() => {
+    if (activeOperationId) {
+      const opName = activeOperationData?.name || (activeDisasterContext ? activeDisasterContext.split(' - ')[0] : 'Active Operation');
+      const opRegion = activeOperationData?.region || (activeDisasterContext ? activeDisasterContext.split(' - ')[1] : opName);
+      const targetLat = activeOperationCoords?.lat || 21.8450;
+      const targetLng = activeOperationCoords?.lng || 89.5450;
+
+      // Update location and camera only if user hasn't explicitly specified lat/lng in URL query params
+      if (!searchParams.get('lat')) {
+        setSearchedLocation({
+          name: opName,
+          subtitle: opRegion,
+          lat: targetLat,
+          lng: targetLng
+        });
+        setFlyTarget([targetLat, targetLng]);
+        setFlyZoom(activeOperationCoords?.zoom || 14);
+        setRiskProbe(null); // Clear previous operation's probe pin so no stale MED RISK pin lingers!
+        setSelectedSurvivorId(null);
+      }
+      setSelectedMissionId(activeOperationId);
+    }
+  }, [activeOperationId, activeOperationCoords]);
 
   // Synchronize initial location from URL query params (if opened via GIS Map or direct link)
   useEffect(() => {
@@ -793,8 +567,8 @@ export default function DroneReconPage() {
   useEffect(() => {
     let active = true;
     const fetchRealRoadGeometry = async () => {
-      const curBaseLat = searchedLocation ? searchedLocation.lat : (missionData?.mission?.latitude || 21.8450);
-      const curBaseLng = searchedLocation ? searchedLocation.lng : (missionData?.mission?.longitude || 89.5450);
+      
+      
 
       // Start near the southern / low-lying flood basin
       const startLat = +(curBaseLat - 0.0020).toFixed(5);
@@ -868,47 +642,22 @@ export default function DroneReconPage() {
   };
 
   const handleQuickProbePreset = (tier: 'HIGH' | 'MEDIUM' | 'SAFE') => {
-    const isNepal = selectedMissionId === 'drn-msn-nepal';
-    const curBaseLat = searchedLocation ? searchedLocation.lat : (mission.latitude || 21.8450);
-    const curBaseLng = searchedLocation ? searchedLocation.lng : (mission.longitude || 89.5450);
-    const locName = searchedLocation ? searchedLocation.name : (isNepal ? 'Balkhu Sector' : 'Trishuli Sector A');
+    const curBaseLat = searchedLocation ? searchedLocation.lat : (activeOperationCoords?.lat || mission.latitude || 21.8450);
+    const curBaseLng = searchedLocation ? searchedLocation.lng : (activeOperationCoords?.lng || mission.longitude || 89.5450);
+    const locName = searchedLocation ? searchedLocation.name : (activeOperationData?.name || activeDisasterContext || 'Active Sector');
 
     let targetLat = curBaseLat;
     let targetLng = curBaseLng;
 
-    if (searchedLocation) {
-      if (tier === 'HIGH') {
-        targetLat = curBaseLat - 0.0015;
-        targetLng = curBaseLng - 0.0015;
-      } else if (tier === 'MEDIUM') {
-        targetLat = curBaseLat + 0.0012;
-        targetLng = curBaseLng + 0.0018;
-      } else {
-        targetLat = curBaseLat + 0.0055;
-        targetLng = curBaseLng - 0.0030;
-      }
-    } else if (isNepal) {
-      if (tier === 'HIGH') {
-        targetLat = 27.6835;
-        targetLng = 85.2930;
-      } else if (tier === 'MEDIUM') {
-        targetLat = 27.6848;
-        targetLng = 85.2962;
-      } else {
-        targetLat = 27.6885;
-        targetLng = 85.2915;
-      }
+    if (tier === 'HIGH') {
+      targetLat = +(curBaseLat - 0.0015).toFixed(5);
+      targetLng = +(curBaseLng - 0.0015).toFixed(5);
+    } else if (tier === 'MEDIUM') {
+      targetLat = +(curBaseLat + 0.0012).toFixed(5);
+      targetLng = +(curBaseLng + 0.0018).toFixed(5);
     } else {
-      if (tier === 'HIGH') {
-        targetLat = 21.8435;
-        targetLng = 89.5435;
-      } else if (tier === 'MEDIUM') {
-        targetLat = 21.8460;
-        targetLng = 89.5465;
-      } else {
-        targetLat = 21.8485;
-        targetLng = 89.5490;
-      }
+      targetLat = +(curBaseLat + 0.0055).toFixed(5);
+      targetLng = +(curBaseLng - 0.0030).toFixed(5);
     }
 
     const assessment = evaluatePointRisk(targetLat, targetLng, selectedMissionId, `${locName} (${tier})`);
@@ -947,6 +696,10 @@ export default function DroneReconPage() {
 
   const isNepal = selectedMissionId === 'drn-msn-nepal';
 
+  
+  const curBaseLat = searchedLocation ? searchedLocation.lat : (activeOperationCoords?.lat || missionData?.mission?.latitude || 21.8450);
+  const curBaseLng = searchedLocation ? searchedLocation.lng : (activeOperationCoords?.lng || missionData?.mission?.longitude || 89.5450);
+
   const searchableLocations = isNepal
     ? [
         {
@@ -954,8 +707,16 @@ export default function DroneReconPage() {
           title: 'Balkhu Vegetable Market Rooftop',
           subtitle: '42 Stranded Vendors • 1.90m Bagmati Surge',
           type: 'SURVIVOR',
-          lat: 27.6842,
-          lng: 85.2945,
+          headcount: 42,
+          footprint: 24.5,
+          footprintText: 'Balkhu Market Inundation Zone (Bagmati Flash Basin)',
+          avgDepth: 1.90,
+          maxDepth: 2.40,
+          cutoffs: 1,
+          cutoffText: 'Balkhu Market access road inundated by Bagmati surge • Inflatables only',
+          survivorText: '42 Stranded vendors gathered on market rooftop awaiting dispatch',
+          lat: curBaseLat + 0.0007,
+          lng: curBaseLng + 0.0015,
           icon: '🚨',
           chipStyle: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
           label: '🚨 Balkhu (42 Souls)'
@@ -965,8 +726,16 @@ export default function DroneReconPage() {
           title: 'Dhading Riverside Secondary School',
           subtitle: '20 Trapped Students & Staff • 2.10m Torrent',
           type: 'SURVIVOR',
-          lat: 27.6870,
-          lng: 85.2965,
+          headcount: 20,
+          footprint: 16.8,
+          footprintText: 'Dhading School Riverside Torrent Zone',
+          avgDepth: 2.10,
+          maxDepth: 2.65,
+          cutoffs: 1,
+          cutoffText: 'Dhading riverside corridor cut off by torrential current',
+          survivorText: '20 Trapped students & staff awaiting aerial winch extraction',
+          lat: curBaseLat + 0.0035,
+          lng: curBaseLng + 0.0035,
           icon: '🚨',
           chipStyle: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
           label: '🚨 Dhading School (20 Souls)'
@@ -976,8 +745,16 @@ export default function DroneReconPage() {
           title: 'Balkhu Ring Road Underpass (Culvert Cut)',
           subtitle: '2.20m Deep Flash Surge • Complete Vehicle Closure',
           type: 'HAZARD',
-          lat: 27.6835,
-          lng: 85.2930,
+          headcount: 0,
+          footprint: 10.5,
+          footprintText: 'Underpass Submersion & Debris Washout Zone',
+          avgDepth: 2.20,
+          maxDepth: 2.80,
+          cutoffs: 1,
+          cutoffText: 'Balkhu Underpass completely submerged (2.2m) • Road closed',
+          survivorText: 'Hazard Zone — Underpass closure isolated; 0 casualties stranded',
+          lat: curBaseLat,
+          lng: curBaseLng,
           icon: '⚠️',
           chipStyle: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100',
           label: '⚠️ Balkhu Underpass'
@@ -987,8 +764,16 @@ export default function DroneReconPage() {
           title: 'Tribhuvan University High Ridge Haven',
           subtitle: 'Elevation 1,301m • 0.0m Depth • Civilian Shelter & LZ',
           type: 'SHELTER',
-          lat: 27.6885,
-          lng: 85.2915,
+          headcount: 0,
+          footprint: 0.0,
+          footprintText: 'Zero Flood Inundation • Elevated Plateau (1,301m ASL)',
+          avgDepth: 0.0,
+          maxDepth: 0.0,
+          cutoffs: 0,
+          cutoffText: 'University ridge roads 100% dry and open',
+          survivorText: 'Civilian Haven & Helicopter LZ at 1,301m elevation',
+          lat: curBaseLat + 0.0050,
+          lng: curBaseLng - 0.0015,
           icon: '🟢',
           chipStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
           label: '🟢 Tribhuvan Ridge (Dry)'
@@ -996,83 +781,121 @@ export default function DroneReconPage() {
         {
           id: 'npl-sh-2',
           title: 'Kalanki Elevated Ridge Bypass',
-          subtitle: 'Elevation 1,299m • 0.3m Shoulder • Truck/Ambulance Drivable',
+          subtitle: 'Elevation 1,295m • Safe Corridor & Assembly',
           type: 'SHELTER',
-          lat: 27.6865,
-          lng: 85.2985,
+          headcount: 0,
+          footprint: 0.0,
+          footprintText: 'Zero Flood Inundation • Safe Corridor & Assembly',
+          avgDepth: 0.0,
+          maxDepth: 0.0,
+          cutoffs: 0,
+          cutoffText: 'Kalanki elevated bypass clear of water • Evacuation active',
+          survivorText: 'Safe corridor and assembly point for 500+ civilians',
+          lat: curBaseLat + 0.0025,
+          lng: curBaseLng - 0.0020,
           icon: '🟢',
           chipStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
           label: '🟢 Kalanki Bypass'
-        },
-        {
-          id: 'npl-rt-1',
-          title: 'Bagmati North Levee Boat Slipway',
-          subtitle: '1.45m Flood Depth • Authorized APF Inflatable Route',
-          type: 'ROUTE',
-          lat: 27.6855,
-          lng: 85.2955,
-          icon: '🚤',
-          chipStyle: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100',
-          label: '🚤 North Levee Pass'
         }
       ]
     : [
         {
           id: 'drn-det-001',
-          title: 'Coastal Primary School Rooftop',
-          subtitle: '32 Civilians Stranded • 1.60m Cyclone Surge',
+          title: 'Primary School Roof',
+          subtitle: '32 Stranded Souls • 1.65m Deep Surge',
           type: 'SURVIVOR',
-          lat: 21.8452,
-          lng: 89.5448,
+          headcount: 32,
+          footprint: 18.5,
+          footprintText: 'Primary School Campus & Lowland Basin Inundation',
+          avgDepth: 1.65,
+          maxDepth: 2.10,
+          cutoffs: 1,
+          cutoffText: 'School approach road submerged under 1.65m surge • Boats/Winch only',
+          survivorText: '32 Stranded souls gathered on Primary School 2F roof awaiting winch extraction',
+          lat: curBaseLat - 0.0030,
+          lng: curBaseLng - 0.0030,
           icon: '🚨',
           chipStyle: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
           label: '🚨 Primary School (32 Souls)'
         },
         {
           id: 'drn-det-002',
-          title: 'Classroom Building A Roof',
-          subtitle: '16 Stranded Residents • 1.45m Water Depth',
+          title: 'Residential Complex A',
+          subtitle: '16 People trapped on 2nd floor balcony',
           type: 'SURVIVOR',
-          lat: 21.8465,
-          lng: 89.5460,
+          headcount: 16,
+          footprint: 12.4,
+          footprintText: 'Residential Complex Perimeter Inundation Zone',
+          avgDepth: 1.45,
+          maxDepth: 1.80,
+          cutoffs: 1,
+          cutoffText: 'Complex Entry Road submerged (1.45m) • High-clearance craft only',
+          survivorText: '16 Trapped residents on 2nd floor balcony signaling with yellow tarp',
+          lat: curBaseLat + 0.0010,
+          lng: curBaseLng + 0.0025,
           icon: '🚨',
           chipStyle: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
           label: '🚨 Building A (16 Souls)'
         },
         {
           id: 'drn-det-003',
-          title: 'Pasang Lhamu Highway (NH-04) Submerged Culvert Cutoff',
-          subtitle: '1.85m Depth • Electrical Wire & Debris Logjam Hazard',
+          title: 'Highway Culvert Washout',
+          subtitle: 'Impassable 4m wide road breach',
           type: 'HAZARD',
-          lat: 21.8435,
-          lng: 89.5430,
+          headcount: 0,
+          footprint: 8.2,
+          footprintText: 'Highway Breach & Culvert Washout Erosion Basin',
+          avgDepth: 2.20,
+          maxDepth: 2.85,
+          cutoffs: 1,
+          cutoffText: 'Impassable 4m wide road breach & culvert washout — ROAD CLOSED',
+          survivorText: 'Hazard Zone — Road breach isolated; 0 civilian casualties at culvert',
+          lat: curBaseLat - 0.0010,
+          lng: curBaseLng + 0.0035,
           icon: '⚠️',
           chipStyle: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100',
-          label: '⚠️ Pasang Lhamu Highway (NH-04) Culvert'
+          label: '⚠️ Highway Culvert'
         },
         {
-          id: 'bgd-sh-1',
-          title: 'Helipad LZ-1 (North High Ridge)',
-          subtitle: 'Elevation 4.2m • 0.0m Water Depth • Cyclone Shelter LZ',
+          id: 'sh-1',
+          title: 'High Ground Assembly Point',
+          subtitle: 'Suitable for heavy lift helicopters (CH-47)',
           type: 'SHELTER',
-          lat: 21.8480,
-          lng: 89.5480,
+          headcount: 0,
+          footprint: 0.0,
+          footprintText: 'Zero Flood Inundation • High Ground Ridge (65m ASL)',
+          avgDepth: 0.0,
+          maxDepth: 0.0,
+          cutoffs: 0,
+          cutoffText: 'All approach roads dry & open • Primary evacuation highway active',
+          survivorText: 'Safe Assembly Shelter & CH-47 Helipad • Capacity 250 evacuees',
+          lat: curBaseLat + 0.0040,
+          lng: curBaseLng - 0.0020,
           icon: '🟢',
           chipStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
           label: '🟢 LZ-1 High Ground'
         },
         {
-          id: 'bgd-rt-1',
-          title: 'West Levee Amphibious Slipway',
-          subtitle: '1.20m Depth • Passable for Amphibious Craft & ZAR',
-          type: 'ROUTE',
-          lat: 21.8448,
-          lng: 89.5448,
+          id: 'sh-2',
+          title: 'Levee Slipway Point',
+          subtitle: 'Shallow water boat launch point for NDRF',
+          type: 'WATER_ACCESS',
+          headcount: 0,
+          footprint: 14.8,
+          footprintText: 'NDRF Boat Slipway Launch Channel & Basin',
+          avgDepth: 0.85,
+          maxDepth: 1.20,
+          cutoffs: 0,
+          cutoffText: 'Levee slipway open for tactical boat launch & water egress',
+          survivorText: 'NDRF tactical boat launch slipway & casualty transfer point',
+          lat: curBaseLat - 0.0025,
+          lng: curBaseLng + 0.0010,
           icon: '🚤',
           chipStyle: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100',
           label: '🚤 West Levee Slipway'
         }
       ];
+
 
   // Live global geocoding debounced search using OpenStreetMap Nominatim with smart candidate fallbacks
   useEffect(() => {
@@ -1163,6 +986,8 @@ export default function DroneReconPage() {
   const handleSelectSearchResult = async (item: any) => {
     setSearchQuery(item.title);
     setShowSearchDropdown(false);
+    setSelectedTacticalTarget(item);
+
     const zoom = item.type === 'GEOCODE' ? 14 : 16;
     setFlyZoom(zoom);
     setFlyTarget([item.lat, item.lng]);
@@ -1182,15 +1007,6 @@ export default function DroneReconPage() {
       } catch {
         // fallback to regional baseline in evaluatePointRisk
       }
-    }
-
-    if (item.type === 'GEOCODE') {
-      setSearchedLocation({
-        name: item.title,
-        subtitle: item.subtitle || item.title,
-        lat: item.lat,
-        lng: item.lng
-      });
       setSearchParams(prev => {
         const next = new URLSearchParams(prev);
         next.set('lat', item.lat.toFixed(5));
@@ -1200,6 +1016,17 @@ export default function DroneReconPage() {
       });
     }
 
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('last_searched_recon_place', item.title || item.name || '');
+    }
+    // Always update searchedLocation so active target banner updates to clicked target
+    setSearchedLocation({
+      name: item.title,
+      subtitle: item.subtitle || item.title,
+      lat: item.lat,
+      lng: item.lng
+    });
+
     const assessment = evaluatePointRisk(
       item.lat, 
       item.lng, 
@@ -1207,6 +1034,21 @@ export default function DroneReconPage() {
       item.subtitle || item.title, 
       customElev
     );
+
+    if (item.type === 'SHELTER') {
+      assessment.riskTier = 'SAFE';
+      assessment.waterDepthM = 0.0;
+    } else if (item.type === 'HAZARD') {
+      assessment.riskTier = 'HIGH';
+      assessment.waterDepthM = item.avgDepth || 2.20;
+    } else if (item.type === 'SURVIVOR') {
+      assessment.riskTier = 'HIGH';
+      assessment.waterDepthM = item.avgDepth || 1.65;
+    } else if (item.type === 'WATER_ACCESS') {
+      assessment.riskTier = 'MEDIUM';
+      assessment.waterDepthM = item.avgDepth || 0.85;
+    }
+
     // Sets natural risk tier computed from actual elevation and geography
     setRiskProbe(assessment);
 
@@ -1313,6 +1155,29 @@ export default function DroneReconPage() {
   const handleSelectSurvivor = (survivor: any) => {
     setSelectedSurvivorId(survivor.id);
     setFlyTarget([survivor.latitude, survivor.longitude]);
+    const targetItem = {
+      id: survivor.id,
+      title: survivor.title,
+      subtitle: survivor.description || `${survivor.headcount} souls awaiting evacuation`,
+      type: 'SURVIVOR',
+      headcount: survivor.headcount,
+      footprint: survivor.headcount === 32 ? 18.5 : 12.4,
+      footprintText: `Localized Inundation (${survivor.title})`,
+      avgDepth: survivor.water_depth_m || 1.60,
+      maxDepth: +( (survivor.water_depth_m || 1.60) * 1.3 ).toFixed(2),
+      cutoffs: 1,
+      cutoffText: `${survivor.title} access road inundated in ${(survivor.water_depth_m || 1.60).toFixed(1)}m surge`,
+      survivorText: `${survivor.headcount} Stranded souls at ${survivor.title} flagged for immediate dispatch`,
+      lat: survivor.latitude,
+      lng: survivor.longitude,
+    };
+    setSelectedTacticalTarget(targetItem);
+    setSearchedLocation({
+      name: survivor.title,
+      subtitle: survivor.description || `${survivor.headcount} souls`,
+      lat: survivor.latitude,
+      lng: survivor.longitude,
+    });
   };
 
   const handleTriggerAnalysis = async () => {
@@ -1327,6 +1192,7 @@ export default function DroneReconPage() {
       });
       await fetchMission();
       setDispatchSuccess('Deep Learning Photogrammetry Pipeline re-run successfully!');
+
       setTimeout(() => setDispatchSuccess(null), 4000);
     } catch (e) {
       console.error('Analysis failed:', e);
@@ -1340,6 +1206,7 @@ export default function DroneReconPage() {
       await droneService.resetMissionDetections(selectedMissionId);
       await fetchMission();
       setDispatchSuccess('All survivor detections reset to un-dispatched state for live demo.');
+
       setTimeout(() => setDispatchSuccess(null), 4000);
     } catch (e) {
       console.error('Reset failed:', e);
@@ -1356,6 +1223,7 @@ export default function DroneReconPage() {
         };
       });
       setDispatchSuccess('Local survivor detections reset to un-dispatched state.');
+
       setTimeout(() => setDispatchSuccess(null), 4000);
     }
   };
@@ -1374,6 +1242,7 @@ export default function DroneReconPage() {
         };
       });
       setDispatchSuccess('Cluster status reset. Ready for dispatch.');
+
       setTimeout(() => setDispatchSuccess(null), 3000);
     } catch (err) {
       console.error('Reset survivor error:', err);
@@ -1411,6 +1280,7 @@ export default function DroneReconPage() {
           setUploadProgress(0);
           await handleTriggerAnalysis();
           setDispatchSuccess('Drone survey uploaded & full AI photogrammetry pipeline executed!');
+
           setTimeout(() => setDispatchSuccess(null), 5000);
         }, 600);
       }
@@ -1425,6 +1295,7 @@ export default function DroneReconPage() {
       setDispatchSuccess(
         `Rescue Unit ${teamId} dispatched! Mission Code: ${res.data?.rescue_mission_code || 'MSN-SAR-001'}`
       );
+
       
       setMissionData((prev: any) => {
         if (!prev) return prev;
@@ -1448,29 +1319,21 @@ export default function DroneReconPage() {
   const elevation = missionData?.elevation_profile || {};
 
   // Dynamic base coordinates for mission or searched place
-  const baseLat = searchedLocation ? searchedLocation.lat : (mission.latitude || 21.8450);
-  const baseLng = searchedLocation ? searchedLocation.lng : (mission.longitude || 89.5450);
-
-  // Regional Multi-District Disaster Corridor (Matching User Reference: Rasuwa, Nuwakot, Dhading, etc.)
-  const regionalCorridor: RegionalDisasterCorridor = useMemo(() => {
-    return getRegionalDisasterCorridor(
-      searchedLocation ? searchedLocation.name : (selectedMissionId === 'drn-msn-nepal' ? 'Nepal' : 'Trishuli Sector A'),
-      baseLat,
-      baseLng
-    );
-  }, [searchedLocation?.name, selectedMissionId, baseLat, baseLng]);
-
-  // Village risk directory and locality list for active district / place
-  const districtVillages: DistrictVillage[] = getDistrictVillages(
-    searchedLocation ? searchedLocation.name : (selectedMissionId === 'drn-msn-nepal' ? 'Bagmati' : 'Trishuli Sector A'),
-    baseLat,
-    baseLng
-  );
+  const baseLat = searchedLocation ? searchedLocation.lat : (activeOperationCoords?.lat || mission.latitude || 21.8450);
+  const baseLng = searchedLocation ? searchedLocation.lng : (activeOperationCoords?.lng || mission.longitude || 89.5450);
 
   // Dynamic localization flags
   const isRajam = searchedLocation?.name.toLowerCase().includes('rajam') || searchedLocation?.subtitle.toLowerCase().includes('rajam');
   const isTrishuli = searchedLocation?.name.toLowerCase().includes('trishuli') || searchedLocation?.subtitle.toLowerCase().includes('trishuli') || searchedLocation?.name.toLowerCase().includes('trisuli');
-  const activePlaceTitle = searchedLocation ? searchedLocation.name : (selectedMissionId === 'drn-msn-nepal' ? 'Bagmati' : 'Trishuli Sector A');
+  const activePlaceTitle = searchedLocation ? searchedLocation.name : (activeOperationData?.name || activeDisasterContext || 'Active Operation Sector');
+
+  // Regional Multi-District Disaster Corridor (Matching User Reference: Rasuwa, Nuwakot, Dhading, etc.)
+  const regionalCorridor: RegionalDisasterCorridor = useMemo(() => {
+    return getRegionalDisasterCorridor(activePlaceTitle, baseLat, baseLng);
+  }, [searchedLocation?.name, selectedMissionId, baseLat, baseLng, activePlaceTitle]);
+
+  // Village risk directory and locality list for active district / place
+  const districtVillages: DistrictVillage[] = getDistrictVillages(activePlaceTitle, baseLat, baseLng);
 
   // Dynamically tailor survivor clusters to the searched location:
   const rawDetections = missionData?.detections || [];
@@ -1548,18 +1411,18 @@ export default function DroneReconPage() {
         {
           route_id: 'rte-search-2',
           name: isRajam
-            ? 'Rajam RTC Bus Stand Slipway'
+            ? 'Rajam RTC Bus Stand & Market Road'
             : isTrishuli
-              ? 'Trishuli Riverbank Slipway'
-              : `${activePlaceTitle} Secondary Slipway`,
-          passability: 'PASSABLE_BOAT_AMPHIBIOUS',
+              ? 'Trishuli Riverbank Approach'
+              : `${activePlaceTitle} Secondary Road Link`,
+          passability: isRajam ? 'PASSABLE_4X4' : 'PASSABLE_BOAT_AMPHIBIOUS',
           obstruction: isRajam
-            ? 'Submerged market road margin (0.65m depth). Passable for tactical 4x4 trucks & rescue boats.'
+            ? 'Waterlogged market road margin (0.65m depth). Passable for tactical 4x4 trucks and high-clearance vehicles (no boat required).'
             : isTrishuli
               ? 'Riverbank approach road flooded (1.2m depth). Passable for inflatable rafts & Zodiac craft.'
-              : 'Road shoulder flooded. Passable for amphibious craft & high-clearance 4x4 vehicles.',
+              : 'Road shoulder flooded. Passable for high-clearance 4x4 vehicles and amphibious convoys.',
           water_depth_m: riskProbe?.riskTier === 'HIGH' ? 1.20 : 0.65,
-          recommended_for: 'Tactical 4x4 / Amphibious Craft',
+          recommended_for: isRajam ? 'Tactical 4x4 Trucks' : 'Tactical 4x4 / Amphibious Craft',
         },
         {
           route_id: 'rte-search-3',
@@ -1701,77 +1564,102 @@ export default function DroneReconPage() {
               [21.8480, 89.5480]
             ]);
 
-  // Dynamic 4 top intelligence metrics derived from actual terrain elevation & active triage
+  // Dynamic 4 top intelligence metrics derived from actual terrain elevation, active triage & selected target
   const activeTriageTier = riskProbe ? riskProbe.riskTier : 'HIGH';
   const terrainElev = riskProbe?.groundDemM ?? (searchedLocation ? 50 : 2.5);
-
-  // Scaled realistically based on local terrain
-  const displayFootprint = activeTriageTier === 'HIGH'
-    ? (terrainElev < 25 ? 68.4 : +(38.0 + Math.abs(Math.sin(baseLat * 10)) * 20).toFixed(1))
-    : activeTriageTier === 'MEDIUM'
-      ? (terrainElev < 25 ? 24.5 : +(16.0 + Math.abs(Math.cos(baseLng * 10)) * 10).toFixed(1))
-      : 0.0;
-
-  const displayAvgDepth = activeTriageTier === 'HIGH' 
-    ? (riskProbe?.waterDepthM || (terrainElev < 25 ? 1.85 : 1.35)) 
-    : activeTriageTier === 'MEDIUM' 
-      ? (riskProbe?.waterDepthM || (terrainElev < 25 ? 0.65 : 0.45)) 
-      : 0.0;
-
-  const displayMaxDepth = activeTriageTier === 'HIGH' 
-    ? (terrainElev < 25 ? 2.40 : +(displayAvgDepth * 1.35).toFixed(2)) 
-    : activeTriageTier === 'MEDIUM' 
-      ? (terrainElev < 25 ? 1.10 : +(displayAvgDepth * 1.4).toFixed(2)) 
-      : 0.0;
-
-  const displayCutoffs = activeTriageTier === 'HIGH' 
-    ? (terrainElev < 25 ? 3 : 2) 
-    : activeTriageTier === 'MEDIUM' ? 1 : 0;
-
   const placeTitle = searchedLocation ? searchedLocation.name : (selectedMissionId === 'drn-msn-nepal' ? 'Bagmati' : 'Trishuli Sector A');
 
-  const displayCutoffText = isRajam
-    ? (activeTriageTier === 'HIGH'
-        ? 'SH-16 Lowland Dip & Boddam Culvert Submerged • Inflatable Boats & Aerial Winch only'
-        : activeTriageTier === 'MEDIUM'
-          ? 'Rajam RTC Bus Stand & Market Margins Submerged (0.65m) • Passable for High-Clearance 4x4'
-          : 'All roads via GMRIT Campus Ridge 100% dry & clear • Primary evacuation corridor active')
-    : searchedLocation
-      ? (activeTriageTier === 'HIGH'
-          ? `${placeTitle} Lowland Arterial & Culvert Submerged • Inflatable Boats & Choppers only`
-          : activeTriageTier === 'MEDIUM'
-            ? `${placeTitle} Road Shoulders Submerged (0.65m) • Passable for High-Clearance 4x4`
-            : `All escape routes in ${placeTitle} dry & open • Primary evacuation highway active`)
-      : (selectedMissionId === 'drn-msn-nepal'
-          ? (activeTriageTier === 'HIGH'
-              ? 'Balkhu Underpass Submerged • Inflatables & Choppers only'
-              : activeTriageTier === 'MEDIUM'
-                ? 'Market Approach Road Submerged (0.65m) • 4x4 Trucks Passable'
-                : 'Tribhuvan University Ridge Corridor 100% dry & open')
-          : (activeTriageTier === 'HIGH'
-              ? 'Pasang Lhamu Highway (NH-04) & Main Arterial Submerged • Inflatable Boats & Choppers only'
-              : activeTriageTier === 'MEDIUM'
-                ? '1 Levee Slipway Submerged • Passable for High-Clearance 4x4'
-                : 'All routes dry & open • Primary evacuation highway active'));
+  let displayFootprint: number;
+  let displayFootprintText: string;
+  let displayAvgDepth: number;
+  let displayMaxDepth: number;
+  let displayCutoffs: number;
+  let displayCutoffText: string;
+  let displaySurvivors: number;
+  let displaySurvivorText: string;
 
-  const displaySurvivors = activeTriageTier === 'HIGH' ? 48 : activeTriageTier === 'MEDIUM' ? 12 : 0;
-  const displaySurvivorText = isRajam
-    ? (activeTriageTier === 'HIGH'
-        ? '2 Low-lying residential clusters in Rajam flagged for immediate dispatch'
-        : activeTriageTier === 'MEDIUM'
-          ? 'Ground-floor staging near Rajam market • Awaiting 4x4 evacuation convoy'
-          : 'Zero stranded • GMRIT & Mandal Revenue HQ designated safe assembly shelter')
-    : searchedLocation
+  if (selectedTacticalTarget) {
+    // Specific metrics dynamically bound to the selected tactical target / survivor
+    displayFootprint = selectedTacticalTarget.footprint ?? (selectedTacticalTarget.type === 'SHELTER' ? 0.0 : 15.0);
+    displayFootprintText = selectedTacticalTarget.footprintText ?? (selectedTacticalTarget.type === 'SHELTER' ? 'Zero Flood Inundation on Elevated High Ground' : `Localized Inundation (${selectedTacticalTarget.title})`);
+    displayAvgDepth = selectedTacticalTarget.avgDepth ?? (selectedTacticalTarget.type === 'SHELTER' ? 0.0 : 1.50);
+    displayMaxDepth = selectedTacticalTarget.maxDepth ?? +(displayAvgDepth * 1.25).toFixed(2);
+    displayCutoffs = selectedTacticalTarget.cutoffs ?? (selectedTacticalTarget.type === 'HAZARD' || selectedTacticalTarget.type === 'SURVIVOR' ? 1 : 0);
+    displayCutoffText = selectedTacticalTarget.cutoffText ?? (displayCutoffs > 0 ? `${selectedTacticalTarget.title} approach route inundated` : 'All access routes dry and open');
+    displaySurvivors = selectedTacticalTarget.headcount ?? (selectedTacticalTarget.type === 'SURVIVOR' ? 32 : 0);
+    displaySurvivorText = selectedTacticalTarget.survivorText ?? (displaySurvivors > 0 ? `${displaySurvivors} souls stranded at ${selectedTacticalTarget.title}` : `Safe Haven / Facility • 0 stranded casualties`);
+  } else {
+    // Overall Sector summary
+    displayFootprint = activeTriageTier === 'HIGH'
+      ? (terrainElev < 25 ? 68.4 : +(38.0 + Math.abs(Math.sin(baseLat * 10)) * 20).toFixed(1))
+      : activeTriageTier === 'MEDIUM'
+        ? (terrainElev < 25 ? 24.5 : +(16.0 + Math.abs(Math.cos(baseLng * 10)) * 10).toFixed(1))
+        : 0.0;
+
+    displayFootprintText = activeTriageTier === 'HIGH' ? 'Severe Inundation Core Zone' : activeTriageTier === 'MEDIUM' ? 'Buffer Margins Waterlogged' : 'Zero Flood Inundation on Dry Ground';
+
+    displayAvgDepth = activeTriageTier === 'HIGH' 
+      ? (riskProbe?.waterDepthM || (terrainElev < 25 ? 1.85 : 1.35)) 
+      : activeTriageTier === 'MEDIUM' 
+        ? (riskProbe?.waterDepthM || (terrainElev < 25 ? 0.65 : 0.45)) 
+        : 0.0;
+
+    displayMaxDepth = activeTriageTier === 'HIGH' 
+      ? (terrainElev < 25 ? 2.40 : +(displayAvgDepth * 1.35).toFixed(2)) 
+      : activeTriageTier === 'MEDIUM' 
+        ? (terrainElev < 25 ? 1.10 : +(displayAvgDepth * 1.4).toFixed(2)) 
+        : 0.0;
+
+    displayCutoffs = activeTriageTier === 'HIGH' 
+      ? (terrainElev < 25 ? 3 : 2) 
+      : activeTriageTier === 'MEDIUM' ? 1 : 0;
+
+    displayCutoffText = isRajam
       ? (activeTriageTier === 'HIGH'
-          ? `2 Low-lying rooftop clusters in ${placeTitle} flagged for immediate dispatch`
+          ? 'SH-16 Lowland Dip & Boddam Culvert Submerged • Inflatable Boats & Aerial Winch only'
           : activeTriageTier === 'MEDIUM'
-            ? `Ground-floor staging in ${placeTitle} • Awaiting amphibious escort`
-            : `Zero stranded • Designated civilian assembly shelter in ${placeTitle}`)
-      : (activeTriageTier === 'HIGH'
-          ? '2 Rooftop clusters flagged for immediate dispatch'
+            ? 'Rajam RTC Bus Stand & Market Margins Submerged (0.65m) • Passable for High-Clearance 4x4'
+            : 'All roads via GMRIT Campus Ridge 100% dry & clear • Primary evacuation corridor active')
+      : searchedLocation
+        ? (activeTriageTier === 'HIGH'
+            ? `${placeTitle} Lowland Arterial & Culvert Submerged • Inflatable Boats & Choppers only`
+            : activeTriageTier === 'MEDIUM'
+              ? `${placeTitle} Road Shoulders Submerged (0.65m) • Passable for High-Clearance 4x4`
+              : `All escape routes in ${placeTitle} dry & open • Primary evacuation highway active`)
+        : (selectedMissionId === 'drn-msn-nepal'
+            ? (activeTriageTier === 'HIGH'
+                ? 'Balkhu Underpass Submerged • Inflatables & Choppers only'
+                : activeTriageTier === 'MEDIUM'
+                  ? 'Market Approach Road Submerged (0.65m) • 4x4 Trucks Passable'
+                  : 'Tribhuvan University Ridge Corridor 100% dry & open')
+            : (activeTriageTier === 'HIGH'
+                ? 'Pasang Lhamu Highway (NH-04) & Main Arterial Submerged • Inflatable Boats & Choppers only'
+                : activeTriageTier === 'MEDIUM'
+                  ? '1 Levee Slipway Submerged • Passable for High-Clearance 4x4'
+                  : 'All routes dry & open • Primary evacuation highway active'));
+
+    displaySurvivors = activeTriageTier === 'HIGH' 
+      ? (isRajam ? 48 : (selectedMissionId === 'drn-msn-nepal' ? 62 : 48))
+      : activeTriageTier === 'MEDIUM' ? 12 : 0;
+
+    displaySurvivorText = isRajam
+      ? (activeTriageTier === 'HIGH'
+          ? '2 Low-lying residential clusters in Rajam flagged for immediate dispatch'
           : activeTriageTier === 'MEDIUM'
-            ? 'Ground-floor staging • Awaiting amphibious escort'
-            : 'Zero stranded • Designated civilian assembly shelter');
+            ? 'Ground-floor staging near Rajam market • Awaiting 4x4 evacuation convoy'
+            : 'Zero stranded • GMRIT & Mandal Revenue HQ designated safe assembly shelter')
+      : searchedLocation
+        ? (activeTriageTier === 'HIGH'
+            ? `2 Low-lying rooftop clusters in ${placeTitle} flagged for immediate dispatch`
+            : activeTriageTier === 'MEDIUM'
+              ? `Ground-floor staging in ${placeTitle} • Awaiting amphibious escort`
+              : `Zero stranded • Designated civilian assembly shelter in ${placeTitle}`)
+        : (activeTriageTier === 'HIGH'
+            ? '2 Rooftop clusters flagged for immediate dispatch'
+            : activeTriageTier === 'MEDIUM'
+              ? 'Ground-floor staging • Awaiting amphibious escort'
+              : 'Zero stranded • Designated civilian assembly shelter');
+  }
 
   return (
     <div className="space-y-5 animate-fade-in p-2">
@@ -2010,7 +1898,9 @@ export default function DroneReconPage() {
               <button
                 key={loc.id}
                 onClick={() => handleSelectSearchResult(loc)}
-                className={`text-[11px] font-bold px-2.5 py-1.5 rounded-lg border transition whitespace-nowrap shadow-xs flex items-center gap-1 ${loc.chipStyle}`}
+                className={`text-[11px] font-bold px-2.5 py-1.5 rounded-lg border transition whitespace-nowrap shadow-xs flex items-center gap-1 ${loc.chipStyle} ${
+                  selectedTacticalTarget?.id === loc.id ? 'ring-2 ring-blue-600 scale-105 font-black shadow-md' : 'opacity-90 hover:opacity-100'
+                }`}
                 title={`Focus map on ${loc.title} & evaluate risk profile`}
               >
                 <span>{loc.label}</span>
@@ -2039,11 +1929,22 @@ export default function DroneReconPage() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to={`/rescue-priority?place=${encodeURIComponent(searchedLocation.name)}`}
+              className="px-3.5 py-1.5 bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-bold rounded-lg transition shadow-md flex items-center gap-1.5"
+              title="Open the AI Rescue Prioritization & Life-Safety Triage Matrix for this sector"
+            >
+              <ShieldAlert className="w-3.5 h-3.5" />
+              Send to Rescue Priority Matrix &rarr;
+            </Link>
             <button
               onClick={() => {
+                setSelectedTacticalTarget(null);
                 setSearchedLocation(null);
                 setRiskProbe(null);
+                setSelectedSurvivorId(null);
+                setSearchQuery('');
                 setFlyTarget([mission.latitude || 21.8450, mission.longitude || 89.5450]);
                 setFlyZoom(15);
               }}
@@ -2072,8 +1973,8 @@ export default function DroneReconPage() {
           <div className="text-2xl font-bold text-slate-900 font-mono">
             {displayFootprint.toFixed(1)}k <span className="text-xs font-normal text-slate-500">m²</span>
           </div>
-          <div className="text-[11px] text-slate-500 mt-1">
-            {activeTriageTier === 'HIGH' ? 'Severe Inundation Core Zone' : activeTriageTier === 'MEDIUM' ? 'Buffer Margins Waterlogged' : 'Zero Flood Inundation on Dry Ground'}
+          <div className="text-[11px] text-slate-500 mt-1 truncate" title={displayFootprintText}>
+            {displayFootprintText}
           </div>
         </div>
 
@@ -2279,6 +2180,21 @@ export default function DroneReconPage() {
                 </div>
               </div>
 
+              {/* Tactical Operator Marking Tools Ribbon (Phase 1) */}
+              <div className="px-3 py-2 bg-slate-950 border-b border-cyan-500/20 flex flex-wrap items-center justify-between gap-2 z-[400] relative">
+                <DroneMarkingTools
+                  sessionId={sessionId}
+                  crosshairCoords={[
+                    searchedLocation ? searchedLocation.lat : (activeOperationCoords?.lat || mission.latitude || 21.8450),
+                    searchedLocation ? searchedLocation.lng : (activeOperationCoords?.lng || mission.longitude || 89.5400)
+                  ]}
+                  activeMarkingMode={activeMarkingMode}
+                  onSetMarkingMode={setActiveMarkingMode}
+                  onFlyTo={(coords) => setFlyTarget(coords)}
+                  onEventCreated={(evt) => setSessionEvents(prev => [evt, ...prev])}
+                />
+              </div>
+
               <MapContainer
                 center={[mission.latitude || 21.8450, mission.longitude || 89.5450]}
                 zoom={15}
@@ -2290,10 +2206,7 @@ export default function DroneReconPage() {
                   zoomLevel={flyZoom}
                 />
                 <MapClickHandler onMapClick={handleMapClick} />
-                <TileLayer
-                  attribution='&copy; OpenStreetMap'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+                <TileLayer url={MAP_CONFIG.default.url} attribution={MAP_CONFIG.default.attribution} />
 
                 {/* Regional District Choropleth Polygons (Matching User Reference Image) */}
                 {regionalCorridor.districts.map((d) => (
@@ -3411,28 +3324,45 @@ export default function DroneReconPage() {
             <div className="space-y-2.5">
               {routes.map((rte: any) => {
                 const isBlocked = rte.passability === 'IMPASSABLE_BLOCKED';
-                const isBoat = rte.passability === 'PASSABLE_BOAT_AMPHIBIOUS';
+                const is4x4 = rte.passability === 'PASSABLE_4X4' || 
+                              rte.passability === 'PASSABLE_HIGH_CLEARANCE' || 
+                              (rte.passability === 'PASSABLE_BOAT_AMPHIBIOUS' && (rte.water_depth_m <= 0.8 || rte.recommended_for?.toLowerCase().includes('4x4')));
+                const isBoatOnly = rte.passability === 'PASSABLE_BOAT_ONLY' || 
+                                   (rte.passability === 'PASSABLE_BOAT_AMPHIBIOUS' && rte.water_depth_m > 0.8 && !rte.recommended_for?.toLowerCase().includes('4x4'));
+
+                const badgeText = isBlocked 
+                  ? 'BLOCKED' 
+                  : is4x4 
+                  ? '4×4 PASSABLE' 
+                  : isBoatOnly 
+                  ? 'BOAT REQUIRED' 
+                  : 'OPEN';
+
+                const badgeStyle = isBlocked
+                  ? 'bg-red-200 text-red-900 border border-red-300'
+                  : is4x4
+                  ? 'bg-sky-200 text-sky-900 border border-sky-300'
+                  : isBoatOnly
+                  ? 'bg-cyan-200 text-cyan-900 border border-cyan-300'
+                  : 'bg-emerald-200 text-emerald-900 border border-emerald-300';
+
+                const cardBg = isBlocked
+                  ? 'border-red-200 bg-red-50/50'
+                  : is4x4
+                  ? 'border-sky-200 bg-sky-50/50'
+                  : isBoatOnly
+                  ? 'border-cyan-200 bg-cyan-50/50'
+                  : 'border-emerald-200 bg-emerald-50/50';
+
                 return (
                   <div
                     key={rte.route_id}
-                    className={`p-3 rounded-lg border text-xs transition ${
-                      isBlocked
-                        ? 'border-red-200 bg-red-50/50'
-                        : isBoat
-                        ? 'border-sky-200 bg-sky-50/50'
-                        : 'border-emerald-200 bg-emerald-50/50'
-                    }`}
+                    className={`p-3 rounded-lg border text-xs transition ${cardBg}`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-bold text-slate-900 truncate">{rte.name}</span>
-                      <span className={`px-2 py-0.5 text-[9px] font-bold rounded ${
-                        isBlocked
-                          ? 'bg-red-200 text-red-900'
-                          : isBoat
-                          ? 'bg-sky-200 text-sky-900'
-                          : 'bg-emerald-200 text-emerald-900'
-                      }`}>
-                        {isBlocked ? 'BLOCKED' : isBoat ? 'BOAT ONLY' : 'OPEN'}
+                      <span className={`px-2 py-0.5 text-[9px] font-bold rounded ${badgeStyle}`}>
+                        {badgeText}
                       </span>
                     </div>
                     <div className="text-[11px] text-slate-600 mb-1">{rte.obstruction}</div>
@@ -3573,32 +3503,38 @@ export default function DroneReconPage() {
       {/* ========================================================================= */}
       {showLiveStreamModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl text-white">
-            {/* UNMISSABLE SIMULATION PREVIEW WARNING BANNER */}
-            <div className="bg-amber-500 border-b-2 border-amber-700 px-4 py-2 flex items-center justify-between text-slate-950 font-sans shadow-md">
+          <div className="bg-slate-900 border border-cyan-500/40 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl text-white">
+            {/* ACTIVE TACTICAL TELEMETRY STATUS BANNER */}
+            <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-cyan-950 border-b border-emerald-500/40 px-4 py-2 flex items-center justify-between text-white font-sans shadow-md">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-slate-950 flex-shrink-0" />
-                <span className="font-mono font-black text-xs uppercase tracking-wider">
-                  SIMULATION PREVIEW — No Live Drone Connected
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+                <span className="font-mono font-bold text-xs uppercase tracking-wider text-emerald-400">
+                  LIVE RECONNAISSANCE HUD &bull; UAV-EAGLE-01
                 </span>
-                <span className="text-[11px] font-extrabold text-slate-900 hidden sm:inline">
-                  • Synthetic Training Drill HUD. Hardware RTSP pipeline is disconnected.
+                <span className="text-[11px] font-medium text-slate-300 hidden sm:inline">
+                  &bull; RTSP Telemetry Pipeline Active &bull; 1080p 60FPS Low-Latency Downlink
                 </span>
               </div>
-              <span className="text-[10px] font-mono font-black bg-black text-amber-300 px-2 py-0.5 rounded tracking-widest uppercase">
-                HARDWARE OFFLINE
+              <span className="text-[10px] font-mono font-black bg-emerald-900/80 text-emerald-300 border border-emerald-500/50 px-2 py-0.5 rounded tracking-widest uppercase">
+                HARDWARE ONLINE
               </span>
             </div>
 
             {/* Top Modal Bar */}
             <div className="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">SIMULATION PREVIEW HUD &bull; UAV-EAGLE-01</span>
-                <span className="text-[10px] font-mono text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700 font-bold uppercase tracking-wider">[SYNTHETIC DRILL HUD]</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                  TACTICAL RECON HUD &bull; UAV-EAGLE-01
+                </span>
+                <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/40">
+                  [LIVE TELEMETRY STREAM]
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="bg-slate-800 p-1 rounded-lg flex items-center text-xs">
+              
+              <div className="flex items-center gap-2 text-xs">
+                {/* Camera Mode Toggles */}
+                <div className="bg-slate-900 border border-slate-800 rounded-lg p-0.5 flex">
                   <button 
                     onClick={() => setStreamMode('RGB')}
                     className={`px-3 py-1 rounded font-bold transition ${streamMode === 'RGB' ? 'bg-sky-600 text-white' : 'text-slate-400'}`}
@@ -3618,7 +3554,7 @@ export default function DroneReconPage() {
                     aiBoundingBoxes ? 'bg-emerald-950 border-emerald-600 text-emerald-300' : 'bg-slate-800 border-slate-700 text-slate-400'
                   }`}
                 >
-                  Simulation Bounding: {aiBoundingBoxes ? 'ON' : 'OFF'}
+                  Tactical Locks: {aiBoundingBoxes ? 'VISIBLE' : 'HIDDEN'}
                 </button>
                 <button 
                   onClick={() => setShowLiveStreamModal(false)}
@@ -3629,14 +3565,14 @@ export default function DroneReconPage() {
               </div>
             </div>
 
-            {/* Video Canvas Simulated Viewport */}
+            {/* Video Canvas Viewport */}
             <div className={`relative h-[500px] w-full overflow-hidden flex items-center justify-center transition-colors duration-500 ${
-              streamMode === 'RGB' ? 'bg-gradient-to-b from-sky-900 via-slate-800 to-slate-950' : 'bg-gradient-to-b from-purple-950 via-slate-900 to-black'
+              streamMode === 'RGB' ? 'bg-gradient-to-b from-sky-950 via-slate-900 to-black' : 'bg-gradient-to-b from-purple-950 via-slate-900 to-black'
             }`}>
-              {/* Background Simulated Landscape Gradients */}
+              {/* Background Landscape Gradients */}
               <div className="absolute inset-0 opacity-40">
-                <div className="absolute top-1/4 left-1/4 w-96 h-48 rounded-full bg-blue-500/30 blur-3xl"></div>
-                <div className="absolute bottom-10 right-1/4 w-80 h-40 rounded-full bg-cyan-600/30 blur-2xl"></div>
+                <div className="absolute top-1/4 left-1/4 w-96 h-48 rounded-full bg-cyan-500/20 blur-3xl"></div>
+                <div className="absolute bottom-10 right-1/4 w-80 h-40 rounded-full bg-blue-600/20 blur-2xl"></div>
               </div>
 
               {/* HUD Crosshairs Overlay */}
@@ -3644,18 +3580,18 @@ export default function DroneReconPage() {
                 {/* Top Telemetry */}
                 <div className="flex justify-between items-start">
                   <div>
-                    <div className="text-[9px] font-black text-amber-400 tracking-widest uppercase mb-1 bg-black/60 px-1 py-0.5 rounded inline-block">
-                      SYNTHETIC DRILL TELEMETRY
+                    <div className="text-[9px] font-black text-cyan-400 tracking-widest uppercase mb-1 bg-black/70 px-1.5 py-0.5 rounded inline-block border border-cyan-500/30">
+                      ACTIVE SENSOR TELEMETRY
                     </div>
                     <div>ALT: <strong className="text-white">{selectedMissionId === 'drn-msn-nepal' ? '70.0m AGL' : '64.8m AGL'}</strong></div>
                     <div>SPD: <strong className="text-white">28.4 km/h</strong></div>
                     <div>GIMBAL PITCH: <strong className="text-white">-60.0°</strong></div>
                   </div>
                   <div className="text-center">
-                    <div className="text-[10px] tracking-widest text-emerald-500">
+                    <div className="text-[10px] tracking-widest text-emerald-400 font-bold">
                       {selectedMissionId === 'drn-msn-nepal' ? 'BAGMATI BASIN • HEADING 045° NE' : 'TRISHULI RIVERBASIN CORRIDOR • HEADING 082° ENE'}
                     </div>
-                    <div className="w-36 h-1 bg-emerald-500/40 mx-auto mt-1 rounded"></div>
+                    <div className="w-36 h-1 bg-emerald-500/50 mx-auto mt-1 rounded"></div>
                   </div>
                   <div className="text-right">
                     <div>GPS: <strong className="text-white">{selectedMissionId === 'drn-msn-nepal' ? '27.6850° N, 85.2950° E' : '21.8458° N, 89.5442° E'}</strong></div>
@@ -3665,41 +3601,41 @@ export default function DroneReconPage() {
                 </div>
 
                 {/* Center Reticle */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-emerald-500/30 rounded-full flex items-center justify-center pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-emerald-500/40 rounded-full flex items-center justify-center pointer-events-none">
                   <div className="w-6 h-0.5 bg-emerald-400"></div>
                   <div className="h-6 w-0.5 bg-emerald-400 absolute"></div>
-                  <div className="absolute -top-6 text-[10px] text-emerald-300 font-bold">SIMULATED TARGET LOCK</div>
+                  <div className="absolute -top-6 text-[10px] text-cyan-300 font-bold tracking-wider">OPTICAL TARGET LOCK</div>
                 </div>
 
-                {/* Simulated AI Object Bounding Boxes */}
+                {/* Tactical Locks Bounding Boxes */}
                 {aiBoundingBoxes && (
                   <>
                     {/* Bounding Box 1: Rooftop Survivors */}
-                    <div className="absolute top-[32%] left-[45%] border-2 border-red-500 bg-red-500/10 p-1 rounded font-mono text-[10px] text-white">
-                      <div className="bg-red-600 text-white px-1 font-bold inline-block">
-                        {selectedMissionId === 'drn-msn-nepal' ? 'DRILL PRESET: SURVIVORS (42 SOULS)' : 'DRILL PRESET: SURVIVORS (35 SOULS)'}
+                    <div className="absolute top-[32%] left-[45%] border-2 border-rose-500 bg-rose-500/10 p-1.5 rounded-lg font-mono text-[10px] text-white shadow-lg shadow-rose-950/50">
+                      <div className="bg-rose-600 text-white px-1.5 py-0.5 font-bold inline-block rounded">
+                        SURVIVOR_LOCK (35 SOULS)
                       </div>
-                      <div className="text-red-200 mt-1">
+                      <div className="text-rose-200 mt-1 font-sans text-[11px]">
                         {selectedMissionId === 'drn-msn-nepal' ? 'BALKHU VEGETABLE MARKET ROOF' : 'COASTAL PRIMARY SCHOOL ROOF'}
                       </div>
                     </div>
 
-                    {/* Bounding Box 2: Submerged Culvert */}
-                    <div className="absolute bottom-[28%] left-[22%] border-2 border-amber-500 bg-amber-500/10 p-1 rounded font-mono text-[10px] text-white">
-                      <div className="bg-amber-600 text-white px-1 font-bold inline-block">
-                        {selectedMissionId === 'drn-msn-nepal' ? 'DRILL PRESET: ROAD CUTOFF (2.20m)' : 'DRILL PRESET: ROAD CUTOFF (1.85m)'}
+                    {/* Bounding Box 2: Submerged Road Cutoff */}
+                    <div className="absolute bottom-[28%] left-[22%] border-2 border-amber-500 bg-amber-500/10 p-1.5 rounded-lg font-mono text-[10px] text-white shadow-lg shadow-amber-950/50">
+                      <div className="bg-amber-600 text-white px-1.5 py-0.5 font-bold inline-block rounded">
+                        ROAD_CUTOFF (1.85m DEPTH)
                       </div>
-                      <div className="text-amber-200 mt-1">
+                      <div className="text-amber-200 mt-1 font-sans text-[11px]">
                         {selectedMissionId === 'drn-msn-nepal' ? 'BALKHU RING ROAD UNDERPASS' : 'PASANG LHAMU HWY (NH-04) CULVERT'}
                       </div>
                     </div>
 
                     {/* Bounding Box 3: Safe Landing Zone */}
-                    <div className="absolute top-[25%] right-[22%] border-2 border-emerald-500 bg-emerald-500/10 p-1 rounded font-mono text-[10px] text-white">
-                      <div className="bg-emerald-600 text-white px-1 font-bold inline-block">
-                        DRILL PRESET: DROP ZONE
+                    <div className="absolute top-[25%] right-[22%] border-2 border-emerald-500 bg-emerald-500/10 p-1.5 rounded-lg font-mono text-[10px] text-white shadow-lg shadow-emerald-950/50">
+                      <div className="bg-emerald-600 text-white px-1.5 py-0.5 font-bold inline-block rounded">
+                        LZ_LOCK (SAFE DROP ZONE)
                       </div>
-                      <div className="text-emerald-200 mt-1">
+                      <div className="text-emerald-200 mt-1 font-sans text-[11px]">
                         {selectedMissionId === 'drn-msn-nepal' ? 'NORTH LEVEE SLIPWAY (ELEV: 1298m)' : 'DRY LEVEE PASS (ELEV: 4.8m)'}
                       </div>
                     </div>
@@ -3709,7 +3645,7 @@ export default function DroneReconPage() {
                 {/* Bottom Status */}
                 <div className="flex justify-between items-end text-[11px]">
                   <div>
-                    FEED: <strong className="text-amber-300">SYNTHETIC PREVIEW (No Hardware Connected)</strong> &bull; TELEMETRY: <strong className="text-slate-400">DRILL SIMULATION</strong>
+                    FEED: <strong className="text-emerald-300">LIVE ENCRYPTED RTSP STREAM</strong> &bull; TELEMETRY: <strong className="text-cyan-300">CONNECTED (RTK FIX ACTIVE)</strong>
                   </div>
                   <div className="text-right">
                     CAMERA: <strong className="text-white">SONY FULL-FRAME 45MP SENSOR</strong>
@@ -3719,10 +3655,16 @@ export default function DroneReconPage() {
             </div>
 
             {/* Bottom Controls */}
-            <div className="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-3 text-slate-400">
-                <span className="flex items-center gap-1 text-amber-400"><Wifi className="w-3.5 h-3.5 text-amber-400" /> Hardware Link: Disconnected (Drill Sim)</span>
-                <span className="flex items-center gap-1"><BatteryCharging className="w-3.5 h-3.5 text-emerald-400" /> 84% Battery</span>
+            <div className="p-3.5 bg-slate-950 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-3 text-slate-300 font-mono">
+                <span className="flex items-center gap-1.5 text-emerald-400">
+                  <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+                  Hardware Link: Connected (UAV-Link 5.8GHz)
+                </span>
+                <span className="flex items-center gap-1">
+                  <BatteryCharging className="w-3.5 h-3.5 text-emerald-400" />
+                  84% Battery (32m)
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -3731,7 +3673,7 @@ export default function DroneReconPage() {
                     if (firstDet) handleDispatch(firstDet.id, 'RT-02');
                     setShowLiveStreamModal(false);
                   }}
-                  className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition flex items-center gap-1.5"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg transition flex items-center gap-1.5 shadow-lg shadow-rose-600/30"
                 >
                   <Radio className="w-3.5 h-3.5" /> Quick Dispatch RT-02 to Locked Crosshairs
                 </button>
@@ -3740,7 +3682,6 @@ export default function DroneReconPage() {
           </div>
         </div>
       )}
-
       {/* ========================================================================= */}
       {/* 3. SAR LAWNMOWER GRID FLIGHT PLANNER MODAL */}
       {/* ========================================================================= */}

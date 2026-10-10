@@ -11,7 +11,7 @@ class ReportService:
     def __init__(self):
         os.makedirs(settings.REPORT_DIR, exist_ok=True)
 
-    def generate_pdf_report(self, disaster_name: str, report_type: str, author: str = "Cmdr. Sarah Jenkins") -> Dict[str, Any]:
+    def generate_pdf_report(self, disaster_name: str, report_type: str, author: str = "System Generated") -> Dict[str, Any]:
         report_id = f"REP-{datetime.now().strftime('%Y-%m%d')}-{uuid.uuid4().hex[:4].upper()}"
         filename = f"{report_id}.pdf"
         filepath = os.path.join(settings.REPORT_DIR, filename)
@@ -27,7 +27,7 @@ class ReportService:
         c.setFont("Helvetica-Bold", 16)
         c.drawString(30, height - 42, "SENTINELAID AI — DISASTER SITUATIONAL REPORT")
         c.setFont("Helvetica", 9)
-        c.drawString(30, height - 58, "UN-SPIDER & FEMA COMPLIANT RAPID DISASTER INTELLIGENCE DOSSIER")
+        c.drawString(30, height - 58, "RAPID DISASTER INTELLIGENCE DOSSIER")
 
         # Report Metadata
         c.setFillColor(colors.HexColor("#1E293B"))
@@ -51,10 +51,10 @@ class ReportService:
         c.setFont("Helvetica", 9)
         c.setFillColor(colors.HexColor("#334155"))
         text = [
-            "• Sentinel-2 L2A & Sentinel-1A SAR dual pass co-registration completed with 98.2% spatial confidence.",
-            "• MNDWI Inundation delta detected +18.64 sq km of surface water expansion across delta sector 4.",
-            "• 4,280 structures surveyed via Multi-Spectral Change Detection Models. 1,126 Level 4/5 catastrophic failures identified.",
-            "• Primary road cuts: 42 segments severed (18.4 km total network severed). Alternate Route A verified safe."
+            "• Imagery co-registration completed.",
+            "• Awaiting finalized inundation delta data.",
+            "• Structure survey data is pending real-time verification.",
+            "• Road cut and infrastructure obstruction data pending."
         ]
         y = height - 190
         for line in text:
@@ -81,10 +81,7 @@ class ReportService:
         y -= 22
 
         table_rows = [
-            ("P1-01", "Sector 4 - Riverview", "1,240 (380 vulnerable)", "Amphibious Boat + Medevac", "RT-02 (En Route)"),
-            ("P1-02", "Sector 7 - Central Levee", "920 (210 hospital)", "Heavy Lift Air Winch", "RT-05 (Standby)"),
-            ("P1-03", "Old Town Island Sector 9", "860 souls", "Inflatable SAR Rafts", "UNASSIGNED"),
-            ("P1-04", "East Port Harbor Basin", "640 trapped workers", "Tracked All-Terrain (BV-206)", "RT-09 (Deployed)")
+            ("Pending", "Data unavailable", "Data unavailable", "Pending verification", "UNASSIGNED")
         ]
 
         c.setFont("Helvetica", 8)
@@ -117,3 +114,117 @@ class ReportService:
         }
 
 report_service = ReportService()
+
+import hashlib
+import json
+import csv
+from datetime import datetime, timezone
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from sqlalchemy.orm import Session
+from app.models.drone_recon import DroneReconSession
+from app.models.report import Report
+from app.models.user import User
+import uuid
+
+def generate_drone_recon_report_service(db: Session, current_user: User, session_ids: list, format: str):
+    sessions = db.query(DroneReconSession).filter(DroneReconSession.id.in_(session_ids)).all()
+    if not sessions:
+        raise ValueError("No valid sessions found")
+
+    events = []
+    is_simulation = False
+    for s in sessions:
+        if s.is_simulation:
+            is_simulation = True
+        for e in s.events:
+            events.append(e)
+
+    if not events:
+        raise ValueError("Nothing recorded in this session")
+
+    events.sort(key=lambda x: x.created_at)
+
+    # Content Hash for idempotency
+    content_str = "".join([f"{e.id}{e.event_type}{e.created_at}" for e in events])
+    content_hash = hashlib.sha256(content_str.encode()).hexdigest()
+
+    existing_report = db.query(Report).filter(
+        Report.report_type == "DRONE_RECON",
+        Report.source_session_ids == ",".join(sorted(session_ids)),
+        Report.content_hash == content_hash,
+        Report.file_path.like(f"%.{format}")
+    ).first()
+
+    if existing_report:
+        return existing_report
+
+    filename = f"drone_recon_{datetime.now().strftime('%Y%md%H%M%S')}.{format}"
+    filepath = os.path.join("data", "reports", filename)
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+    if format == 'pdf':
+        c = canvas.Canvas(filepath, pagesize=letter)
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(50, 750, f"Drone Reconnaissance Report")
+        if is_simulation:
+            c.setFillColor(colors.red)
+            c.drawString(50, 730, "SIMULATION / DRILL DATA, NOT LIVE")
+            c.setFillColor(colors.black)
+        
+        c.setFont("Helvetica", 10)
+        y = 700
+        for e in events:
+            c.drawString(50, y, f"[{e.created_at}] {e.event_type} - {e.place_name} ({e.lat}, {e.lng}) [{e.provenance}]")
+            y -= 15
+            if y < 50:
+                c.showPage()
+                y = 750
+        c.save()
+    elif format == 'csv':
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Time', 'Event Type', 'Place', 'Lat', 'Lng', 'Provenance', 'Simulation'])
+            for e in events:
+                writer.writerow([e.created_at, e.event_type, e.place_name, e.lat, e.lng, e.provenance, is_simulation])
+    elif format == 'geojson':
+        features = []
+        for e in events:
+            if e.lat and e.lng:
+                features.append({
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [e.lng, e.lat]},
+                    "properties": {
+                        "event_type": e.event_type,
+                        "place_name": e.place_name,
+                        "provenance": e.provenance,
+                        "time": e.created_at.isoformat() if e.created_at else None,
+                        "is_simulation": is_simulation
+                    }
+                })
+        fc = {"type": "FeatureCollection", "features": features}
+        with open(filepath, 'w') as f:
+            json.dump(fc, f)
+
+    file_size_bytes = os.path.getsize(filepath)
+
+    new_report = Report(
+        report_code=f"REP-{uuid.uuid4().hex[:8].upper()}",
+        report_type="DRONE_RECON",
+        title=f"Drone Recon - {sessions[0].disaster_id}",
+        disaster_id=sessions[0].disaster_id,
+        source_session_ids=",".join(sorted(session_ids)),
+        created_at=datetime.now(timezone.utc),
+        author=current_user.name,
+        generated_by=current_user.id,
+        status="FINAL",
+        file_path=filepath,
+        file_size_bytes=file_size_bytes,
+        content_hash=content_hash
+    )
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+
+    return new_report

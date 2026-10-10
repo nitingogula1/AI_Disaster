@@ -1,5 +1,7 @@
+import { MAP_CONFIG } from '../../config/mapConfig';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { 
+
   Search, MapPin, Calendar, Layers, RefreshCw, Download, 
   Send, Eye, AlertCircle, CheckCircle2, ChevronRight, Sliders,
   ArrowRight, ShieldAlert, Sparkles, Filter, ExternalLink, Info
@@ -461,10 +463,7 @@ export default function SatelliteComparisonPage() {
               style={{ height: '100%', width: '100%' }}
               zoomControl={false}
             >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
+              <TileLayer url={MAP_CONFIG.default.url} attribution={MAP_CONFIG.default.attribution} />
               <MapRecenter center={[selectedPlace.latitude, selectedPlace.longitude]} bbox={customBbox} />
               <Marker position={[selectedPlace.latitude, selectedPlace.longitude]}>
                 <Popup>
